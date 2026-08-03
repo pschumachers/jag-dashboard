@@ -2733,7 +2733,7 @@ async function exportToXLSX(account) {
     ["Geo Conflict Impact", account.geoConflictImpact || ""],
     ["Micro Growth Area", account.microGrowthArea || ""],
     ["JAGGAER Geo Play", account.phenomGeoPlay || ""],
-    ["Geo Talent Shift", account.geoTalentShift || ""],
+    ["Supply & Sourcing Shift", account.geoTalentShift || ""],
     ["", ""],
     ["HYPER-CELL TITLE", account.hyperCellTitle || ""],
     ["HYPER-CELL NARRATIVE", account.hyperCellNarrative || ""],
@@ -6874,7 +6874,7 @@ function GeoPoliSection({ account, update }) {
       color: "#DC2626",
       field: "geoConflictImpact",
       placeholder:
-        "How do the Ukraine war and Middle East/Iran tensions directly affect this company's revenue, supply chain, operations, and talent market? Be specific about cost impacts, market exits, and strategic pivots forced by geopolitics...",
+        "How do geopolitical shifts (conflicts, trade, tariffs, sanctions) directly affect this company's revenue, supply chain, sourcing, and cost base? Be specific about supplier disruption, input-cost inflation, market exits, reshoring, and strategic pivots forced by geopolitics...",
       pills: [
         { label: "Ukraine", color: "#2563EB" },
         { label: "Middle East", color: "#DC2626" },
@@ -6882,21 +6882,21 @@ function GeoPoliSection({ account, update }) {
     }),
     /*#__PURE__*/ React.createElement(GeoCard, {
       icon: "\uD83D\uDCCD",
-      title: "Micro Growth Areas with Talent Implications",
+      title: "Micro Growth Areas with Procurement Implications",
       color: "#0D9488",
       field: "microGrowthArea",
       placeholder:
-        "Which specific business areas, geographies, or product lines are growing BECAUSE of geopolitical shifts? (e.g. defence tech, renewables, reshoring, CEE expansion, Red Sea alternatives, hydrogen, NATO infrastructure...) What talent does each growth area need?",
+        "Which specific business areas, geographies, or product lines are growing BECAUSE of geopolitical shifts? (e.g. defence tech, renewables, reshoring, CEE expansion, hydrogen, new-market entry...) What sourcing, supplier, and spend needs does each growth area create \u2014 new categories, new suppliers, supply-risk exposure, cost pressure?",
       pills: [{ label: "Growth Signal", color: "#0D9488" }],
     }),
     /*#__PURE__*/ React.createElement(GeoCard, {
       icon: "\uD83D\uDD04",
-      title: "Talent Market Shift",
+      title: "Supply & Sourcing Market Shift",
       color: "#7C3AED",
       field: "geoTalentShift",
       placeholder:
-        "How is geopolitics reshaping the talent market for this company? (e.g. Ukrainian engineers in Germany, defence-cleared talent scarcity, nearshoring workforce in new geographies, loss of Russian talent pool, Gulf talent competition for aviation/energy roles...)",
-      pills: [{ label: "Talent Dynamics", color: "#7C3AED" }],
+        "How is geopolitics reshaping this company's supply base and sourcing? (e.g. reshoring / nearshoring suppliers, tariff-driven supplier switching, sanctioned-supplier exits, critical-material scarcity, dual-sourcing for resilience, cross-border trade & compliance...)",
+      pills: [{ label: "Supply Dynamics", color: "#7C3AED" }],
     }),
     /*#__PURE__*/ React.createElement(
       "div",
@@ -9738,9 +9738,9 @@ function ProspectDashboard() {
   "hyperCellTitle": "Provocative one-line headline about their talent challenge",
   "hyperCellNarrative": "2-3 sentence hyper-cell narrative with quantified opportunity",
   "geoConflictImpact": "How geopolitical factors (conflicts, trade, regulation) affect this company",
-  "microGrowthArea": "Specific emerging growth area creating new talent needs",
-  "phenomGeoPlay": "How a procurement platform addresses geopolitical talent challenges",
-  "geoTalentShift": "Talent market shifts caused by geopolitical or demographic changes"
+  "microGrowthArea": "Specific emerging growth area creating new sourcing, supplier, and spend needs",
+  "phenomGeoPlay": "How a source-to-pay platform addresses geopolitically-driven supply and procurement challenges",
+  "geoTalentShift": "Supply-base and sourcing market shifts caused by geopolitical or trade changes (reshoring, tariffs, supplier risk)"
 }`;
         const d2p = callClaudeAPI(key, p2, 3500);
 
