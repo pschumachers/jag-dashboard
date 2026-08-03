@@ -720,12 +720,12 @@ async function exportToPPTX(account) {
     },
     {
       title: 'Procurement & Spend',
-      body: truncate(`${account.talentPressure || 'Talent challenges'}\n\nWorkforce Scale: ${account.workforceScale || 'N/A'}\n\nCHRO Focus: ${account.chroProblems || 'N/A'}`, 180),
+      body: truncate(`${account.talentPressure || 'Cost & supply pressure'}\n\nWorkforce Scale: ${account.workforceScale || 'N/A'}\n\nCHRO Focus: ${account.chroProblems || 'N/A'}`, 180),
       tags: ['Hiring', 'Retention', 'Growth']
     },
     {
       title: 'Sourcing & Suppliers',
-      body: truncate(`Hiring Shape: ${account.hiringShape || 'N/A'}\n\nCritical Roles: ${account.criticalRoles || 'N/A'}\n\nWorkflow: ${account.workflowAssessment || 'N/A'}`, 180),
+      body: truncate(`Sourcing Profile: ${account.hiringShape || 'N/A'}\n\nSpend Categories: ${account.criticalRoles || 'N/A'}\n\nWorkflow: ${account.workflowAssessment || 'N/A'}`, 180),
       tags: ['Staffing', 'Process', 'Skills']
     },
     {
@@ -859,7 +859,7 @@ async function exportToPPTX(account) {
     {
       num: 4,
       question: 'Which job families or workflows are tied to that strategy?',
-      body: truncate(`Critical Roles: ${account.criticalRoles || 'N/A'}\n\nHiring Shape: ${account.hiringShape || 'N/A'}\n\nWorkflow: ${account.workflowAssessment || 'N/A'}`, 200),
+      body: truncate(`Spend Categories: ${account.criticalRoles || 'N/A'}\n\nSourcing Profile: ${account.hiringShape || 'N/A'}\n\nWorkflow: ${account.workflowAssessment || 'N/A'}`, 200),
       tags: ['Roles', 'Hiring', 'Process']
     }
   ];
@@ -2516,9 +2516,9 @@ function buildAccountHTML(account) {
     (account.workforceScale
       ? "<h2>Workforce Intelligence</h2><h3>Scale</h3><p>" + account.workforceScale + "</p>"
       : "") +
-    (account.hiringShape ? "<h3>Hiring Shape</h3><p>" + account.hiringShape + "</p>" : "") +
-    (account.criticalRoles ? "<h3>Critical Roles</h3><p>" + account.criticalRoles + "</p>" : "") +
-    (account.talentPressure ? "<h3>Talent Pressure</h3><p>" + account.talentPressure + "</p>" : "") +
+    (account.hiringShape ? "<h3>Sourcing &amp; Buying</h3><p>" + account.hiringShape + "</p>" : "") +
+    (account.criticalRoles ? "<h3>Spend Categories &amp; Risk</h3><p>" + account.criticalRoles + "</p>" : "") +
+    (account.talentPressure ? "<h3>Cost &amp; Supply Pressure</h3><p>" + account.talentPressure + "</p>" : "") +
     (execRows
       ? "<h2>Executive Mapping</h2><table><thead><tr><th>Executive</th><th>Priorities</th><th>Outreach Angles</th></tr></thead><tbody>" +
         execRows +
@@ -5576,33 +5576,33 @@ function WorkforceSection({ account, update, claudeApiKey }) {
     [
       [
         "\uD83D\uDCCA",
-        "Workforce Scale & Trajectory",
+        "Spend & Supplier Scale",
         "workforceScale",
-        "Total headcount trend, recent hiring vs. layoffs, headcount by region\u2026",
+        "Total annual / addressable spend, direct vs indirect split, active supplier count, tail-spend concentration\u2026",
       ],
       [
-        "\uD83D\uDCCB",
-        "Current Hiring Shape",
+        "\uD83D\uDED2",
+        "Sourcing & Buying Profile",
         "hiringShape",
-        "Total spend & category breakdown, supplier count, sourcing cycle time, contract coverage, ERP/P2P systems in use\u2026",
+        "Sourcing event volume & cycle time, contract coverage, catalog vs off-catalog buying, PO/invoice volumes, AP automation\u2026",
       ],
       [
-        "\u2B50",
-        "Critical Role Families",
+        "\uD83D\uDCE6",
+        "Top Spend Categories & Supplier Risk",
         "criticalRoles",
-        "Most hard-to-fill roles: actuaries, engineers, sales specialists, etc. Why scarce?",
+        "Highest-spend categories, single-source & supply risks, tail-spend sprawl, contract coverage gaps, savings opportunities\u2026",
       ],
       [
         "\uD83C\uDF0D",
-        "Geographic Hiring Patterns",
+        "Geographic Spend & Supplier Footprint",
         "geoPatterns",
-        "Where are they hiring most? Remote vs. hybrid vs. onsite policy tensions\u2026",
+        "Spend by region & entity, multi-country supplier base, local sourcing & compliance, cross-border e-invoicing needs\u2026",
       ],
       [
         "\uD83D\uDD25",
-        "Talent Pressure & Employer Brand",
+        "Cost, Savings & Supply Pressure",
         "talentPressure",
-        "Glassdoor trends, employer brand strength, competitor poaching, retention issues\u2026",
+        "Cost / margin pressure & savings mandates, supply-chain risk, procurement digital maturity, ESG & compliance demands\u2026",
       ],
     ].map(([icon, title, field, placeholder]) =>
       /*#__PURE__*/ React.createElement(
@@ -9334,9 +9334,9 @@ const SUPER_SECTIONS = [
     { id: "revenue", label: "Revenue" },
     { id: "strategy", label: "Strategy" },
   ]},
-  { id: "talent", label: "Workforce & HR", icon: "\uD83D\uDC65", children: [
-    { id: "workforce", label: "Workforce Intel" },
-    { id: "hrtech", label: "HR Tech Stack" },
+  { id: "talent", label: "Procurement & Spend", icon: "\uD83D\uDED2", children: [
+    { id: "workforce", label: "Spend & Supplier Intel" },
+    { id: "hrtech", label: "ERP / P2P Stack" },
     { id: "executives", label: "People" },
     { id: "geopolitics", label: "Geo-Politics" },
   ]},
@@ -9703,11 +9703,11 @@ function ProspectDashboard() {
   "costEfficiency": "Cost reduction programs, efficiency targets",
   "techBets": "Technology stack, digital transformation, AI initiatives",
   "regulatoryContext": "Key regulatory factors affecting the business",
-  "workforceScale": "Employee breakdown by division/region",
-  "hiringShape": "Hiring volume, pace, seasonal patterns",
-  "criticalRoles": "Hardest-to-fill roles and skill gaps",
-  "geoPatterns": "HQ location and key geographic hubs",
-  "talentPressure": "Employer brand strength, retention challenges, talent competition"
+  "workforceScale": "Total addressable / annual spend; direct vs indirect split; number of active suppliers; tail-spend concentration; source-to-pay automation maturity",
+  "hiringShape": "Sourcing event volume and cycle time; contract coverage; catalog vs off-catalog buying; PO and invoice volumes; AP automation rate",
+  "criticalRoles": "Top spend categories and supplier dependencies: highest-spend categories, single-source and supply risks, tail-spend sprawl, contract coverage gaps, and savings opportunities",
+  "geoPatterns": "Spend by region and entity, multi-country supplier base, local sourcing and compliance needs, and cross-border e-invoicing requirements",
+  "talentPressure": "Cost and margin pressure driving savings mandates, supply-chain and supplier risk, procurement digital maturity, and ESG/compliance demands"
 }`;
         const d1p = callClaudeAPI(key, p1, 3000);
 
