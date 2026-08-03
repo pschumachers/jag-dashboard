@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JAGGAER — Prep Analysis</title>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7fafc}</style>
+</head><body><div id="root"></div>
+<script>
+const {
+  useState
+} = React;
+const SECTIONS = {
+  overview: {
+    icon: "🏢",
+    label: "Company",
+    color: "#0277bd"
+  },
+  product: {
+    icon: "⚙️",
+    label: "Product",
+    color: "#01579b"
+  },
+  role: {
+    icon: "💼",
+    label: "The Role",
+    color: "#2e7d32"
+  },
+  market: {
+    icon: "🌍",
+    label: "Territory",
+    color: "#0e7490"
+  },
+  starr: {
+    icon: "⭐",
+    label: "STARR",
+    color: "#d32f2f"
+  },
+  story: {
+    icon: "🧭",
+    label: "My Story",
+    color: "#00695c"
+  },
+  fit: {
+    icon: "🎯",
+    label: "My Fit",
+    color: "#4a148c"
+  },
+  intro: {
+    icon: "🎤",
+    label: "Intro",
+    color: "#bf360c"
+  },
+  yasmine: {
+    icon: "📞",
+    label: "Yasmine Q&A",
+    color: "#1565c0"
+  },
+  questions: {
+    icon: "❓",
+    label: "Q&A Prep",
+    color: "#6a1b9a"
+  },
+  myquestions: {
+    icon: "🙋",
+    label: "Questions",
+    color: "#00796b"
+  },
+  intel: {
+    icon: "🔍",
+    label: "Intel",
+    color: "#37474f"
+  },
+  tips: {
+    icon: "✅",
+    label: "Tips",
+    color: "#e65100"
+  },
+  nextsteps: {
+    icon: "🚀",
+    label: "Next Steps",
+    color: "#c62828"
+  }
+};
+const s = {
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 800,
+    color: "#0277bd",
+    letterSpacing: -0.3
+  },
+  statGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: 10
+  },
+  statCard: {
+    background: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    textAlign: "center",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+    border: "1px solid #e2e8f0"
+  },
+  statValue: {
+    fontSize: 28,
+    fontWeight: 800,
+    color: "#0277bd"
+  },
+  statLabel: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: "#718096",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginTop: 2
+  },
+  statSub: {
+    fontSize: 11,
+    color: "#a0aec0",
+    marginTop: 2
+  },
+  chip: {
+    background: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: 20,
+    padding: "6px 14px",
+    fontSize: 13,
+    color: "#2d3748",
+    fontWeight: 500
+  },
+  detailCard: {
+    background: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)"
+  },
+  detailTitle: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: "#0277bd"
+  },
+  detailText: {
+    fontSize: 14,
+    color: "#4a5568",
+    marginTop: 6,
+    lineHeight: 1.5
+  },
+  listItem: {
+    background: "#fff",
+    borderRadius: 10,
+    padding: "10px 14px",
+    fontSize: 14,
+    color: "#2d3748",
+    border: "1px solid #e2e8f0"
+  },
+  fitCard: {
+    display: "flex",
+    gap: 14,
+    alignItems: "flex-start",
+    background: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+    border: "1px solid #e2e8f0"
+  },
+  scriptBox: {
+    background: "#fafafa",
+    borderRadius: 14,
+    padding: 20,
+    border: "2px solid #e2e8f0",
+    color: "#2d3748",
+    fontStyle: "italic",
+    fontSize: 16,
+    lineHeight: 1.7
+  },
+  tipBox: {
+    background: "#fffde7",
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 14,
+    color: "#795548",
+    border: "1px solid #fff9c4"
+  },
+  qHeader: {
+    padding: "14px 16px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: 15,
+    cursor: "pointer"
+  },
+  aBody: {
+    padding: "14px 16px",
+    fontSize: 14,
+    color: "#4a5568",
+    background: "#fafafa",
+    borderTop: "1px solid #e2e8f0"
+  },
+  questionCard: {
+    display: "flex",
+    gap: 14,
+    alignItems: "flex-start",
+    background: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)"
+  },
+  tipCard: {
+    display: "flex",
+    gap: 12,
+    alignItems: "flex-start",
+    background: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    border: "1px solid #e2e8f0"
+  },
+  highlightBox: {
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 14,
+    lineHeight: 1.5
+  },
+  timelineCard: {
+    background: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.06)"
+  }
+};
+const CompanyOverview = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "JAGGAER"), /*#__PURE__*/React.createElement("div", {
+  style: s.statGrid
+}, [{
+  label: "Founded",
+  value: "1995",
+  sub: "Durham, NC (ex SciQuest)"
+}, {
+  label: "Employees",
+  value: "1,300+",
+  sub: "Global presence"
+}, {
+  label: "Customers",
+  value: "1,400+",
+  sub: "$2.9T annual spend managed"
+}, {
+  label: "Owner",
+  value: "Vista EP",
+  sub: "Acquired 2024 (PE)"
+}].map((x, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.statCard
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.statValue
+}, x.value), /*#__PURE__*/React.createElement("div", {
+  style: s.statLabel
+}, x.label), /*#__PURE__*/React.createElement("div", {
+  style: s.statSub
+}, x.sub)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 8
+  }
+}, ["🏆 Gartner Visionary S2P (3 yrs running)", "📈 IDC MarketScape Leader CLM and P2P", "🤖 AI embedded across every module", "🌍 30+ years in procurement"].map((c, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.chip
+}, c))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #0277bd"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.detailTitle
+}, "What is JAGGAER?"), /*#__PURE__*/React.createElement("div", {
+  style: s.detailText
+}, "Leading provider of ", /*#__PURE__*/React.createElement("strong", null, "intelligent Source to Pay and Supplier Collaboration Platform"), ". Helps organizations manage and automate complex procurement and supply chain processes. Think of it as the infrastructure layer for how enterprises buy everything: from raw materials to software licenses to office supplies. 13M+ suppliers in their network. Integrates with 40+ ERP systems including SAP, Oracle, Workday.")), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #01579b"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.detailTitle
+}, "Ownership and History"), /*#__PURE__*/React.createElement("div", {
+  style: s.detailText
+}, "Originally ", /*#__PURE__*/React.createElement("strong", null, "SciQuest"), " (1995). Rebranded to JAGGAER in 2017. Acquired by ", /*#__PURE__*/React.createElement("strong", null, "Cinven"), " (PE) in 2019, then by ", /*#__PURE__*/React.createElement("strong", null, "Vista Equity Partners"), " in 2024. Vista is one of the largest PE firms specialising in enterprise software. Previously acquired ", /*#__PURE__*/React.createElement("strong", null, "Pool4Tool"), " (direct materials) and ", /*#__PURE__*/React.createElement("strong", null, "BravoSolution"), " (spend management). CEO: ", /*#__PURE__*/React.createElement("strong", null, "Andy Hovancik"), " (since June 2023).")), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #2e7d32"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.detailTitle
+}, "Key Customers (confirmed by Yasmin)"), /*#__PURE__*/React.createElement("div", {
+  style: s.detailText
+}, /*#__PURE__*/React.createElement("strong", null, "Zeiss"), " and ", /*#__PURE__*/React.createElement("strong", null, "Continental"), " mentioned on the call. Also serves TK Elevator, Angelini Pharma, and enterprises across manufacturing, public sector, healthcare, higher education, energy, and financial services. 1,400+ enterprises globally.")), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #e65100"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.detailTitle
+}, "Results They Deliver"), /*#__PURE__*/React.createElement("div", {
+  style: s.detailText
+}, "90% savings on pricing inaccuracies. 85% time savings on invoice processing. 40% payment cost reduction. 58% faster sourcing cycle times. They define outcomes and KPIs before you sign.")));
+const ProductInfo = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "What JAGGAER Sells"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.highlightBox,
+    background: "linear-gradient(135deg, #e1f5fe, #e8f5e9)"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 18,
+    fontWeight: 700,
+    color: "#0277bd",
+    marginBottom: 8
+  }
+}, "JAGGAER One: Source to Pay Platform"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    color: "#4a5568"
+  }
+}, "Enterprise SaaS for procurement, supply chain, and finance teams. 8 core modules on one platform. AI embedded across every module. Strategic deals are 7 figures+. Connects to SAP, Oracle, Workday, and 1,000+ business applications.")), /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "8 Core Modules"), ["🔍 Sourcing: AI powered sourcing events, supplier selection, RFP automation", "📝 Contracts: lifecycle management, clause library, auto renewal tracking", "📊 Spend Management: analytics, category intelligence, cost driver insights", "📁 Category Management: strategy tracking, supplier Pareto analysis", "🛒 eProcurement: guided buying, requisitions, approved supplier steering", "🔗 Supply Chain Collaboration: direct materials, supplier quality, demand planning", "📄 Invoicing: automated processing, 3 way matching, exception handling", "💰 Payments: AP automation, early payment discounts, virtual cards"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.listItem
+}, item)), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #4a148c"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.detailTitle
+}, "Yasmin's Comparison"), /*#__PURE__*/React.createElement("div", {
+  style: s.detailText
+}, "Yasmin compared JAGGAER to ", /*#__PURE__*/React.createElement("strong", null, "Zip, Coupa, SAP Ariba"), ". Same ballpark but JAGGAER handles both direct and indirect materials on one platform (unique differentiator). AI embedded, not bolted on. 30 years of domain expertise versus newer entrants.")), /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Target Buyers (from JD)"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #e65100"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.detailText
+}, /*#__PURE__*/React.createElement("strong", null, "Personas:"), " Chief Procurement Officer (CPO), COO, CFO, VP Supply Chain, VP Procurement", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Company size:"), " Fortune 100 to 500 organisations", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Industries:"), " Manufacturing, healthcare, higher education, public sector, retail, energy, transportation, financial services", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", null, "Your angle:"), " You already work with procurement at Phenom. You know how procurement thinks. And Yasmin confirmed they don't need procurement domain experience.")));
+const TheRole = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Strategic Account Executive (Europe)"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.highlightBox,
+    background: "#e8f5e9",
+    borderLeft: "4px solid #2e7d32"
+  }
+}, /*#__PURE__*/React.createElement("strong", {
+  style: {
+    color: "#2e7d32"
+  }
+}, "✅ HR Screen with Jennifer PASSED (21 Jul)."), " Invited forward on the call. Next: OMG pre hire assessment, then one hour with Bob (SVP Sales Europe, hiring manager), then VP Sales UK, Nordics and Benelux, then local HR consult."), /*#__PURE__*/React.createElement("div", {
+  style: s.statGrid
+}, [{
+  label: "Quota",
+  value: "~£1.5M",
+  sub: "After ramp period"
+}, {
+  label: "Deal Size",
+  value: "£300K to 7 fig+",
+  sub: "3 to 5 strategic deals/yr"
+}, {
+  label: "Base",
+  value: "£130 to 250K",
+  sub: "Range (flexible)"
+}, {
+  label: "OTE",
+  value: "Double",
+  sub: "Uncapped commission"
+}].map((x, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.statCard
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.statValue
+}, x.value), /*#__PURE__*/React.createElement("div", {
+  style: s.statLabel
+}, x.label), /*#__PURE__*/React.createElement("div", {
+  style: s.statSub
+}, x.sub)))), /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Confirmed by Yasmin (Call)"), ["Strategic Sales = on par with Sales Director level. Only 1 to 2 across the whole business (1,500+ people)", "New business hunting role, IC. Europe wide territory with greenfield freedom", "Don't need procurement experience. Just complex software selling experience", "Deal sizes: £300K to 500K+ into millions. Enterprise AEs do £150 to 200K, Strategic AEs do the big deals", "Quota: ~£1.5M. Hit it with 3 to 5 strategic deals per year", "Comp: base £130 to 250K (flexible), double OTE, uncapped commission", "Sales support: BDR, Solution Advisors, Pre-sales team", "Culture: people stay long, work their way up. Collaborative but independent", "AI section of the business is significant (one reason your profile interested them)", "Zeiss and Continental are existing customers", "Majority of AEs hitting targets", "They want someone as soon as possible (will factor in notice period)"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.listItem
+}, "• ", item)), /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "From the JD"), ["Own and exceed revenue targets for JAGGAER's enterprise SaaS solutions", "Drive transformational 7 figure+ deals from engagement through close", "Develop Strategic Account Plan for each assigned account", "Engage and influence C level executives (CPO, COO, CFO)", "Serve as trusted advisor and thought leader to key stakeholders", "Collaborate with Alliance Partners to strengthen positioning", "Craft executive level proposals and presentations", "Accurate forecasting and pipeline management in Salesforce"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.listItem
+}, "✓ ", item)), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.highlightBox,
+    background: "#fffde7",
+    borderLeft: "4px solid #f57f17"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#e65100",
+    marginBottom: 8
+  }
+}, "JAGGAER Values: TEAM"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 6
+  }
+}, ["Transparency: openness builds trust. Candor strengthens relationships", "Entrepreneurial Spirit: own it, drive it, make it. Scrappy and customer obsessed", "Accountability: thumbs in, not fingers out. Take responsibility first", "Metrics Driven Results: outcomes over activities. Data guides decisions"].map((v, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 13,
+    color: "#795548"
+  }
+}, "• ", v)))));
+const TerritoryPlan = () => {
+  const [active, setActive] = useState(0);
+  const [showContacts, setShowContacts] = useState(false);
+  const markets = [{
+    "name": "DACH",
+    "emoji": "\ud83c\udde9\ud83c\uddea",
+    "phase": "Phase 1: Immediate",
+    "phaseColor": "#2e7d32",
+    "total": 68,
+    "scores": [{
+      "label": "Procurement market size",
+      "score": 10
+    }, {
+      "label": "Enterprise density",
+      "score": 10
+    }, {
+      "label": "S2P adoption",
+      "score": 8
+    }, {
+      "label": "Product readiness",
+      "score": 9
+    }, {
+      "label": "Existing references",
+      "score": 8
+    }, {
+      "label": "Alliance partners",
+      "score": 7
+    }, {
+      "label": "My network",
+      "score": 9
+    }, {
+      "label": "Competitive whitespace",
+      "score": 7
+    }],
+    "detail": "Zeiss and Continental already JAGGAER customers. Siemens, BMW, BASF, Bayer, Bosch, ThyssenKrupp are prime targets. German manufacturing is the largest S2P market in Europe. I closed Siemens Healthineers, BMW, Adidas, DHL here.",
+    "rec": "Start here. Zeiss and Continental as references. My manufacturing and automotive logos open procurement doors."
+  }, {
+    "name": "UK",
+    "emoji": "\ud83c\uddec\ud83c\udde7",
+    "phase": "Phase 1: Parallel",
+    "phaseColor": "#2e7d32",
+    "total": 62,
+    "scores": [{
+      "label": "Procurement market size",
+      "score": 8
+    }, {
+      "label": "Enterprise density",
+      "score": 9
+    }, {
+      "label": "S2P adoption",
+      "score": 8
+    }, {
+      "label": "Product readiness",
+      "score": 9
+    }, {
+      "label": "Existing references",
+      "score": 6
+    }, {
+      "label": "Alliance partners",
+      "score": 7
+    }, {
+      "label": "My network",
+      "score": 6
+    }, {
+      "label": "Competitive whitespace",
+      "score": 7
+    }],
+    "detail": "FTSE 100 companies with complex procurement. Shell, Unilever, GSK, AstraZeneca, BAE Systems. UK procurement is mature and receptive to S2P consolidation.",
+    "rec": "Run parallel with DACH. Leverage UK base for face to face meetings."
+  }, {
+    "name": "Benelux",
+    "emoji": "\ud83c\uddf3\ud83c\uddf1",
+    "phase": "Phase 2: Months 6 to 12",
+    "phaseColor": "#0277bd",
+    "total": 55,
+    "scores": [{
+      "label": "Procurement market size",
+      "score": 7
+    }, {
+      "label": "Enterprise density",
+      "score": 7
+    }, {
+      "label": "S2P adoption",
+      "score": 7
+    }, {
+      "label": "Product readiness",
+      "score": 8
+    }, {
+      "label": "Existing references",
+      "score": 4
+    }, {
+      "label": "Alliance partners",
+      "score": 5
+    }, {
+      "label": "My network",
+      "score": 8
+    }, {
+      "label": "Competitive whitespace",
+      "score": 8
+    }],
+    "detail": "Shell, Philips, ASML, DSM, Ahold Delhaize. Dutch procurement is sophisticated. I speak fluent Dutch and lived there 10 years.",
+    "rec": "Natural extension. Dutch language and network accelerate entry."
+  }, {
+    "name": "Nordics",
+    "emoji": "\ud83c\uddf8\ud83c\uddea",
+    "phase": "Phase 3: Year 2",
+    "phaseColor": "#e65100",
+    "total": 46,
+    "scores": [{
+      "label": "Procurement market size",
+      "score": 6
+    }, {
+      "label": "Enterprise density",
+      "score": 5
+    }, {
+      "label": "S2P adoption",
+      "score": 6
+    }, {
+      "label": "Product readiness",
+      "score": 7
+    }, {
+      "label": "Existing references",
+      "score": 3
+    }, {
+      "label": "Alliance partners",
+      "score": 4
+    }, {
+      "label": "My network",
+      "score": 4
+    }, {
+      "label": "Competitive whitespace",
+      "score": 8
+    }],
+    "detail": "Ericsson, Volvo, H&M, Maersk, Novo Nordisk. Fewer mega enterprises but progressive digital adoption.",
+    "rec": "Year 2. English sufficient. Lower priority than DACH, UK, Benelux."
+  }];
+  const barColor = v => v >= 8 ? "#1baf7a" : v >= 5 ? "#eda100" : "#e34948";
+  const m = markets[active];
+  const sorted = [...markets].sort((a, b) => b.total - a.total);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 800,
+      color: "#0e7490",
+      letterSpacing: -0.3
+    }
+  }, "European Territory Plan for JAGGAER"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 14,
+      lineHeight: 1.6,
+      background: "linear-gradient(135deg, #ecfeff, #f5f3ff)",
+      color: "#4a5568"
+    }
+  }, "Strategic AE for Europe. Only 1 to 2 across 1,500 people. 7 figure deals. My enterprise network opens doors immediately."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      overflowX: "auto"
+    }
+  }, markets.map((mk, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    onClick: () => setActive(i),
+    style: {
+      padding: "8px 12px",
+      borderRadius: 8,
+      border: active === i ? "2px solid #0e7490" : "1px solid #e2e8f0",
+      background: active === i ? "#ecfeff" : "#fff",
+      cursor: "pointer",
+      textAlign: "center",
+      minWidth: 70
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18
+    }
+  }, mk.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: active === i ? "#0e7490" : "#4a5568"
+    }
+  }, mk.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      color: active === i ? "#0e7490" : "#2d3748"
+    }
+  }, mk.total, "/80")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      borderRadius: 12,
+      padding: 14,
+      border: "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 700,
+      color: "#18181b"
+    }
+  }, m.emoji, " ", m.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 600,
+      color: "#fff",
+      background: m.phaseColor,
+      padding: "3px 10px",
+      borderRadius: 12
+    }
+  }, m.phase)), m.scores.map((sc, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "6px 0",
+      borderBottom: i < m.scores.length - 1 ? "1px solid #f0f0f0" : "none"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "#718096",
+      width: 120,
+      flexShrink: 0
+    }
+  }, sc.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      height: 7,
+      background: "#f0f4f8",
+      borderRadius: 4,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: "100%",
+      width: sc.score * 10 + "%",
+      background: barColor(sc.score),
+      borderRadius: 4
+    }
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      color: "#2d3748",
+      width: 28,
+      textAlign: "right"
+    }
+  }, sc.score))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      paddingTop: 10,
+      marginTop: 6,
+      borderTop: "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700
+    }
+  }, "Total"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 22,
+      fontWeight: 700
+    }
+  }, m.total, "/80"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#f8fafc",
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 13,
+      color: "#4a5568",
+      lineHeight: 1.6
+    }
+  }, m.detail), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#ecfdf5",
+      borderRadius: 10,
+      padding: 12,
+      borderLeft: "4px solid " + m.phaseColor
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 700,
+      color: m.phaseColor
+    }
+  }, "Recommendation"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#4a5568",
+      marginTop: 4,
+      lineHeight: 1.6
+    }
+  }, m.rec)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      color: "#0e7490",
+      marginTop: 8
+    }
+  }, "Entry Sequence"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 8
+    }
+  }, sorted.map((mk, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    onClick: () => setActive(markets.indexOf(mk)),
+    style: {
+      background: "#fff",
+      borderRadius: 10,
+      padding: "10px 12px",
+      border: "1px solid #e2e8f0",
+      cursor: "pointer",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 700
+    }
+  }, "#" + (i + 1) + " " + mk.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#4a5568"
+    }
+  }, mk.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "#718096"
+    }
+  }, mk.total + "/80")))));
+};
+const STARRPrep = () => {
+  const [openQ, setOpenQ] = useState(null);
+  const items = [{
+    "q": "No procurement experience. How will you sell S2P?",
+    "s": "Pivoted domains three times. Each time new domain.",
+    "t": "Prove domain is learnable in 90 days.",
+    "a": "Already work with procurement stakeholders at Phenom. Yasmin confirmed no procurement experience required. What transfers: Fortune 500 navigation, C suite trust, 6 to 24 month cycles, measurable ROI.",
+    "r": "Every pivot: Phenom 170%, VMware 250%, Apple 150%.",
+    "ref": "JAGGAER needs strategic sellers for 7 figure deals. That takes 15 years. Procurement terminology takes 90 days.",
+    "color": "#0277bd"
+  }, {
+    "q": "Tell me about a 7 figure deal",
+    "s": "Grew strategic account to $2M+ ACV across countries and business units.",
+    "t": "Close complex multi entity enterprise deal at strategic level.",
+    "a": "Separate business cases per unit, unified global proposition. Engaged CIOs, CHROs, CFOs. Navigated procurement and data privacy.",
+    "r": "Total FY25: $2.652M at 170%.",
+    "ref": "Strategic deals need patience and multi threading. You earn 7 figures through value and trust.",
+    "color": "#01579b"
+  }, {
+    "q": "How would you approach Europe as greenfield?",
+    "s": "1 to 2 Strategic AEs across 1,500 people. Europe wide territory.",
+    "t": "Build strategic sales across Europe from scratch.",
+    "a": "Map 50 to 100 targets, identify fragmented procurement tools, lead with ROI (90% pricing savings, 85% invoicing time savings), partner with Alliance Partners and BDR. CPO/COO roundtables in German and English.",
+    "r": "Built DACH four times from zero. Phenom $2.652M, VMware 250%.",
+    "ref": "Zeiss and Continental show JAGGAER wins in DACH. My network accelerates pipeline immediately.",
+    "color": "#2e7d32"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 800,
+      letterSpacing: -0.3
+    }
+  }, "STARR Interview Prep"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 14,
+      lineHeight: 1.5,
+      background: "linear-gradient(135deg, #fce4ec, #f3e5f5)"
+    }
+  }, "Tailored for JAGGAER. Procurement stakeholder experience and strategic 7 figure deal sizes are your angle. Use ", /*#__PURE__*/React.createElement("strong", null, "STARR"), ": Situation, Task, Action, Result, Reflection."), items.map((item, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      borderRadius: 12,
+      overflow: "hidden",
+      border: "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: () => setOpenQ(openQ === i ? null : i),
+    style: {
+      padding: "14px 16px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      background: openQ === i ? item.color : "#f7fafc",
+      color: openQ === i ? "#fff" : "#2d3748",
+      cursor: "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      flex: 1,
+      fontSize: 15
+    }
+  }, "Q: ", item.q), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 18,
+      flexShrink: 0
+    }
+  }, openQ === i ? "\u25B2" : "\u25BC")), openQ === i && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 16,
+      background: "#fff",
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      borderTop: "1px solid #e2e8f0"
+    }
+  }, [{
+    label: "S \u00B7 Situation",
+    text: item.s,
+    color: "#7c3aed",
+    bg: "#f5f3ff"
+  }, {
+    label: "T \u00B7 Task",
+    text: item.t,
+    color: "#1565c0",
+    bg: "#e3f2fd"
+  }, {
+    label: "A \u00B7 Action",
+    text: item.a,
+    color: "#2e7d32",
+    bg: "#f1f8e9"
+  }, {
+    label: "R \u00B7 Result",
+    text: item.r,
+    color: "#e65100",
+    bg: "#fff3e0"
+  }, {
+    label: "R \u00B7 Reflection",
+    text: item.ref,
+    color: "#c62828",
+    bg: "#fce4ec"
+  }].map((sec, j) => /*#__PURE__*/React.createElement("div", {
+    key: j,
+    style: {
+      background: sec.bg,
+      borderRadius: 12,
+      padding: 16,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+      borderLeft: "4px solid " + sec.color
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 800,
+      color: sec.color,
+      textTransform: "uppercase",
+      letterSpacing: 1
+    }
+  }, sec.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "#4a5568",
+      marginTop: 6,
+      lineHeight: 1.6,
+      fontStyle: j === 4 ? "italic" : "normal"
+    }
+  }, sec.text)))))));
+};
+const CareerStory = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Career Arc: Your Narrative"), [{
+  period: "1996",
+  title: "Craftsman Master",
+  org: "HWK Düsseldorf",
+  color: "#795548",
+  icon: "🔨"
+}, {
+  period: "Early",
+  title: "National Instruments (EWB)",
+  org: "First on the ground Germany",
+  color: "#ff8f00",
+  icon: "🏛️"
+}, {
+  period: "Early",
+  title: "Hardware Sales Leader",
+  org: "Team of 7",
+  color: "#6d4c41",
+  icon: "👥"
+}, {
+  period: "Africa",
+  title: "The Gambia ⭐",
+  org: "Govt contract, turnkey pivot",
+  color: "#d84315",
+  icon: "🌍"
+}, {
+  period: "2011 to 2013",
+  title: "Apple",
+  org: "150%, WWAA, EMEIA",
+  color: "#37474f",
+  icon: "🍎"
+}, {
+  period: "2013 to 2019",
+  title: "VMware / AirWatch",
+  org: "250%, President's Club, DACH",
+  color: "#1565c0",
+  icon: "☁️"
+}, {
+  period: "2019 to Now",
+  title: "Phenom",
+  org: "170% FY25, #1 DACH, $2.652M closed",
+  color: "#6a1b9a",
+  icon: "🤖"
+}].map((ch, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    ...s.timelineCard,
+    borderLeft: `4px solid ${ch.color}`,
+    padding: 12
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10
+  }
+}, /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 20
+  }
+}, ch.icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: ch.color
+  }
+}, ch.title), /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 12,
+    color: "#718096"
+  }
+}, ch.period, " · ", ch.org))))));
+const MyFit = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Why You Fit (and Gaps)"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.highlightBox,
+    background: "#e8f5e9",
+    borderLeft: "4px solid #2e7d32"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#2e7d32",
+    marginBottom: 8
+  }
+}, "✅ Strong Match")), [{
+  icon: "⚙️",
+  title: "Complex enterprise SaaS",
+  desc: "7 years at Phenom, 6 at VMware. Multi stakeholder, C suite, 6 to 24 month cycles. 170% FY25, $2.652M closed. This is your core skill."
+}, {
+  icon: "📈",
+  title: "Strategic deal sizes match",
+  desc: "Your $500K to $2M+ deals at Phenom match JAGGAER's strategic tier (£300K to 7 figures). You told Yasmin you're comfortable at this level."
+}, {
+  icon: "🌍",
+  title: "Europe wide greenfield",
+  desc: "Freedom to sell across Europe. First on the ground for NI, Phenom, VMware, Gambia. This is your superpower."
+}, {
+  icon: "🇩🇪",
+  title: "Trilingual European",
+  desc: "German, English, Dutch. Zeiss and Continental are German. Your language skills are immediately valuable."
+}, {
+  icon: "🤝",
+  title: "You already work with procurement",
+  desc: "At Phenom you engage heads of procurement as stakeholders. Yasmin confirmed procurement domain experience is not required."
+}, {
+  icon: "🤖",
+  title: "AI experience",
+  desc: "Yasmin said your AI experience is one reason your profile interested them. JAGGAER has a significant AI section."
+}].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.fitCard
+}, /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 24,
+    flexShrink: 0
+  }
+}, item.icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#2e7d32"
+  }
+}, item.title), /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 13,
+    color: "#4a5568",
+    marginTop: 2
+  }
+}, item.desc)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.highlightBox,
+    background: "#fff3e0",
+    borderLeft: "4px solid #e65100",
+    marginTop: 8
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#e65100",
+    marginBottom: 8
+  }
+}, "⚠️ Things to Consider")), [{
+  icon: "🏦",
+  title: "Vista Equity Partners ownership",
+  desc: "PE owned since 2024. Expect performance pressure, cost discipline, and metrics driven culture. Not a startup vibe."
+}, {
+  icon: "🖥️",
+  title: "Different buyer persona",
+  desc: "CPO, VP Procurement, COO. Not CHROs. You'll need to learn procurement language and value drivers."
+}, {
+  icon: "📊",
+  title: "Mature market, not hypergrowth",
+  desc: "30 year old company, not a rocketship. Stable but less equity upside than Rogo or Hightouch."
+}, {
+  icon: "❓",
+  title: "Equity unclear",
+  desc: "Yasmin didn't know about equity. PE owned companies sometimes offer it, sometimes don't. Push for clarity."
+}].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.fitCard
+}, /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 24,
+    flexShrink: 0
+  }
+}, item.icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#e65100"
+  }
+}, item.title), /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 13,
+    color: "#4a5568",
+    marginTop: 2
+  }
+}, item.desc)))));
+const IntroScript = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Your Intro (tailored for JAGGAER)"), /*#__PURE__*/React.createElement("div", {
+  style: s.scriptBox
+}, /*#__PURE__*/React.createElement("p", null, "\"I've spent nearly 7 years at Phenom as Senior Director selling AI powered enterprise SaaS, trilingual in German, English, and Dutch. Last year: 170% of target, $2.652M in closed revenue, #1 rep in DACH out of 60 globally."), /*#__PURE__*/React.createElement("p", null, "What makes me interesting for JAGGAER is three things. First, I'm comfortable at the strategic deal level. My average deal is $500K to $700K, with upsells above $2M. I close 3 to 5 large deals per year, which is exactly the rhythm JAGGAER needs. Second, I already work with procurement stakeholders at Phenom. Getting heads of procurement on board is critical to closing enterprise deals, and I do this every day. Third, I've built European territories from scratch four times: for National Instruments, VMware, Phenom, and a government business in The Gambia."), /*#__PURE__*/React.createElement("p", null, "I know Zeiss and Continental are customers. Those are the type of accounts I've sold into across my career: Siemens Healthineers, Roche, ABB, Swiss Re, BMW, Adidas, DHL. Complex, multi stakeholder, European enterprise.\"")), /*#__PURE__*/React.createElement("div", {
+  style: s.tipBox
+}, /*#__PURE__*/React.createElement("strong", null, "💡 Key framing:"), " You don't need to know procurement. You need to know how to sell complex enterprise SaaS at the strategic level. That's exactly what you do. The domain is learnable; the selling DNA is not."));
+const YasmineQA = () => {
+  const [openQ, setOpenQ] = useState(null);
+  const qas = [{
+    q: "Topic 1: How do you generate and close new business?",
+    a: "\"I am a new business hunter. I have built territories from zero four times: National Instruments in Germany, VMware AirWatch in DACH, Phenom in DACH, and a government business in The Gambia. At Phenom I started with no logos, no pipeline, and no brand recognition, and built it into the top performing enterprise territory. I generate my own pipeline through direct executive outreach, a network of over 4,000 senior enterprise contacts, partner co selling, and industry events. New logos I brought in include Siemens Healthineers, BMW, Adidas, and DHL.\""
+  }, {
+    q: "Topic 2: Do you own deals end to end?",
+    a: "\"Yes, full cycle. I own everything from first outreach through qualification, business case, multi stakeholder navigation across HR, IT, procurement, and legal, then contract negotiation and close. And I stay in the account afterwards, because expansion is where strategic value compounds. My largest account started as a new logo and grew to over $2M in annual contract value across multiple countries and business units.\""
+  }, {
+    q: "Topic 3: What are your average deal sizes?",
+    a: "\"My deals sit in the six to seven figure range. Average deal size is $500K to $700K, with expansions above $2M. I close 3 to 5 large deals a year, so I am used to exactly the rhythm this role requires: fewer, bigger, more strategic deals rather than volume.\""
+  }, {
+    q: "Topic 4: What is your quota attainment record?",
+    a: "\"I have consistently exceeded targets across my career: at Phenom, at VMware AirWatch, and at Apple before that. Last year I finished as the top enterprise seller in my market. The pattern across three companies and thirteen years is consistency, not a single good year.\""
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.cardTitle,
+      color: "#1565c0"
+    }
+  }, "Q&A from the Yasmine Call"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 14,
+      lineHeight: 1.5,
+      background: "linear-gradient(135deg, #e3f2fd, #e8f5e9)",
+      color: "#4a5568",
+      marginBottom: 4
+    }
+  }, "The four topics Yasmine pre briefed Jennifer on, with the answers given on the first call. Jennifer will screen on the same four. Stay consistent with these; she needs facts she can carry to the hiring manager."), qas.map((qa, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      borderRadius: 12,
+      overflow: "hidden",
+      border: "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: () => setOpenQ(openQ === i ? null : i),
+    style: {
+      ...s.qHeader,
+      background: openQ === i ? "#1565c0" : "#f7fafc",
+      color: openQ === i ? "#fff" : "#2d3748"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      flex: 1
+    }
+  }, qa.q), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 18,
+      flexShrink: 0
+    }
+  }, openQ === i ? "▲" : "▼")), openQ === i && /*#__PURE__*/React.createElement("div", {
+    style: s.aBody
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: 0,
+      lineHeight: 1.6
+    }
+  }, qa.a)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #e65100",
+      background: "#fff3e0",
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#e65100"
+    }
+  }, "⚠️ Already Answered by Yasmine (do not ask Jennifer again)"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginTop: 10
+    }
+  }, ["Procurement experience needed? No. Complex software selling experience is enough", "Quota? Around £1.5M after ramp, hit with 3 to 5 strategic deals per year", "Deal sizes? £300K to 500K+ into the millions at the strategic tier", "Comp? Base £130 to 250K flexible, double OTE, uncapped commission", "Territory? Europe wide, greenfield freedom, IC new business hunting role", "Seniority? Strategic AE is on par with Sales Director, only 1 to 2 across 1,500 people", "Sales support? BDR, Solution Advisors, and Pre sales team behind you", "Customers? Zeiss and Continental confirmed, plus 1,400+ enterprises globally", "Team performance? Majority of AEs hitting targets", "Culture? People stay long and work their way up, collaborative but independent", "Timing? They want someone as soon as possible and will factor in notice period", "Why me? AI experience, multilingual skills, and EMEA track record"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      fontSize: 14,
+      color: "#bf360c",
+      lineHeight: 1.5
+    }
+  }, "• ", item)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #2e7d32",
+      background: "#f1f8e9",
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#2e7d32"
+    }
+  }, "🙋 Great Questions for Jennifer (HR screen appropriate)"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginTop: 10
+    }
+  }, ["Who is the hiring manager for this role, and what matters most to them in a candidate?", "What does the rest of the process look like from here, and what is the timeline?", "Is this a newly created position or a backfill, and what is behind the decision to hire now?", "How does JAGGAER onboard senior sellers coming from outside the procurement domain?", "How is the European sales organisation structured, and where does this role sit within it?", "In your experience, what separates the people who thrive at JAGGAER from those who do not?"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 800,
+      color: "#2e7d32",
+      flexShrink: 0
+    }
+  }, i + 1, "."), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      color: "#33691e",
+      lineHeight: 1.5
+    }
+  }, item))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.tipBox,
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "💡 Hold back for sales leadership:"), " equity structure, exact team attainment rates, and the formal reporting line. Those are the three gaps from the Yasmine call, but they belong in the hiring manager conversation, not the HR screen. Question 1 above gets you the reporting line indirectly anyway."));
+};
+const QAPrep = () => {
+  const [openQ, setOpenQ] = useState(null);
+  const qas = [{
+    q: "You don't have procurement experience. How will you sell S2P?",
+    a: "\"Yasmin confirmed this role doesn't require procurement experience, and here's why that makes sense. At Phenom I sell complex enterprise SaaS to a specific buyer persona (CHROs, VPs of Talent) and I've learned that domain inside out. What transfers is the selling motion: navigating Fortune 500 organisations, building C suite trust, managing 6 to 24 month cycles, and creating business cases that demonstrate measurable ROI. I already work with procurement teams as stakeholders at Phenom because if you don't get procurement on board, nothing closes. I understand how procurement thinks. The S2P domain specifics I can learn in 90 days. The enterprise selling DNA takes 15+ years to build, and I have it.\""
+  }, {
+    q: "Tell me about a 7 figure deal you've driven",
+    a: "\"At Phenom I grew a strategic account to a $2M+ annual contract value. This involved multiple stakeholders across HR, IT, procurement, and legal spanning several countries. I built separate business cases for each business unit, unified them into a single global value proposition, and navigated complex compliance and data privacy requirements. At VMware I built the DACH territory from zero to 250% attainment and President's Club, with Federal Government deals that required security clearance and multi stage procurement. My FY25 total was $2.652M in closed revenue at 170% of quota.\""
+  }, {
+    q: "How would you approach Europe as a greenfield territory?",
+    a: "\"Same playbook I've used four times. Map the top 50 to 100 enterprise targets by industry and geography. Identify which ones already use fragmented procurement tools that JAGGAER can consolidate. Lead with the ROI story: 90% savings on pricing inaccuracies, 85% time savings on invoicing. Partner with Alliance Partners and the BDR team to create multi touch campaigns. Host CPO and COO roundtables in German and English. Leverage Zeiss and Continental as reference customers for the DACH market. Build momentum through early wins and expand from there.\""
+  }, {
+    q: "Why leave a Senior Director title for a Strategic AE role?",
+    a: "\"Yasmin explained that Strategic AE at JAGGAER is on par with Sales Director level. Only 1 to 2 exist across 1,500 people. That tells me this is not a step back; it's the most senior selling position in the company. I'm an IC who loves being in the deal. The combination of Europe wide greenfield territory, 7 figure deal sizes, and the freedom to sell strategically is exactly what I'm looking for.\""
+  }, {
+    q: "How do you build C suite relationships with CPOs and COOs?",
+    a: "\"The approach is the same regardless of the title. At Phenom I engage CHROs, CIOs, CFOs, and CEOs regularly. At VMware I ran CIO workshops for Federal Government. The key is speaking their language: for CPOs it's total cost of ownership, supplier risk, and compliance. For COOs it's operational efficiency and supply chain resilience. For CFOs it's working capital optimisation and AP automation. I build data driven business cases that resonate with each persona. At Phenom I created an AI powered dashboard that generates custom ROI presentations in 10 minutes. I'd do exactly the same for JAGGAER.\""
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: s.cardTitle
+  }, "Likely Questions (Tap to Expand)"), qas.map((qa, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      borderRadius: 12,
+      overflow: "hidden",
+      border: "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: () => setOpenQ(openQ === i ? null : i),
+    style: {
+      ...s.qHeader,
+      background: openQ === i ? "#0277bd" : "#f7fafc",
+      color: openQ === i ? "#fff" : "#2d3748"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      flex: 1
+    }
+  }, "Q: ", qa.q), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 18,
+      flexShrink: 0
+    }
+  }, openQ === i ? "▲" : "▼")), openQ === i && /*#__PURE__*/React.createElement("div", {
+    style: s.aBody
+  }, qa.a.split("\n\n").map((p, j) => /*#__PURE__*/React.createElement("p", {
+    key: j,
+    style: {
+      margin: "0 0 10px 0",
+      lineHeight: 1.6
+    }
+  }, p))))));
+};
+const AskQuestions = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Questions for JAGGAER (Next Round)"), ["What does the ramp period look like and when am I expected to hit full quota?", "How is the Strategic AE territory defined: all of Europe, or specific verticals/regions?", "Is there equity in the package, or is it purely base + commission?", "Who would I report to: VP Sales EMEA, CRO, or someone else?", "How many enterprise logos do you have in DACH specifically?", "What's the competitive win rate against Coupa, SAP Ariba, and Zip?", "What does the Alliance Partner ecosystem look like in Europe?", "How has the Vista Equity Partners acquisition changed the culture and expectations?", "What's the average sales cycle for a 7 figure strategic deal?", "How are the Solution Advisors and Pre-sales team structured for Europe?"].map((q, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.questionCard
+}, /*#__PURE__*/React.createElement("span", {
+  style: {
+    color: "#00796b",
+    fontWeight: 800,
+    fontSize: 16,
+    flexShrink: 0
+  }
+}, i + 1), /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 15,
+    color: "#2d3748"
+  }
+}, q))));
+const InsiderIntel = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Insider Intel"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #c62828",
+    background: "#fce4ec"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailTitle,
+    color: "#c62828"
+  }
+}, "🎯 Bob O'Leary Prep (Fri 7 Aug, 1pm UK). Jen's Marking Scheme"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    marginTop: 8
+  }
+}, ["OMG passed. Straight to hiring manager round. Bob is SVP of Sales for Europe", "What Bob rates: strong discovery, executive level credibility, disciplined qualification", "Expect a deep walkthrough of one complex enterprise win: ACV versus TCV, new logo versus expansion, personal ownership, stakeholder map, how urgency was created, how the economic buyer was reached", "PREPARE EXACT NUMBERS for Verisure and Roche: ACV, TCV, licence versus services split, land value versus current value. Vague deal numbers is the number one listed candidate killer, and the NDA deflection from the Jennifer call will not fly with Bob", "Answer format: outcome first, then the strategy behind it. Structured and concise. Half the length of the Jennifer answers", "He values challenger and value based selling, clear product knowledge, and the judgment to qualify out without a compelling business case. The Verisure RFP walk away is the perfect qualify out story. Know the JAGGAER modules well enough to speak to them", "Listed candidate killers: vague deal numbers, overly long answers, relationship selling without discovery and commercial insight", "Bring thoughtful questions on role, market, and sales strategy. This is where the territory plan and market analysis earn their keep", "This is also the round for the three open items: equity structure, reporting line, team attainment. And the £150K reframe to total package at Sales Director level"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 14,
+    color: "#880e4f"
+  }
+}, "• ", item)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #2e7d32",
+    background: "#e8f5e9"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailTitle,
+    color: "#2e7d32"
+  }
+}, "✅ Jennifer Screen (21 Jul): PASSED. Key Outcomes"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    marginTop: 8
+  }
+}, ["Invited forward live on the call. Positive signal", "Hiring manager identified: Bob, SVP of Sales for Europe", "Full process: HR screen (done) → OMG pre hire assessment → 1 hour with Bob → VP Sales UK, Nordics and Benelux → 15 to 20 min local HR consult on benefits", "OMG assessment: online, multiple choice, set aside about an hour. Link expires; Jennifer set an auto resend for Monday 27 Jul", "On record via her note taker: one month notice period and desired base of £150K (pounds confirmed). Bob will read the transcript", "£150K is a low anchor against the £130 to 250K range. With Bob, reframe around total package and the Sales Director level seniority. Do not confirm 150 again", "Jennifer is a TA contractor, second stint at JAGGAER. Her HR role was eliminated in restructuring, then she was brought back. Parted amicably", "She confirmed the Vista picture herself: majority of C suite exited after the acquisition, 18 months of restructuring, in her words not for everybody", "She referred to Federica as the recruiter who sent the CV and as a contact for questions. Clarify whether Federica and Yasmine are the same person or two contacts", "Long answers were fine for Jennifer. With Bob: same content, half the length"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 14,
+    color: "#33691e"
+  }
+}, "• ", item)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #6a1b9a",
+    background: "#f3e5f5"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailTitle,
+    color: "#6a1b9a"
+  }
+}, "📝 OMG Assessment Briefing (take Mon 27 or Tue 28 Jul)"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    marginTop: 8
+  }
+}, ["Online, multiple choice, about an hour. One quiet sitting, no interruptions", "Measures 21 sales competencies in three groups: Will to Sell, Sales DNA, Tactical Selling. Configured for a hunting, major account role", "Bob receives: Recommended or Not Recommended, plus a Scoring Confidence rating based on answer consistency. It detects gaming, so inconsistent strategic answers hurt more than honest ones", "Role criteria it checks read like your CV: will hunt for new business, high ticket seller, value seller, competition resistant, works independently, entrepreneurial", "The bar scales with role difficulty. Strategic AE means a high Sales DNA threshold, so direct honest answers are the strongest play", "How you buy: it asks about your own purchasing style. Decisive buyers score as decisive sellers. Answer truthfully", "Money: it probes comfort discussing budgets and finances directly. No hedging", "Need for approval: statements about wanting to be liked. Your pattern is respect over likeability. That is the strong profile", "First instinct answers. Do not overthink. The developer's own guidance: there are no wrong answers, honesty is the best approach", "It is one data point. The transcript from the Jennifer call and the Bob conversation carry more weight"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 14,
+    color: "#4a148c"
+  }
+}, "• ", item)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #0277bd",
+    background: "#e1f5fe"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailTitle,
+    color: "#0277bd"
+  }
+}, "📞 Yasmin Hughes (Gillespie Manners)"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    marginTop: 8
+  }
+}, ["External recruiter at Gillespie Manners (gillespiemmanners.com)", "She was professional and structured on the call", "She confirmed procurement experience is NOT required", "She specifically mentioned your AI experience as a reason they're interested", "She also mentioned your multilingual skills and EMEA experience", "She said the base range is £130 to 250K (flexible), which is wide", "She will use your LinkedIn profile as CV (they prefer CVs but will accept LinkedIn)", "She's sending the JD and website link for you to review", "Next step: once you confirm interest, she introduces you to JAGGAER directly"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 14,
+    color: "#01579b"
+  }
+}, "• ", item)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #2e7d32",
+    background: "#f1f8e9"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailTitle,
+    color: "#2e7d32"
+  }
+}, "✅ The Good"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    marginTop: 8
+  }
+}, ["Strategic AE = Sales Director level. Only 1 to 2 across 1,500 people: elite position", "Europe wide territory with greenfield freedom: sell anywhere", "£1.5M quota with 3 to 5 deals: high value, low volume. Strategic selling at its purest", "Uncapped commission with double OTE: significant earning potential", "30 years of domain expertise: proven product, established market", "Gartner Visionary 3 years running, IDC MarketScape Leader", "Zeiss, Continental, TK Elevator: serious enterprise logos", "Sales support: BDR, Solution Advisors, Pre-sales. You won't be alone", "Majority of AEs hitting targets: healthy sales culture", "People stay long and work their way up: stability"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 14,
+    color: "#33691e"
+  }
+}, "• ", item)))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailCard,
+    borderLeft: "4px solid #e65100",
+    background: "#fff3e0"
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.detailTitle,
+    color: "#e65100"
+  }
+}, "⚠️ Watch Out For"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    marginTop: 8
+  }
+}, ["Vista Equity Partners PE ownership (2024): expect metrics driven performance culture", "PE firms often optimise for margin, which can mean cost cutting and pressure", "Buyer persona (CPO, VP Procurement) is different from your HR tech background", "30 year old company: stable but not hypergrowth. Less startup energy", "Equity unclear: Yasmin didn't know. PE owned companies may not offer meaningful equity", "Yasmin is external recruiter: may not have deep inside knowledge of culture", "Some Gartner Peer Insights reviews mention product rigidity and data migration challenges", "Previous CEO Jim Bureau left in March 2023: leadership turnover worth noting"].map((item, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: {
+    fontSize: 14,
+    color: "#bf360c"
+  }
+}, "• ", item)))));
+const Tips = () => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: s.cardTitle
+}, "Tips for Next Steps"), ["The Strategic AE position (1 to 2 across 1,500 people) is genuinely elite. Frame your interest around this exclusivity.", "Your procurement stakeholder experience at Phenom is your bridge into the domain. Don't undersell it.", "Drop Zeiss and Continental early: shows you've researched their customer base. Your Siemens Healthineers, ABB, and Roche logos are in the same league.", "Ask about equity before investing too much time. If there's no meaningful equity, compare the total package against Rogo and Ben.", "The TEAM values (Transparency, Entrepreneurial Spirit, Accountability, Metrics Driven) map perfectly to how you described yourself to Fabiola: 'I run my operations like my own business.'", "Your $2.652M closed revenue at 170% proves you can operate at the £1.5M quota level. Make this clear.", "The AI angle is your differentiator vs other candidates. 7 years selling AI at Phenom puts you ahead of anyone coming from traditional procurement software.", "Research Coupa, Zip, and SAP Ariba as competitors before the JAGGAER interview. Know their weaknesses.", "PE ownership means they'll want precise forecasting and pipeline discipline. Mention your Salesforce experience.", "This role has the highest deal sizes of all your opportunities (7 figures+). If the comp works, it could be very lucrative."].map((tip, i) => /*#__PURE__*/React.createElement("div", {
+  key: i,
+  style: s.tipCard
+}, /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 18,
+    flexShrink: 0
+  }
+}, "✅"), /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 15,
+    color: "#2d3748",
+    lineHeight: 1.5
+  }
+}, tip))), /*#__PURE__*/React.createElement("div", {
+  style: {
+    ...s.highlightBox,
+    background: "linear-gradient(135deg, #0277bd, #01579b)",
+    color: "#fff",
+    textAlign: "center",
+    padding: 24,
+    borderRadius: 16,
+    marginTop: 8
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 22,
+    fontWeight: 800
+  }
+}, "Elite position 🏆"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 15,
+    marginTop: 8,
+    opacity: 0.9
+  }
+}, "1 of 2 Strategic AEs across 1,500 people. Europe wide. 7 figure deals. Your kind of role.")));
+const NextSteps = () => {
+  const [inputText, setInputText] = useState("");
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(null);
+  const [activeScenario, setActiveScenario] = useState(null);
+  const scenarios = [{
+    id: "proceed",
+    label: "🟢 Proceed to JAGGAER intro",
+    description: "You've reviewed the JD and want to meet JAGGAER directly",
+    steps: ["Reply to Yasmin confirming your interest (see message below)", "Research Coupa, Zip, and SAP Ariba as competitors", "Prepare your procurement stakeholder stories from Phenom", "Review JAGGAER case studies on their website", "Prepare questions about equity, territory definition, and reporting line"],
+    followUp: "Hi Yasmin, thanks for sending everything over. I've had a good look at the JD and the website, and I'm very interested in moving forward. The strategic level position, the Europe wide territory, and the deal sizes are all a strong match for what I'm looking for. Happy for you to make the introduction to JAGGAER whenever works. Best, Pascal"
+  }, {
+    id: "pass",
+    label: "🔴 Not the right fit",
+    description: "PE ownership or buyer persona gap is a dealbreaker",
+    steps: ["Reply to Yasmin politely and keep the relationship open"],
+    followUp: "Hi Yasmin, thanks for taking the time to walk me through the opportunity. After reviewing the JD, I've decided to focus on opportunities that are a closer domain fit to my current expertise. I really appreciate the conversation and would love to stay in touch for future roles. Best, Pascal"
+  }];
+  const analyzeNotes = async () => {
+    if (!inputText.trim()) return;
+    setLoading(true);
+    setError(null);
+    setAnalysisResult(null);
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          system: `You are a senior sales career coach helping Pascal Schumachers evaluate a Strategic AE role at JAGGAER (S2P procurement platform, Vista PE owned, 1300 employees). Pascal is a Senior Director at Phenom (AI HR tech), 170% FY25, $2.652M closed, #1 DACH out of 60. Analyze notes and return ONLY valid JSON: {"summary":"2 to 3 sentences","sentiment":"positive" or "neutral" or "cautious","action_items":["item"],"follow_up_message":"message, NO hyphens or dashes","talking_points_next":["point"],"positive_signals":["signal"],"watch_outs":["concern"]}`,
+          messages: [{
+            role: "user",
+            content: inputText
+          }]
+        })
+      });
+      const data = await response.json();
+      const text = data.content.map(i => i.text || "").filter(Boolean).join("\n");
+      setAnalysisResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
+      setActiveScenario(null);
+    } catch (err) {
+      setError("Could not analyze. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const copyText = (text, id) => {
+    navigator.clipboard?.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  };
+  const sentimentColor = {
+    positive: "#2e7d32",
+    neutral: "#f57f17",
+    cautious: "#c62828"
+  };
+  const sentimentIcon = {
+    positive: "🟢",
+    neutral: "🟡",
+    cautious: "🔴"
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: s.cardTitle
+  }, "Next Steps"), scenarios.map(sc => /*#__PURE__*/React.createElement("div", {
+    key: sc.id
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: () => setActiveScenario(activeScenario === sc.id ? null : sc.id),
+    style: {
+      ...s.qHeader,
+      background: activeScenario === sc.id ? "#0277bd" : "#f7fafc",
+      color: activeScenario === sc.id ? "#fff" : "#2d3748",
+      borderRadius: activeScenario === sc.id ? "12px 12px 0 0" : 12,
+      border: "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700
+    }
+  }, sc.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      opacity: 0.8,
+      marginTop: 2
+    }
+  }, sc.description)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 18
+    }
+  }, activeScenario === sc.id ? "▲" : "▼")), activeScenario === sc.id && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      border: "1px solid #e2e8f0",
+      borderTop: "none",
+      borderRadius: "0 0 12px 12px",
+      padding: 16,
+      display: "flex",
+      flexDirection: "column",
+      gap: 14
+    }
+  }, sc.steps && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #2e7d32",
+      background: "#f1f8e9"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#2e7d32"
+    }
+  }, "✅ Action Items"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginTop: 10
+    }
+  }, sc.steps.map((step, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 800,
+      color: "#2e7d32",
+      flexShrink: 0
+    }
+  }, i + 1, "."), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      color: "#33691e",
+      lineHeight: 1.5
+    }
+  }, step))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #4a148c",
+      background: "#f3e5f5"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#4a148c"
+    }
+  }, "💬 Ready to Send"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      borderRadius: 10,
+      padding: 14,
+      marginTop: 10,
+      fontSize: 14,
+      lineHeight: 1.6,
+      color: "#2d3748",
+      fontStyle: "italic",
+      border: "1px solid #ce93d8"
+    }
+  }, sc.followUp), /*#__PURE__*/React.createElement("div", {
+    onClick: () => copyText(sc.followUp, sc.id),
+    style: {
+      marginTop: 8,
+      background: copied === sc.id ? "#2e7d32" : "#4a148c",
+      color: "#fff",
+      padding: "8px 16px",
+      borderRadius: 8,
+      textAlign: "center",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer",
+      display: "inline-block"
+    }
+  }, copied === sc.id ? "✅ Copied!" : "📋 Copy Message"))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderTop: "2px solid #e2e8f0",
+      margin: "8px 0"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: s.cardTitle
+  }, "📝 Custom Analysis"), /*#__PURE__*/React.createElement("textarea", {
+    value: inputText,
+    onChange: e => setInputText(e.target.value),
+    placeholder: "Paste your call notes or messages here...",
+    style: {
+      width: "100%",
+      minHeight: 150,
+      padding: 16,
+      borderRadius: 12,
+      border: "2px solid #e2e8f0",
+      fontSize: 15,
+      fontFamily: "'Avenir', 'Segoe UI', sans-serif",
+      lineHeight: 1.5,
+      color: "#2d3748",
+      background: "#fff",
+      resize: "vertical",
+      boxSizing: "border-box",
+      outline: "none"
+    },
+    onFocus: e => e.target.style.borderColor = "#0277bd",
+    onBlur: e => e.target.style.borderColor = "#e2e8f0"
+  }), /*#__PURE__*/React.createElement("div", {
+    onClick: !loading ? analyzeNotes : undefined,
+    style: {
+      background: loading ? "#90a4ae" : "linear-gradient(135deg, #0277bd, #01579b)",
+      color: "#fff",
+      padding: "14px 24px",
+      borderRadius: 12,
+      textAlign: "center",
+      fontSize: 16,
+      fontWeight: 700,
+      cursor: loading ? "not-allowed" : "pointer"
+    }
+  }, loading ? "⏳ Analyzing..." : "🚀 Analyze and Generate Next Steps"), error && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#ffebee",
+      borderRadius: 10,
+      padding: 14,
+      color: "#c62828",
+      fontSize: 14
+    }
+  }, "⚠️ ", error), analysisResult && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #0277bd"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle
+    }
+  }, "📋 Summary"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      color: sentimentColor[analysisResult.sentiment] || "#666"
+    }
+  }, sentimentIcon[analysisResult.sentiment] || "⚪", " ", (analysisResult.sentiment || "").toUpperCase())), /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailText,
+      marginTop: 8
+    }
+  }, analysisResult.summary)), analysisResult.action_items?.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #2e7d32",
+      background: "#f1f8e9"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#2e7d32"
+    }
+  }, "✅ Action Items"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      marginTop: 10
+    }
+  }, analysisResult.action_items.map((step, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 800,
+      color: "#2e7d32",
+      flexShrink: 0
+    }
+  }, i + 1, "."), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 14,
+      color: "#33691e",
+      lineHeight: 1.5
+    }
+  }, step))))), analysisResult.follow_up_message && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #4a148c",
+      background: "#f3e5f5"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#4a148c"
+    }
+  }, "💬 Suggested Follow Up"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#fff",
+      borderRadius: 10,
+      padding: 14,
+      marginTop: 10,
+      fontSize: 14,
+      lineHeight: 1.6,
+      fontStyle: "italic",
+      border: "1px solid #ce93d8"
+    }
+  }, analysisResult.follow_up_message), /*#__PURE__*/React.createElement("div", {
+    onClick: () => copyText(analysisResult.follow_up_message, "ai"),
+    style: {
+      marginTop: 8,
+      background: copied === "ai" ? "#2e7d32" : "#4a148c",
+      color: "#fff",
+      padding: "8px 16px",
+      borderRadius: 8,
+      textAlign: "center",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer",
+      display: "inline-block"
+    }
+  }, copied === "ai" ? "✅ Copied!" : "📋 Copy Message")), analysisResult.positive_signals?.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #00695c",
+      background: "#e0f2f1"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#00695c"
+    }
+  }, "💡 Positive Signals"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      marginTop: 10
+    }
+  }, analysisResult.positive_signals.map((sig, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      fontSize: 14,
+      color: "#004d40",
+      lineHeight: 1.5
+    }
+  }, "✦ ", sig)))), analysisResult.watch_outs?.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailCard,
+      borderLeft: "4px solid #c62828",
+      background: "#ffebee"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...s.detailTitle,
+      color: "#c62828"
+    }
+  }, "⚠️ Watch Out For"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      marginTop: 10
+    }
+  }, analysisResult.watch_outs.map((flag, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      fontSize: 14,
+      color: "#b71c1c",
+      lineHeight: 1.5
+    }
+  }, "• ", flag))))));
+};
+const CONTENT = {
+  overview: CompanyOverview,
+  product: ProductInfo,
+  role: TheRole,
+  market: TerritoryPlan,
+  starr: STARRPrep,
+  story: CareerStory,
+  fit: MyFit,
+  intro: IntroScript,
+  yasmine: YasmineQA,
+  questions: QAPrep,
+  myquestions: AskQuestions,
+  intel: InsiderIntel,
+  tips: Tips,
+  nextsteps: NextSteps
+};
+function JaggaerDashboard() {
+  const [active, setActive] = useState("overview");
+  const ActiveContent = CONTENT[active];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Avenir', 'Segoe UI', 'Helvetica Neue', sans-serif",
+      background: "#f0f4f8",
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(135deg, #01579b, #0277bd)",
+      padding: "16px 20px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 20,
+      fontWeight: 800,
+      color: "#fff",
+      letterSpacing: -0.5
+    }
+  }, "Interview Prep"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#81d4fa",
+      marginTop: 2
+    }
+  }, "JAGGAER · Bob O'Leary (SVP Sales Europe) · Fri 7 Aug · 1pm UK · 1 hour")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "#81d4fa",
+      fontWeight: 600
+    }
+  }, "Strategic AE (1 of 2)"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "#81d4fa"
+    }
+  }, "🏆 Europe Wide · 7 Fig Deals"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      padding: "10px 12px",
+      overflowX: "auto",
+      background: "#fff",
+      borderBottom: "1px solid #e2e8f0",
+      WebkitOverflowScrolling: "touch"
+    }
+  }, Object.entries(SECTIONS).map(([key, sec]) => /*#__PURE__*/React.createElement("div", {
+    key: key,
+    onClick: () => setActive(key),
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 3,
+      padding: "8px 12px",
+      borderRadius: 10,
+      cursor: "pointer",
+      minWidth: 64,
+      background: active === key ? sec.color : "transparent",
+      color: active === key ? "#fff" : "#4a5568",
+      border: active === key ? "none" : "1px solid #e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, sec.icon), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      whiteSpace: "nowrap"
+    }
+  }, sec.label)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      padding: 16,
+      overflowY: "auto"
+    }
+  }, /*#__PURE__*/React.createElement(ActiveContent, null)));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(JaggaerDashboard));
+</script></body></html>
