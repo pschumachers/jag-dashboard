@@ -3879,7 +3879,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const existingWorkforce = [account.workforceScale, account.hiringShape, account.criticalRoles, account.geoPatterns, account.talentPressure].filter(Boolean).join(" | ");
       const existingProblems = [account.cioProblems, account.chroProblems, account.businessPain, account.whyNow].filter(Boolean).join(" | ");
 
-      const prompt = "You are an elite workforce intelligence analyst specialising in JAGGAER's talent experience platform. You have been given content from JAGGAER's Workforce Intelligence portal or related JAGGAER data about or relevant to \"" + companyName + "\".\n\nEXISTING ACCOUNT INTEL:\n- Industry: " + (account.industry || "unknown") + "\n- Workforce data: " + (existingWorkforce || "none yet") + "\n- Problems identified: " + (existingProblems || "none yet") + "\n\nAnalyse the JAGGAER content below and extract intelligence mapped to these EXACT sections. Use JAGGAER-specific terminology and metrics. Return ONLY valid JSON:\n\n" + JSON.stringify({
+      const prompt = "You are an elite procurement intelligence analyst specialising in JAGGAER's source-to-pay platform. You have been given content from JAGGAER's platform or related JAGGAER data about or relevant to \"" + companyName + "\".\n\nEXISTING ACCOUNT INTEL:\n- Industry: " + (account.industry || "unknown") + "\n- Workforce data: " + (existingWorkforce || "none yet") + "\n- Problems identified: " + (existingProblems || "none yet") + "\n\nAnalyse the JAGGAER content below and extract intelligence mapped to these EXACT sections. Use JAGGAER-specific terminology and metrics. Return ONLY valid JSON:\n\n" + JSON.stringify({
         workforceIntelligence: {
           workforceScale: "Spend & supplier scale from JAGGAER analysis: total addressable spend, direct vs indirect split, number of active suppliers, tail-spend concentration, and source-to-pay automation maturity",
           hiringShape: "Sourcing & buying shape from JAGGAER lens: sourcing event volume and cycle time, contract coverage, catalog vs off-catalog buying, PO and invoice volumes, and AP automation rate",
@@ -10322,17 +10322,40 @@ Return this exact JSON structure:
           { style: { flex: 1, minWidth: 0 } },
           /*#__PURE__*/ React.createElement(
             "div",
-            {
-              style: {
-                fontSize: 16,
-                fontWeight: 700,
-                color: C.text,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+            { style: { display: "flex", alignItems: "center", gap: 6, minWidth: 0 } },
+            /*#__PURE__*/ React.createElement(
+              "div",
+              {
+                style: {
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: C.text,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                },
               },
-            },
-            account.companyName || "Select Account",
+              account.companyName || "Select Account",
+            ),
+            account.companyName && /*#__PURE__*/ React.createElement(
+              "button",
+              {
+                onClick: function () {
+                  var nn = window.prompt("Rename account", account.companyName);
+                  if (nn && nn.trim()) {
+                    var cleaned = nn.trim();
+                    setAccounts(function (prev) {
+                      return prev.map(function (a) {
+                        return a.id === account.id ? { ...a, companyName: cleaned } : a;
+                      });
+                    });
+                  }
+                },
+                title: "Rename account",
+                style: { background: "none", border: "none", cursor: "pointer", fontSize: 13, color: C.muted, padding: "2px 4px", lineHeight: 1, flexShrink: 0 },
+              },
+              "\u270F\uFE0F",
+            ),
           ),
           /*#__PURE__*/ React.createElement(
             "div",
