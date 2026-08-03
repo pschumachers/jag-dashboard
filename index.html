@@ -3091,6 +3091,9 @@ function TextArea({ value, onChange, placeholder, rows = 3 }) {
 function Input({ value, onChange, placeholder, width = "100%" }) {
   return /*#__PURE__*/ React.createElement("input", {
     type: "text",
+    autoCorrect: "off",
+    autoCapitalize: "off",
+    spellCheck: false,
     value: value,
     onChange: (e) => onChange(e.target.value),
     placeholder: placeholder,
@@ -10989,6 +10992,10 @@ Return this exact JSON structure:
             ),
             /*#__PURE__*/ React.createElement("input", {
               type: "text",
+              autoCorrect: "off",
+              autoCapitalize: "off",
+              spellCheck: false,
+              autoComplete: "off",
               value: addAccountName,
               onChange: (e) => setAddAccountName(e.target.value),
               placeholder: "Company name",
@@ -11016,6 +11023,10 @@ Return this exact JSON structure:
             ),
             /*#__PURE__*/ React.createElement("input", {
               type: "text",
+              autoCorrect: "off",
+              autoCapitalize: "off",
+              spellCheck: false,
+              autoComplete: "off",
               value: addAccountIndustry,
               onChange: (e) => setAddAccountIndustry(e.target.value),
               placeholder: "e.g., Technology, Healthcare",
