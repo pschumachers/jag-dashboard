@@ -3044,9 +3044,8 @@ function paragraphize(text) {
   if (!t) return "";
   if (t.indexOf("\n\n") !== -1) return t;
   t = t.replace(/\s*\n\s*/g, " ").replace(/[ \t]{2,}/g, " ");
-  var parts = t.match(/[^.!?]+[.!?]+["'\)\]]*\s*/g);
-  if (!parts) return t;
-  parts = parts.map(function (s) { return s.trim(); }).filter(Boolean);
+  var marked = t.replace(/([.!?]["'\)\]]*)\s+(?=[A-Z(])/g, "$1\u0001");
+  var parts = marked.split("\u0001").map(function (s) { return s.trim(); }).filter(Boolean);
   if (parts.length <= 2) return parts.join(" ");
   var cues = /^(First|Second|Third|Fourth|Fifth|Sixth|Finally|Lastly|Additionally|Also|Moreover|Furthermore|However|In addition|On the other hand|Meanwhile|Notably|Importantly|As a result|Consequently|Therefore|For example|For instance|In contrast|Overall|Separately|Beyond that|Looking ahead|By contrast|At the same time|Crucially|Together|Ultimately)[,:\s]/i;
   var paras = [], cur = [];
