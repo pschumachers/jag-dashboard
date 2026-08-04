@@ -720,13 +720,13 @@ async function exportToPPTX(account) {
     },
     {
       title: 'Procurement & Spend',
-      body: truncate(`${account.talentPressure || 'Cost & supply pressure'}\n\nWorkforce Scale: ${account.workforceScale || 'N/A'}\n\nCHRO Focus: ${account.chroProblems || 'N/A'}`, 180),
-      tags: ['Hiring', 'Retention', 'Growth']
+      body: truncate(`${account.talentPressure || 'Cost & supply pressure'}\n\nSpend Scale: ${account.workforceScale || 'N/A'}\n\nCPO Focus: ${account.chroProblems || 'N/A'}`, 180),
+      tags: ['Spend', 'Savings', 'Growth']
     },
     {
       title: 'Sourcing & Suppliers',
       body: truncate(`Sourcing Profile: ${account.hiringShape || 'N/A'}\n\nSpend Categories: ${account.criticalRoles || 'N/A'}\n\nWorkflow: ${account.workflowAssessment || 'N/A'}`, 180),
-      tags: ['Staffing', 'Process', 'Skills']
+      tags: ['Suppliers', 'Process', 'Categories']
     },
     {
       title: 'JAGGAER Entry Angle',
@@ -858,9 +858,9 @@ async function exportToPPTX(account) {
     },
     {
       num: 4,
-      question: 'Which job families or workflows are tied to that strategy?',
+      question: 'Which spend categories or workflows are tied to that strategy?',
       body: truncate(`Spend Categories: ${account.criticalRoles || 'N/A'}\n\nSourcing Profile: ${account.hiringShape || 'N/A'}\n\nWorkflow: ${account.workflowAssessment || 'N/A'}`, 200),
-      tags: ['Roles', 'Hiring', 'Process']
+      tags: ['Categories', 'Sourcing', 'Process']
     }
   ];
 
@@ -1382,12 +1382,12 @@ async function exportToPPTX(account) {
     });
   });
 
-  // ========== SLIDE 7: HIRING PROCESS - ZONE 1 (HIGH VOLUME) ==========
+  // ========== SLIDE 7: PROCUREMENT PROCESS - ZONE 1 (HIGH VOLUME / TAIL SPEND) ==========
   const slide7 = pptx.addSlide();
   slide7.background = { color: 'FFFFFF' };
 
   // Title
-  slide7.addText('Hiring Process — Zone 1', {
+  slide7.addText('Procurement Process — Zone 1', {
     x: 0.5,
     y: 0.3,
     w: 12.33,
@@ -1398,7 +1398,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  slide7.addText('High Volume, Entry-Level Roles', {
+  slide7.addText('High-Volume, Tail-Spend Buying', {
     x: 0.5,
     y: 0.75,
     w: 12.33,
@@ -1408,8 +1408,8 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  // Current ATS layer
-  slide7.addText('Current ATS (Cornerstone/SAP/Oracle):', {
+  // Current ERP / manual layer
+  slide7.addText('Current ERP / Manual Process (SAP/Oracle):', {
     x: 0.5,
     y: 1.15,
     w: 12.33,
@@ -1420,7 +1420,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const atsSteps = ['Job Posted', 'Apply', 'Screening', 'Interview', 'Offer', 'Hired'];
+  const atsSteps = ['Need Raised', 'Email RFQ', 'Manual Quote', 'Approval', 'Manual PO', 'Goods Receipt'];
   const atsStepX = [0.7, 1.8, 2.9, 4.0, 5.1, 6.2];
 
   atsSteps.forEach((step, idx) => {
@@ -1512,7 +1512,7 @@ async function exportToPPTX(account) {
   });
 
   // Decision outcomes
-  slide7.addText('AI Screening Results:', {
+  slide7.addText('JAGGAER AI Spend Triage:', {
     x: 0.5,
     y: 3.35,
     w: 12.33,
@@ -1524,9 +1524,9 @@ async function exportToPPTX(account) {
   });
 
   const outcomes = [
-    { label: 'HIGH SCORE', color: '10B981', path: '→ Interview' },
-    { label: 'MEDIUM SCORE', color: 'FFD700', path: '→ Phone Screen' },
-    { label: 'LOW SCORE', color: 'EF4444', path: '→ Nurture Pool' }
+    { label: 'HIGH VALUE', color: '10B981', path: '→ Sourcing Event' },
+    { label: 'ON-CONTRACT', color: 'FFD700', path: '→ Guided Buying' },
+    { label: 'TAIL SPEND', color: 'EF4444', path: '→ Catalog / P-Card' }
   ];
 
   outcomes.forEach((outcome, idx) => {
@@ -1555,7 +1555,7 @@ async function exportToPPTX(account) {
   });
 
   // Metrics at bottom
-  slide7.addText('Automation: Level 3 | Intelligence: Level 2 | Time to Hire: -40% | Quality of Hire: +25%', {
+  slide7.addText('Automation: Level 3 | Intelligence: Level 2 | Requisition-to-PO: -50% | Invoice Processing: -85%', {
     x: 0.5,
     y: 4.5,
     w: 12.33,
@@ -1569,9 +1569,9 @@ async function exportToPPTX(account) {
 
   // Benefits boxes
   const benefits = [
-    'Reduces screening time from 2-3 days to 2-3 hours',
-    'Improves first-round interview quality by 35%',
-    'Enables 24/7 candidate engagement & feedback'
+    'Reduces requisition-to-PO from days to hours',
+    'Lifts on-contract / catalog buying by 35%',
+    'Enables 24/7 guided buying & supplier self-service'
   ];
 
   benefits.forEach((benefit, idx) => {
@@ -1598,12 +1598,12 @@ async function exportToPPTX(account) {
     });
   });
 
-  // ========== SLIDE 8: HIRING PROCESS - ZONE 3 (TECHNICAL) ==========
+  // ========== SLIDE 8: PROCUREMENT PROCESS - ZONE 3 (STRATEGIC / MID-VALUE) ==========
   const slide8 = pptx.addSlide();
   slide8.background = { color: 'FFFFFF' };
 
   // Title
-  slide8.addText('Hiring Process — Zone 3', {
+  slide8.addText('Procurement Process — Zone 3', {
     x: 0.5,
     y: 0.3,
     w: 12.33,
@@ -1614,7 +1614,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  slide8.addText('Technical & Mid-to-Senior Roles', {
+  slide8.addText('Strategic & Mid-Value Categories', {
     x: 0.5,
     y: 0.75,
     w: 12.33,
@@ -1663,8 +1663,8 @@ async function exportToPPTX(account) {
     });
   });
 
-  // Interview funnel
-  slide8.addText('Interview Process:', {
+  // Sourcing funnel
+  slide8.addText('Sourcing Process:', {
     x: 0.5,
     y: 2.25,
     w: 12.33,
@@ -1675,7 +1675,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const interviews = ['Phone Screen', 'Technical Assessment', 'Manager Interview', 'Culture Panel', 'Offer'];
+  const interviews = ['RFI', 'RFP / RFQ', 'e-Auction', 'Evaluation', 'Award'];
   let interviewX = 0.7;
   interviews.forEach((interview, idx) => {
     const boxWidth = 2.0;
@@ -1729,10 +1729,10 @@ async function exportToPPTX(account) {
   });
 
   const enhancements = [
-    { title: 'Smart Matching', desc: 'AI ranks candidates by skill-fit & cultural alignment' },
-    { title: 'Interview Insights', desc: 'Real-time feedback during interviews with AI notes' },
-    { title: 'Pipeline Nurturing', desc: 'Engage passive candidates over months/years' },
-    { title: 'Offer Analytics', desc: 'Predict acceptance rates and optimize packages' }
+    { title: 'Smart Supplier Matching', desc: 'JAGGAER AI ranks suppliers by fit, risk & total cost of ownership' },
+    { title: 'Bid Insights', desc: 'Real-time bid analysis and sourcing-scenario optimization' },
+    { title: 'Supplier Development', desc: 'Engage and develop strategic suppliers over time' },
+    { title: 'Award Analytics', desc: 'Optimize award scenarios and predict realised savings' }
   ];
 
   enhancements.forEach((enh, idx) => {
@@ -1785,12 +1785,12 @@ async function exportToPPTX(account) {
     });
   });
 
-  // ========== SLIDE 9: HIRING PROCESS - ZONE 4 (SPECIALIST) ==========
+  // ========== SLIDE 9: PROCUREMENT PROCESS - ZONE 4 (COMPLEX / STRATEGIC) ==========
   const slide9 = pptx.addSlide();
   slide9.background = { color: 'FFFFFF' };
 
   // Title
-  slide9.addText('Hiring Process — Zone 4', {
+  slide9.addText('Procurement Process — Zone 4', {
     x: 0.5,
     y: 0.3,
     w: 12.33,
@@ -1801,7 +1801,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  slide9.addText('Specialist & Hard-to-Fill Roles', {
+  slide9.addText('Complex & Strategic Categories', {
     x: 0.5,
     y: 0.75,
     w: 12.33,
@@ -1823,7 +1823,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const zone4Sources = ['CRM + Talent Pool Sourcing', 'Executive Recruiter Collaboration', 'Industry Community Partnerships'];
+  const zone4Sources = ['Strategic Supplier Sourcing', 'Cross-Functional Collaboration', 'Industry & Market Intelligence'];
   const zone4SourceX = [0.7, 4.0, 7.8];
 
   zone4Sources.forEach((source, idx) => {
@@ -1850,8 +1850,8 @@ async function exportToPPTX(account) {
     });
   });
 
-  // Interview process
-  slide9.addText('Interview & Assessment Process:', {
+  // Evaluation process
+  slide9.addText('Evaluation & Award Process:', {
     x: 0.5,
     y: 2.25,
     w: 12.33,
@@ -1862,7 +1862,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const zone4Interviews = ['Phone Screen', 'Deep Technical', 'Scenario/Case Study', 'Expert Panel', 'Executive Round', 'Final Decision'];
+  const zone4Interviews = ['RFI', 'Detailed RFP', 'Should-Cost / TCO', 'Cross-Functional Review', 'Negotiation', 'Final Award'];
   let zone4IntX = 0.7;
   zone4Interviews.forEach((int, idx) => {
     const iw = 1.85;
@@ -1914,10 +1914,10 @@ async function exportToPPTX(account) {
   });
 
   const zone4Features = [
-    { title: 'Talent Pool Intelligence', desc: 'Maintain 200+ qualified specialists in pipeline even when not hiring' },
-    { title: 'Expert Interview Coordination', desc: 'AI-assisted panel coordination, real-time feedback aggregation' },
-    { title: 'Long-Cycle Nurturing', desc: 'Engage passive candidates over 6-24 month cycles with tailored content' },
-    { title: 'Negotiation Support', desc: 'Offer prediction and acceptance modeling for competitive markets' }
+    { title: 'Supplier Pool Intelligence', desc: 'Maintain a qualified, pre-vetted supplier base ready for strategic sourcing' },
+    { title: 'Cross-Functional Coordination', desc: 'AI-assisted stakeholder collaboration and real-time bid evaluation' },
+    { title: 'Long-Cycle Supplier Development', desc: 'Develop strategic suppliers over 6-24 month cycles with performance programs' },
+    { title: 'Negotiation Support', desc: 'Should-cost and TCO modeling with savings prediction for competitive categories' }
   ];
 
   zone4Features.forEach((feat, idx) => {
@@ -1990,10 +1990,10 @@ async function exportToPPTX(account) {
   const levels = [
     { level: '0', name: 'Stone Age', desc: 'Manual, spreadsheet-based' },
     { level: '1', name: 'Elimination', desc: 'Basic automation' },
-    { level: '2', name: 'Assimilation', desc: 'AI-assisted screening' },
-    { level: '3', name: 'Automation', desc: 'End-to-end automated workflows' },
-    { level: '4', name: 'Augmentation', desc: 'AI coaches & predictive' },
-    { level: '5', name: 'Domination', desc: 'Autonomous hiring agents' }
+    { level: '2', name: 'Assimilation', desc: 'AI-assisted sourcing' },
+    { level: '3', name: 'Automation', desc: 'End-to-end automated source-to-pay' },
+    { level: '4', name: 'Augmentation', desc: 'AI advisors & predictive spend' },
+    { level: '5', name: 'Domination', desc: 'Autonomous source-to-pay agents' }
   ];
 
   const maturityX = 0.5;
@@ -2269,7 +2269,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const stepsText = account.nextSteps || 'Schedule initial discovery meeting to align on hiring challenges and JAGGAER solution fit.\nConduct deep-dive assessment of current talent workflows.\nDevelop implementation roadmap and quick-win opportunities.';
+  const stepsText = account.nextSteps || 'Schedule initial discovery meeting to align on procurement challenges and JAGGAER solution fit.\nConduct deep-dive assessment of current source-to-pay workflows.\nDevelop implementation roadmap and quick-win opportunities.';
 
   slide12.addText(stepsText, {
     x: 0.5,
@@ -2514,7 +2514,7 @@ function buildAccountHTML(account) {
     (account.growthInvestments ? "<h3>Growth Investments</h3><p>" + account.growthInvestments + "</p>" : "") +
     (account.techBets ? "<h3>Tech Bets</h3><p>" + account.techBets + "</p>" : "") +
     (account.workforceScale
-      ? "<h2>Workforce Intelligence</h2><h3>Scale</h3><p>" + account.workforceScale + "</p>"
+      ? "<h2>Spend &amp; Supplier Intelligence</h2><h3>Scale</h3><p>" + account.workforceScale + "</p>"
       : "") +
     (account.hiringShape ? "<h3>Sourcing &amp; Buying</h3><p>" + account.hiringShape + "</p>" : "") +
     (account.criticalRoles ? "<h3>Spend Categories &amp; Risk</h3><p>" + account.criticalRoles + "</p>" : "") +
@@ -2528,7 +2528,7 @@ function buildAccountHTML(account) {
       ? '<h2>Problem Identification</h2><div class="box">' + account.problemHypothesis + "</div>"
       : "") +
     (account.whyNow ? "<h3>Why Now</h3><p>" + account.whyNow + "</p>" : "") +
-    (account.chroProblems ? "<h3>CHRO Pain</h3><p>" + account.chroProblems + "</p>" : "") +
+    (account.chroProblems ? "<h3>CPO Pain</h3><p>" + account.chroProblems + "</p>" : "") +
     (account.businessPain ? "<h3>Business Pain</h3><p>" + account.businessPain + "</p>" : "") +
     (account.workflowAssessment
       ? "<h2>Use Case Mapping</h2><h3>Workflow Assessment</h3><p>" + account.workflowAssessment + "</p>"
@@ -2652,10 +2652,10 @@ async function exportToXLSX(account) {
     ["", ""],
     ["CEO PRIORITIES", account.ceoPriorities || ""],
     ["TECH BETS", account.techBets || ""],
-    ["WORKFORCE SCALE", account.workforceScale || ""],
-    ["HIRING SHAPE", account.hiringShape || ""],
-    ["CRITICAL ROLES", account.criticalRoles || ""],
-    ["TALENT PRESSURE", account.talentPressure || ""],
+    ["SPEND SCALE", account.workforceScale || ""],
+    ["SOURCING SHAPE", account.hiringShape || ""],
+    ["TOP SPEND CATEGORIES & RISK", account.criticalRoles || ""],
+    ["COST & SUPPLY PRESSURE", account.talentPressure || ""],
   ];
   var wsFinancials = XLSX.utils.aoa_to_sheet(finRows);
   wsFinancials["!cols"] = [{ wch: 24 }, { wch: 90 }];
@@ -2696,7 +2696,7 @@ async function exportToXLSX(account) {
     ["", ""],
     ["FIELD", "CONTENT"],
     ["CIO Likely Problems", account.cioProblems || ""],
-    ["CHRO Likely Problems", account.chroProblems || ""],
+    ["CPO Likely Problems", account.chroProblems || ""],
     ["Business Pain", account.businessPain || ""],
     ["Why Now Triggers", account.whyNow || ""],
     ["Problem Hypothesis", account.problemHypothesis || ""],
@@ -3446,11 +3446,11 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           hypothesis: "Sales hypothesis if discussed",
           ceoPriorities: "CEO/leadership priorities mentioned",
           cioProblems: "CIO/CTO/tech challenges discussed",
-          chroProblems: "CHRO/HR challenges discussed",
+          chroProblems: "CPO / Procurement challenges discussed (spend visibility, off-contract spend, savings, supplier risk, source-to-pay)",
           businessPain: "Business pain points mentioned",
           whyNow: "Why-now triggers or urgency signals",
           problemHypothesis: "Problem hypothesis discussed",
-          workflowAssessment: "HR tech stack or workflow info mentioned",
+          workflowAssessment: "ERP / source-to-pay tech stack or procurement workflow info mentioned",
           highestOpportunity: "Biggest opportunity identified",
           outcomeStatement: "Outcome statements or value props discussed",
           quantifiedImpact: "Any ROI or metrics mentioned",
@@ -3458,7 +3458,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           transformationPrograms: "Transformation initiatives mentioned",
           executives: [{ name: "Person VERIFIED as employee of " + account.companyName, title: "Title", department: "Dept", background: "Context", priorities: "Priorities" }],
           projectTeam: [{ name: "Person VERIFIED as employee in a Procurement/Sourcing/Finance role", role: "Procurement / CPO/Strategic Sourcing/Category Management/Supplier Management/Other", title: "Title", responsibility: "Domain", notes: "Context" }],
-          hrTechStack: "ONLY tools explicitly named as used by " + account.companyName + ". Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Tool name, notes: Context}] or empty array",
+          hrTechStack: "ONLY ERP / procurement / source-to-pay tools explicitly named as used by " + account.companyName + ". Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Tool name, notes: Context}] or empty array",
           keySignals: ["Signal or insight 1 from conversation", "Signal 2", "Signal 3"],
           conversationSummary: "2-3 sentence summary of the key intelligence from this conversation",
         }) + "\n\nCONVERSATION:\n" + truncated;
@@ -3677,7 +3677,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           atAGlance: "Key takeaways from this call",
           ceoPriorities: "Leadership priorities mentioned by prospect",
           cioProblems: "Technical/IT challenges discussed",
-          chroProblems: "HR/people challenges discussed",
+          chroProblems: "Procurement / CPO challenges discussed (spend visibility, savings, supplier & supply-chain risk, source-to-pay)",
           businessPain: "Specific pain points and their business impact",
           whyNow: "Urgency signals, timeline drivers, trigger events mentioned",
           problemHypothesis: "Problem hypothesis validated or refined during call",
@@ -3690,7 +3690,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           nextSteps: "Action items and next steps agreed on the call",
           executives: [{ name: "Prospect employee who spoke or was mentioned (NOT your team)", title: "Their title at " + account.companyName, department: "Department", background: "What we learned about them on the call", priorities: "Their stated priorities", relevance: "Their role in the deal" }],
           projectTeam: [{ name: "Prospect employee in a Procurement/Sourcing/Finance role mentioned", role: "Procurement / CPO/Strategic Sourcing/Category Management/Supplier Management/Other", title: "Title", responsibility: "Their domain", notes: "Context from call" }],
-          hrTechStack: "ONLY tools explicitly named by the prospect as tools THEY use. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Tool name, notes: Context from call}] or empty array",
+          hrTechStack: "ONLY ERP / procurement / source-to-pay tools explicitly named by the prospect as tools THEY use. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Tool name, notes: Context from call}] or empty array",
           keySignals: ["Buying signal or key insight 1", "Signal 2", "Signal 3"],
           callSummary: "3-4 sentence summary of the call: who was there, what was discussed, key outcomes, and recommended next actions",
         }) + "\n\nGONG CALL TRANSCRIPT:\n" + truncated;
@@ -3866,13 +3866,13 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     }
   };
 
-  // ── JAGGAER Workforce Intelligence Processing ──
+  // ── JAGGAER Spend & Supplier Intelligence Processing ──
   const processJAGGAERContent = async (text, sourceName) => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
     if (!text || text.length < 30) { alert("Not enough content to analyze."); return; }
     setProcessingJAGGAER(true);
     setUploading(true);
-    setUploadProgress("Analyzing JAGGAER workforce intelligence...");
+    setUploadProgress("Analyzing JAGGAER spend & supplier intelligence...");
     try {
       const truncated = text.substring(0, 14000);
       const companyName = account.companyName || "this company";
@@ -3885,25 +3885,25 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           hiringShape: "Sourcing & buying shape from JAGGAER lens: sourcing event volume and cycle time, contract coverage, catalog vs off-catalog buying, PO and invoice volumes, and AP automation rate",
           criticalRoles: "Key spend categories & supplier dependencies via JAGGAER analysis: highest-spend categories, single-source and supply risks, tail-spend sprawl, contract coverage gaps, and savings opportunities",
           geoPatterns: "Geographic procurement patterns from JAGGAER data: spend by region and entity, multi-country supplier base, local sourcing and compliance needs, and cross-border e-invoicing requirements",
-          talentPressure: "Talent pressure indicators: employer brand score, candidate experience benchmarks, competitor talent flows, Glassdoor/Indeed sentiment, internal vs external hire ratios"
+          talentPressure: "Cost, savings & supply pressure indicators: margin pressure and savings mandates, input-cost inflation, supply-chain and supplier risk exposure, procurement digital maturity, and ESG/compliance demands"
         },
         problemIdentification: {
-          cioProblems: "CIO/CTO problems surfaced by JAGGAER analysis: HR tech stack fragmentation, lack of AI-powered talent intelligence, poor system integration, no skills taxonomy, data silos between ATS-HCM-LMS",
+          cioProblems: "CIO/CTO problems surfaced by JAGGAER analysis: fragmented procurement/ERP tool landscape, weak ERP integration, manual procurement data, no unified source-to-pay platform, data silos between ERP-sourcing-AP systems",
           chroProblems: "CPO & Procurement problems from JAGGAER analysis: poor spend visibility, off-contract/maverick spend, savings leakage, supplier and supply-chain risk, manual source-to-pay processes, weak contract coverage, and ESG/compliance gaps",
           businessPain: "Business-level pain quantified: % of spend off-contract, unrealised savings vs addressable spend, manual PO/invoice processing cost and cycle time, supplier risk exposure, and working-capital tied up in slow AP",
           whyNow: "Why-now triggers: cost and margin pressure driving savings mandates, supply-chain and supplier risk, ERP migration/upgrade window, tariff and cost volatility, e-invoicing and ESG regulation, and competitors modernising to AI-driven source-to-pay"
         },
         useCaseMapping: {
           workflowAssessment: "Current state vs JAGGAER-enabled state: manual/email sourcing vs guided eSourcing & e-auctions, spreadsheets vs real-time spend analytics, fragmented point tools vs one source-to-pay suite, manual AP vs Autonomous AP invoicing",
-          highestOpportunity: "Highest-impact JAGGAER use case for this account based on their specific workforce challenges. Map to JAGGAER modules: Intelligent Talent Experience, High-Volume Hiring, Employee Experience, Workforce Intelligence",
+          highestOpportunity: "Highest-impact JAGGAER use case for this account based on their specific procurement challenges. Map to JAGGAER modules: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Autonomous AP",
           capabilityMatch: "JAGGAER capability-to-pain mapping: Spend Analytics -> spend visibility & savings; Sourcing -> faster competitive sourcing; Contract Management -> contract coverage & compliance; Supplier Management -> supplier risk & performance; eProcurement -> on-contract buying; Procure-to-Pay & Autonomous AP -> invoice cost & cycle time; JAGGAER AI (JAI) -> automation across the suite"
         },
         businessChallenges: [
-          { severity: "CRITICAL or HIGH or MEDIUM", title: "Challenge title from JAGGAER analysis", businessChallenge: "Specific challenge with JAGGAER workforce data and benchmarks", solution: "JAGGAER module and expected outcome with metrics (e.g. 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing, more spend under management)", proofPoint: "JAGGAER proof point (e.g. JAGGAER manages $2.9T in spend across 1,400+ enterprises and 13M+ suppliers)" }
+          { severity: "CRITICAL or HIGH or MEDIUM", title: "Challenge title from JAGGAER analysis", businessChallenge: "Specific challenge with JAGGAER spend & supplier data and benchmarks", solution: "JAGGAER module and expected outcome with metrics (e.g. 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing, more spend under management)", proofPoint: "JAGGAER proof point (e.g. JAGGAER manages $2.9T in spend across 1,400+ enterprises and 13M+ suppliers)" }
         ],
         hyperCell: {
           hyperCellTitle: "Single highest-value JAGGAER opportunity for this account — one sentence",
-          hyperCellNarrative: "Executive narrative: why this specific JAGGAER capability is the #1 priority for this account. Reference their specific workforce data, industry benchmarks, and JAGGAER ROI metrics. Include: the business problem, the JAGGAER solution, quantified expected impact, and the urgency driver."
+          hyperCellNarrative: "Executive narrative: why this specific JAGGAER capability is the #1 priority for this account. Reference their specific spend & supplier data, industry benchmarks, and JAGGAER ROI metrics. Include: the business problem, the JAGGAER solution, quantified expected impact, and the urgency driver."
         }
       }) + "\n\nJAGGAER DATA/CONTENT:\n" + truncated + "\n\nCRITICAL RULES:\n1. Use REAL JAGGAER metrics and benchmarks (e.g. $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing).\n2. Reference JAGGAER product modules by name: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Invoicing (Autonomous AP), Supply Chain Collaboration, Quality Management, and JAGGAER AI (JAI).\n3. Map challenges to JAGGAER outcomes: more spend under management and realised savings, faster sourcing and requisition-to-PO cycles, reduced supplier risk, and lower invoice processing cost via Autonomous AP.\n4. If the content doesn't contain company-specific data, use JAGGAER industry benchmarks and frameworks to ENRICH the existing account intel.\n5. For businessChallenges, provide 2-4 challenges. Each must have a JAGGAER-specific solution and proof point.\n6. APPEND to existing intelligence, don't replace. Prefix new insights with '[JAGGAER Intel]' tag.";
 
@@ -4148,8 +4148,8 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           transformationPrograms: "Transformation or change programmes",
           growthInvestments: "Investment areas, M&A, growth initiatives",
           techBets: "Technology investments, digital transformation, AI initiatives",
-          workforceScale: "Workforce breakdown, divisions, regions",
-          hiringShape: "Hiring volume, pace, focus areas",
+          workforceScale: "Spend breakdown, divisions, regions, direct vs indirect spend, supplier base",
+          hiringShape: "Sourcing volume, cycle time, PO/invoice volumes, focus categories",
           hypothesis: "Sales hypothesis: why this company needs a procurement platform",
           keySignals: ["signal 1", "signal 2", "signal 3", "signal 4"],
         }) + "\n\nWEB PAGE CONTENT:\n" + truncated;
@@ -4171,11 +4171,11 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const p2 = "You are a B2B sales strategist. Based on this web content about or related to \"" + account.companyName + "\" (URL: " + url + "), extract sales positioning intelligence. IMPORTANT: For any people (executives, project team), ONLY include individuals who the content confirms work at " + account.companyName + ". Do NOT include external people, consultants, or anyone not verified as an employee. Return ONLY valid JSON:\n\n" +
         JSON.stringify({
           cioProblems: "CIO/CTO challenges mentioned",
-          chroProblems: "CHRO/HR challenges mentioned",
+          chroProblems: "CPO / Procurement challenges mentioned",
           businessPain: "Quantified business pain points",
           whyNow: "Why-now triggers or urgency signals",
           problemHypothesis: "Problem hypothesis based on content",
-          workflowAssessment: "Current HR/tech stack mentioned",
+          workflowAssessment: "Current ERP / source-to-pay stack mentioned",
           highestOpportunity: "Highest-impact opportunity area",
           outcomeStatement: "Measurable outcome statement",
           quantifiedImpact: "ROI or quantified impact data",
@@ -4186,7 +4186,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           projectTeam: [
             { name: "Person name ONLY if verified employee of this company in a Procurement/Sourcing/Finance role", role: "One of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management, Other", title: "Their title at the company", responsibility: "Their domain", notes: "How verified as employee" }
           ],
-          hrTechStack: "ONLY include HR tools/vendors EXPLICITLY NAMED in the content. Return [] if none mentioned. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Exact name, notes: Context}]",
+          hrTechStack: "ONLY include ERP / procurement / source-to-pay tools/vendors EXPLICITLY NAMED in the content. Return [] if none mentioned. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Exact name, notes: Context}]",
         }) + "\n\nWEB CONTENT:\n" + truncated;
 
       const resp2 = await fetch("https://api.anthropic.com/v1/messages", {
@@ -4369,8 +4369,8 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           transformationPrograms: "Transformation or change programmes",
           growthInvestments: "Investment areas, M&A, growth initiatives",
           techBets: "Technology investments, digital transformation, AI initiatives",
-          workforceScale: "Workforce breakdown, divisions, regions",
-          hiringShape: "Hiring volume, pace, focus areas",
+          workforceScale: "Spend breakdown, divisions, regions, direct vs indirect spend, supplier base",
+          hiringShape: "Sourcing volume, cycle time, PO/invoice volumes, focus categories",
           hypothesis: "Sales hypothesis: why this company needs a procurement platform based on what the document reveals",
           keySignals: ["signal 1", "signal 2", "signal 3", "signal 4"],
         }) + "\n\nDOCUMENT CONTENT:\n" + truncated;
@@ -4393,11 +4393,11 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const p2 = "You are a B2B sales strategist. Based on this document about \"" + account.companyName + "\", extract intelligence for sales positioning. IMPORTANT: For any people (executives, project team), ONLY include individuals who the document confirms work at " + account.companyName + ". Do NOT include external people, consultants, or anyone not verified as an employee. Return ONLY valid JSON:\n\n" +
         JSON.stringify({
           cioProblems: "CIO/CTO challenges mentioned",
-          chroProblems: "CHRO/HR challenges mentioned",
+          chroProblems: "CPO / Procurement challenges mentioned",
           businessPain: "Quantified business pain points",
           whyNow: "Why-now triggers or urgency signals",
           problemHypothesis: "Problem hypothesis based on document",
-          workflowAssessment: "Current HR/tech stack mentioned",
+          workflowAssessment: "Current ERP / source-to-pay stack mentioned",
           highestOpportunity: "Highest-impact opportunity area",
           outcomeStatement: "Measurable outcome statement",
           quantifiedImpact: "ROI or quantified impact data",
@@ -4408,7 +4408,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           projectTeam: [
             { name: "Person name ONLY if verified employee of this company in a Procurement/Sourcing/Finance role", role: "One of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management, Other", title: "Their title at the company", responsibility: "Their domain", notes: "How verified as employee" }
           ],
-          hrTechStack: "ONLY include HR tools/vendors EXPLICITLY NAMED in the document. Return [] if none mentioned. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Exact name, notes: Context}]",
+          hrTechStack: "ONLY include ERP / procurement / source-to-pay tools/vendors EXPLICITLY NAMED in the document. Return [] if none mentioned. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Exact name, notes: Context}]",
         }) + "\n\nDOCUMENT:\n" + truncated;
 
       const resp2 = await fetch("https://api.anthropic.com/v1/messages", {
@@ -4768,14 +4768,14 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     ), // end gong tab
     // ── JAGGAER tab ──
     activeIntelTab === "phenom" && /*#__PURE__*/ React.createElement("div", null,
-        /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10 } }, "Import workforce intelligence from JAGGAER\u2019s platform to enrich Workforce, Problems, Use Cases, Challenges, and Hyper-Cell sections. Paste content from workforce-intelligence.phenompro.com, upload a report, or use a link."),
+        /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10 } }, "Import spend & supplier intelligence from JAGGAER\u2019s platform to enrich Spend & Supplier, Problems, Use Cases, Challenges, and Hyper-Cell sections. Paste content from the JAGGAER platform, upload a report, or use a link."),
         // JAGGAER link input
         /*#__PURE__*/ React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8 } },
           /*#__PURE__*/ React.createElement("input", {
             value: phenomLink,
             onChange: (e) => setJAGGAERLink(e.target.value),
             onKeyDown: (e) => { if (e.key === "Enter" && phenomLink.trim() && !processingJAGGAER) processJAGGAERLink(); },
-            placeholder: "Paste JAGGAER URL (e.g. workforce-intelligence.phenompro.com)...",
+            placeholder: "Paste JAGGAER platform URL or spend intelligence link...",
             disabled: processingJAGGAER,
             style: { flex: 1, padding: "7px 10px", border: "1px solid " + C.border, borderRadius: 6, background: C.card, color: C.text, fontSize: 11, outline: "none" },
           }),
@@ -4866,8 +4866,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         transcriptNotes: safeStr(account.transcriptNotes).substring(0, 300),
         hyperCellTitle: account.hyperCellTitle || "",
       };
-      const prompt = "You are a senior sales intelligence analyst. For \"" + context.companyName + "\", create a comprehensive executive brief by synthesising ALL available intelligence. Use public data, JAGGAER workforce frameworks, and any existing account data. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n" + JSON.stringify({
-        atAGlance: "2-3 sentence executive overview combining company fundamentals with talent/workforce positioning. Mention key JAGGAER-relevant signals.",
+      const prompt = "You are a senior sales intelligence analyst. For \"" + context.companyName + "\", create a comprehensive executive brief by synthesising ALL available intelligence. Use public data, JAGGAER procurement / source-to-pay frameworks, and any existing account data. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n" + JSON.stringify({
+        atAGlance: "2-3 sentence executive overview combining company fundamentals with procurement / spend positioning. Mention key JAGGAER-relevant signals.",
         hypothesis: "Sharp sales hypothesis: why this company needs JAGGAER NOW. Reference specific pain + urgency + capability match.",
         keySignals: ["signal 1 — [source]", "signal 2 — [source]", "signal 3 — [source]", "signal 4 — [source]"],
         primarySponsor: "Recommended primary sponsor (name + title if known, or role) with reasoning",
@@ -5050,7 +5050,7 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement(Input, {
         value: account.primarySponsor,
         onChange: (v) => update("primarySponsor", v),
-        placeholder: "e.g. Kristy Banas (CHRO) \u2014 owns HR transformation, talent retention, employer brand",
+        placeholder: "e.g. Kristy Banas (CPO) \u2014 owns procurement transformation, savings targets, supplier strategy",
       }),
       /*#__PURE__*/ React.createElement(FieldLabel, null, "Secondary Contacts"),
       /*#__PURE__*/ React.createElement(Input, {
@@ -5363,16 +5363,16 @@ function SectionFileUpload({ label, icon, claudeApiKey, prompt, onResult }) {
   );
 }
 
-// ─── HR Tech Stack Section ──────────────────────────────────────────────────
+// ─── ERP / P2P Stack Section ─────────────────────────────────────────────────
 const HR_TECH_CATEGORIES = [
-  { key: "ats", label: "ATS / Recruiting", icon: "\uD83D\uDD0D", placeholder: "e.g. Workday Recruiting, SAP SuccessFactors, SmartRecruiters, Greenhouse..." },
-  { key: "hcm", label: "HCM / Core HR", icon: "\uD83C\uDFE2", placeholder: "e.g. SAP SuccessFactors, Workday HCM, Oracle HCM, Personio..." },
-  { key: "lms", label: "Learning & Development", icon: "\uD83C\uDF93", placeholder: "e.g. Cornerstone, SAP Litmos, LinkedIn Learning, Degreed..." },
-  { key: "perf", label: "Performance Management", icon: "\uD83C\uDFAF", placeholder: "e.g. SAP SuccessFactors PM, Betterworks, Lattice, 15Five..." },
-  { key: "payroll", label: "Payroll & Benefits", icon: "\uD83D\uDCB0", placeholder: "e.g. SAP Payroll, ADP, Paychex, Deel..." },
-  { key: "wfm", label: "Workforce Management", icon: "\u2699\uFE0F", placeholder: "e.g. Kronos/UKG, SAP Time Management, Quinyx..." },
-  { key: "analytics", label: "People Analytics", icon: "\uD83D\uDCCA", placeholder: "e.g. Visier, One Model, Crunchr, Power BI dashboards..." },
-  { key: "engagement", label: "Employee Experience", icon: "\uD83D\uDCAC", placeholder: "e.g. Qualtrics, Glint, Culture Amp, Peakon..." },
+  { key: "ats", label: "ERP System", icon: "\uD83C\uDFE2", placeholder: "e.g. SAP S/4HANA, Oracle Fusion, Microsoft Dynamics 365, Infor, NetSuite..." },
+  { key: "hcm", label: "Existing Source-to-Pay / P2P Suite", icon: "\uD83D\uDD04", placeholder: "e.g. SAP Ariba, Coupa, Ivalua, GEP SMART, JAGGAER..." },
+  { key: "lms", label: "Spend Analytics", icon: "\uD83D\uDCCA", placeholder: "e.g. SAP Ariba Spend Analysis, Coupa Spend Analytics, Sievo, Rosslyn..." },
+  { key: "perf", label: "Contract Management (CLM)", icon: "\uD83D\uDCDC", placeholder: "e.g. Icertis, SAP Ariba Contracts, Coupa CLM, DocuSign CLM, Ironclad..." },
+  { key: "payroll", label: "Supplier Management (SRM)", icon: "\uD83E\uDD1D", placeholder: "e.g. SAP Ariba SLP, Coupa Supplier Management, HICX, Ivalua SRM..." },
+  { key: "wfm", label: "AP / Invoicing", icon: "\uD83D\uDCB0", placeholder: "e.g. Basware, Tungsten, Tipalti, SAP Ariba Invoice Mgmt, Coupa Pay..." },
+  { key: "analytics", label: "Sourcing / eAuction", icon: "\u2699\uFE0F", placeholder: "e.g. SAP Ariba Sourcing, Coupa Sourcing, Keelvar, Scanmarket, Zycus..." },
+  { key: "engagement", label: "Catalog / Marketplace", icon: "\uD83D\uDECD\uFE0F", placeholder: "e.g. SAP Ariba Catalog, Coupa Marketplace, Amazon Business, punchout catalogs..." },
 ];
 const HR_CAT_COLORS = {
   ats: { bg: "#DBEAFE", text: "#2563EB" },
@@ -5434,18 +5434,18 @@ function HRTechStackSection({ account, update, claudeApiKey }) {
     "div",
     null,
     /*#__PURE__*/ React.createElement(SectionHeader, {
-      title: "HR Tech Stack",
+      title: "ERP / P2P Stack",
       badge: "Intelligence",
       badgeColor: C.blue,
     }),
     // Upload to extract tech stack
     /*#__PURE__*/ React.createElement(SectionFileUpload, {
-      label: "Upload doc to extract HR tools",
+      label: "Upload doc to extract procurement tools",
       icon: "\uD83D\uDCBB",
       claudeApiKey: claudeApiKey,
-      prompt: 'You are an HR tech analyst. Extract ALL HR technology tools, platforms, and vendors mentioned in this content for "' + account.companyName + '". Return ONLY valid JSON:\n' + JSON.stringify({
+      prompt: 'You are a procurement technology analyst. Extract ALL ERP, source-to-pay, and procurement technology tools, platforms, and vendors mentioned in this content for "' + account.companyName + '". Return ONLY valid JSON:\n' + JSON.stringify({
         hrTechStack: [{ category: "One of: ats, hcm, lms, perf, payroll, wfm, analytics, engagement", name: "Exact tool/vendor name", notes: "Context from document" }],
-        hrTechNotes: "General observations about their HR tech landscape from this document",
+        hrTechNotes: "General observations about their procurement / source-to-pay tech landscape from this document",
       }),
       onResult: handleTechUpload,
     }),
@@ -5524,7 +5524,7 @@ function HRTechStackSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement(TextArea, {
         value: account.hrTechNotes,
         onChange: (v) => update("hrTechNotes", v),
-        placeholder: "General observations about their HR tech landscape, integration maturity, known pain points, contract renewal dates, transformation initiatives...",
+        placeholder: "General observations about their procurement / source-to-pay tech landscape, integration maturity, known pain points, contract renewal dates, transformation initiatives...",
         rows: 4,
       }),
     ),
@@ -5536,7 +5536,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
   const [enrichStatus, setEnrichStatus] = useState("");
   const enrichWithJAGGAER = async () => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Enriching workforce intelligence with JAGGAER frameworks...");
+    setEnriching(true); setEnrichStatus("Enriching spend & supplier intelligence with JAGGAER frameworks...");
     try {
       const existing = { workforceScale: account.workforceScale || "", hiringShape: account.hiringShape || "", criticalRoles: account.criticalRoles || "", geoPatterns: account.geoPatterns || "", talentPressure: account.talentPressure || "" };
       const prompt = "You are a JAGGAER procurement intelligence analyst. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), enrich these fields using JAGGAER's frameworks, benchmarks and public data. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with the SAME keys. For each field, APPEND new JAGGAER-sourced insights (prefixed with [JAGGAER Intel]) to the existing text. Use real JAGGAER angles: spend visibility and savings, off-contract/maverick spend, competitive sourcing and cycle time, supplier and supply-chain risk, contract coverage, AP automation \u2014 and JAGGAER proof points ($2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 85% faster invoicing). If existing data is empty, provide fresh JAGGAER-lens analysis.";
@@ -5555,7 +5555,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
       ["workforceScale", "hiringShape", "criticalRoles", "geoPatterns", "talentPressure"].forEach(f => {
         if (result[f] && typeof result[f] === "string" && result[f].length > 10) { update(f, result[f]); count++; }
       });
-      setEnrichStatus("\u2705 Enriched " + count + " workforce fields with JAGGAER intel");
+      setEnrichStatus("\u2705 Enriched " + count + " spend & supplier fields with JAGGAER intel");
       setTimeout(() => setEnrichStatus(""), 8000);
     } catch (err) { setEnrichStatus("\u274C " + err.message); }
     setEnriching(false);
@@ -5565,7 +5565,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
     "div",
     null,
     /*#__PURE__*/ React.createElement(SectionHeader, {
-      title: "Workforce Intelligence",
+      title: "Spend & Supplier Intelligence",
       badge: "Research",
       badgeColor: C.teal,
     }),
@@ -5898,8 +5898,8 @@ If CONFIRMED still at company, return ONLY valid JSON (no markdown):
     {"name": "Full Name", "title": "Exact current title", "department": "Digital & Transformation", "roleType": "Tech Oversight", "background": "2-3 sentence career background", "priorities": "Their top priorities", "keyQuote": "A real public quote if available, or empty string", "relevance": "Why they matter for a procurement / source-to-pay deal", "outreachAngles": "2 outreach angles", "linkedinUrl": "LinkedIn profile URL if known, or empty string", "reportsTo": "Name of their boss if known"},
     {"name": "Full Name", "title": "Exact current title", "department": "Category Management", "roleType": "Key Influencer", "background": "...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": ""},
     {"name": "Full Name", "title": "Exact current title", "department": "Procurement / CPO", "roleType": "Primary Sponsor", "background": "...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": ""},
-    {"name": "Full Name", "title": "Exact current title", "department": "Workforce Management", "roleType": "Key Influencer", "background": "...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": ""},
-    {"name": "Full Name", "title": "Exact current title", "department": "HR Leadership", "roleType": "Primary Sponsor", "background": "CHRO or CPO background...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": "CEO name"},
+    {"name": "Full Name", "title": "Exact current title", "department": "Supplier / Supply Chain Management", "roleType": "Key Influencer", "background": "...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": ""},
+    {"name": "Full Name", "title": "Exact current title", "department": "Finance / AP", "roleType": "Primary Sponsor", "background": "CFO or Finance/AP leadership background...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": "CEO name"},
     {"name": "Full Name", "title": "Exact current title", "department": "IT / Digital", "roleType": "Tech Oversight", "background": "CIO/CTO background...", "priorities": "...", "keyQuote": "", "relevance": "...", "outreachAngles": "...", "linkedinUrl": "", "reportsTo": "CEO name"}
   ]
 }
@@ -6311,7 +6311,7 @@ function ProblemIdentificationSection({ account, update, claudeApiKey }) {
       ],
       [
         "\uD83D\uDC65",
-        "CHRO Likely Problems",
+        "CPO Likely Problems",
         "chroProblems",
         "What procurement problems is the CPO facing? Off-contract spend, poor spend visibility, savings leakage, supplier risk, manual source-to-pay\u2026",
       ],
@@ -6319,7 +6319,7 @@ function ProblemIdentificationSection({ account, update, claudeApiKey }) {
         "\uD83C\uDFE2",
         "Business-Level Pain",
         "businessPain",
-        "Revenue impact, competitive disadvantage, cost inefficiency tied to talent/HR problems\u2026",
+        "Revenue impact, competitive disadvantage, cost inefficiency tied to procurement / spend problems\u2026",
       ],
       [
         "\u23F0",
@@ -6407,7 +6407,7 @@ function UseCaseMappingSection({ account, update, claudeApiKey }) {
         "\uD83D\uDD04",
         "Current Workflow Assessment",
         "workflowAssessment",
-        "How are they doing it today? What tools, processes, pain points in their current TA workflow?",
+        "How are they doing it today? What tools, processes, pain points in their current source-to-pay / procurement workflow?",
       ],
       [
         "\uD83C\uDFAF",
@@ -6431,7 +6431,7 @@ function UseCaseMappingSection({ account, update, claudeApiKey }) {
         "\uD83D\uDC64",
         "Persona-Specific Value Map",
         "personaValueMap",
-        "CHRO Value: \u2026\nCFO Value: \u2026\nTA Leader Value: \u2026\nHiring Manager Value: \u2026",
+        "CPO Value: \u2026\nCFO Value: \u2026\nHead of Sourcing Value: \u2026\nCategory Manager Value: \u2026",
       ],
     ].map(([icon, title, field, placeholder]) =>
       /*#__PURE__*/ React.createElement(
@@ -6648,7 +6648,7 @@ function OutcomeFramingSection({ account, update }) {
         value: account.outcomeStatement,
         onChange: (v) => update("outcomeStatement", v),
         placeholder:
-          "One paragraph that a CHRO or CEO could read and immediately understand the value. Focus on business outcomes, not features\u2026",
+          "One paragraph that a CPO or CFO could read and immediately understand the value. Focus on business outcomes, not features\u2026",
         rows: 4,
       }),
     ),
@@ -6758,7 +6758,7 @@ function HyperCellSection({ account, update, claudeApiKey }) {
     /*#__PURE__*/ React.createElement(Input, {
       value: account.hyperCellTitle,
       onChange: (v) => update("hyperCellTitle", v),
-      placeholder: "e.g. U.S. mid-market insurance producer recruitment, onboarding and cross-entity deployment\u2026",
+      placeholder: "e.g. Consolidate $40M of fragmented indirect spend onto JAGGAER Sourcing & eProcurement to unlock double-digit savings\u2026",
     }),
     /*#__PURE__*/ React.createElement(
       "div",
@@ -6859,7 +6859,7 @@ function GeoPoliSection({ account, update }) {
         "div",
         { style: { fontSize: 12, color: "#92400E", flex: "1 1 250px", minWidth: 250 } },
         /*#__PURE__*/ React.createElement("strong", null, "Ukraine War"),
-        " \u2014 Supply chain disruption, energy price shock, reshoring pressure, defence spending, reconstruction opportunity, Eastern Europe talent shift",
+        " \u2014 Supply chain disruption, energy price shock, reshoring pressure, defence spending, reconstruction opportunity, Eastern Europe supplier & sourcing shift",
       ),
       /*#__PURE__*/ React.createElement(
         "div",
@@ -7249,7 +7249,7 @@ function CampaignSection({ account, update, claudeApiKey }) {
             { id: "phone_voicemail", subject: "Call objective", body: "Phone script / voicemail script (30 seconds). Reference the email. Mention a specific business outcome.", timing: "Day 5", notes: "Best time to call and why" },
             { id: "content_share", subject: "Content share subject line", body: "Message sharing relevant content (case study, article, report). Explain why it is specifically relevant to their situation at " + account.companyName + ".", timing: "Day 8", notes: "What content to share and why" },
             { id: "exec_referral", subject: "Executive referral email subject", body: "Email leveraging an executive connection or internal referral. Reference a conversation or mutual connection. Add credibility.", timing: "Day 12", notes: "Which executive to reference and approach" },
-            { id: "trigger_event", subject: "Trigger-based outreach subject", body: "Message tied to a recent event, earnings call, news, hiring signal, or industry trend affecting " + account.companyName + ". Show you are paying attention to their world.", timing: "Day 16", notes: "Trigger event to monitor for" },
+            { id: "trigger_event", subject: "Trigger-based outreach subject", body: "Message tied to a recent event, earnings call, news, supplier/spend signal, or industry trend affecting " + account.companyName + ". Show you are paying attention to their world.", timing: "Day 16", notes: "Trigger event to monitor for" },
             { id: "final_value", subject: "Final value push subject line", body: "Final compelling message. Quantified value proposition specific to " + account.companyName + ". Include ROI estimate. Create urgency. Strong CTA.", timing: "Day 21", notes: "Key metrics and urgency drivers" },
           ],
           opportunityScore: "1-10 rating of deal likelihood based on intel",
@@ -8517,7 +8517,7 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
       var resp = await fetchWithRetry("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint. You ONLY output valid JSON objects. Never include any text, explanation, or commentary outside the JSON.", messages: [{ role: "user", content: "Research \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ". Use ONLY current-year data and publicly available information.\n\nDEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:\n- At a Glance: " + safeStr(account.atAGlance).substring(0, 400) + "\n- Business Segments: " + safeStr(account.businessSegments).substring(0, 400) + "\n- CEO Priorities: " + safeStr(account.ceoPriorities).substring(0, 300) + "\n- Revenue & Growth: " + safeStr(account.revenueGrowth).substring(0, 300) + "\n- Strategy: " + safeStr(account.strategy).substring(0, 300) + "\n- Key Signals: " + safeStr(account.keySignals).substring(0, 400) + "\n- Challenges: " + safeStr(account.challenges).substring(0, 400) + "\n- Workforce Strategy: " + safeStr(account.workforceStrategy).substring(0, 300) + "\n- Hiring Trends: " + safeStr(account.hiringTrends).substring(0, 300) + "\n- Employees: " + safeStr(account.employees) + "\n- Open Roles: " + safeStr(account.openRoles) + "\n- Problems: " + safeStr(account.problems).substring(0, 300) + "\n- Use Cases: " + safeStr(account.useCases).substring(0, 300) + "\n\nIMPORTANT: Cross-reference ALL the above intelligence. Your BU analysis must be CONSISTENT with the challenges, strategy, and signals already identified. Reference specific facts from this intelligence to ground your analysis.\n\nJAGGAER's products: eProcurement (guided buying, catalogs, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.\n\nReturn this exact JSON structure:\n{\n  \"fastestGrowingBU\": \"Name the SPECIFIC fastest-growing BU at " + account.companyName + " with growth rate, revenue, and strategic importance. Must be grounded in their actual publicly reported segments and strategy.\",\n  \"buGrowthDrivers\": \"What drives this BU's growth — cite specific recent acquisitions, product launches, or market moves from " + new Date().getFullYear() + ". Connect to the key signals and strategy above.\",\n  \"buTalentNeeds\": \"What talent this BU urgently needs — specific roles, volumes, skill sets. Reference their actual open roles and hiring trends above.\",\n  \"phenomProductMatch\": \"Map 4-5 SPECIFIC JAGGAER products to THIS company's SPECIFIC challenges listed above: '[Product] → [Their specific challenge/use case] → [Expected impact with numbers]'\",\n  \"phenomQuickWins\": \"3 concrete things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above. Include timelines and metrics.\",\n  \"phenomROIStory\": \"12-month ROI narrative using their actual employee count (" + safeStr(account.employees) + ") and open roles (" + safeStr(account.openRoles) + "). Be specific with $ amounts.\",\n  \"wowInsights\": \"5 jaw-drop insights that connect dots across the intelligence above in ways the CHRO wouldn't expect — each 2-3 sentences with specific data from their public filings, earnings calls, or news. Include: (1) recent event most missed, (2) competitive threat to their talent brand, (3) hidden cost they're not tracking, (4) connection between two of their initiatives creating urgency, (5) prediction for next 6-12 months\"\n}" }] }),
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint. You ONLY output valid JSON objects. Never include any text, explanation, or commentary outside the JSON.", messages: [{ role: "user", content: "Research \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ". Use ONLY current-year data and publicly available information.\n\nDEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:\n- At a Glance: " + safeStr(account.atAGlance).substring(0, 400) + "\n- Business Segments: " + safeStr(account.businessSegments).substring(0, 400) + "\n- CEO Priorities: " + safeStr(account.ceoPriorities).substring(0, 300) + "\n- Revenue & Growth: " + safeStr(account.revenueGrowth).substring(0, 300) + "\n- Strategy: " + safeStr(account.strategy).substring(0, 300) + "\n- Key Signals: " + safeStr(account.keySignals).substring(0, 400) + "\n- Challenges: " + safeStr(account.challenges).substring(0, 400) + "\n- Spend & Sourcing Strategy: " + safeStr(account.workforceStrategy).substring(0, 300) + "\n- Sourcing Trends: " + safeStr(account.hiringTrends).substring(0, 300) + "\n- Employees: " + safeStr(account.employees) + "\n- Open Roles: " + safeStr(account.openRoles) + "\n- Problems: " + safeStr(account.problems).substring(0, 300) + "\n- Use Cases: " + safeStr(account.useCases).substring(0, 300) + "\n\nIMPORTANT: Cross-reference ALL the above intelligence. Your BU analysis must be CONSISTENT with the challenges, strategy, and signals already identified. Reference specific facts from this intelligence to ground your analysis.\n\nJAGGAER's products: eProcurement (guided buying, catalogs, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.\n\nReturn this exact JSON structure:\n{\n  \"fastestGrowingBU\": \"Name the SPECIFIC fastest-growing BU at " + account.companyName + " with growth rate, revenue, and strategic importance. Must be grounded in their actual publicly reported segments and strategy.\",\n  \"buGrowthDrivers\": \"What drives this BU's growth — cite specific recent acquisitions, product launches, or market moves from " + new Date().getFullYear() + ". Connect to the key signals and strategy above.\",\n  \"buTalentNeeds\": \"What procurement, sourcing and supplier pressures this BU faces — spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.\",\n  \"phenomProductMatch\": \"Map 4-5 SPECIFIC JAGGAER products to THIS company's SPECIFIC challenges listed above: '[Product] → [Their specific challenge/use case] → [Expected impact with numbers]'\",\n  \"phenomQuickWins\": \"3 concrete things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above. Include timelines and metrics.\",\n  \"phenomROIStory\": \"12-month ROI narrative using their actual scale — addressable spend, active supplier count, and sourcing/invoice volumes. Be specific with $ amounts (realised savings, cycle-time reduction, working capital freed).\",\n  \"wowInsights\": \"5 jaw-drop insights that connect dots across the intelligence above in ways the CPO wouldn't expect — each 2-3 sentences with specific data from their public filings, earnings calls, or news. Include: (1) recent event most missed, (2) supply-chain or supplier risk threatening their business, (3) hidden off-contract cost they're not tracking, (4) connection between two of their initiatives creating urgency, (5) prediction for next 6-12 months\"\n}" }] }),
       }, 3, function(msg) { setEnrichStatus(msg); });
       var data = await resp.json();
       var rawText = (apiText(data) || "");
@@ -8573,7 +8573,7 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
     // Wow Insights
     React.createElement("div", { style: { margin: "20px 0 10px", fontSize: 14, fontWeight: 700, color: "#1E293B" } }, "\uD83E\uDD2F \"How Do You Know That?\" Insights"),
     React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 10, fontStyle: "italic" } }, "5 jaw-drop data points that make the customer think you know their business better than they do. Use in emails, LinkedIn, and opening statements."),
-    React.createElement(Card, { icon: "\uD83D\uDCA1", title: "Wow Insights", color: "#6366F1", field: "wowInsights", tag: "Conversation Opener", placeholder: "1) A specific recent event most people missed\n2) A competitive threat to their talent brand\n3) A hidden cost they're probably not tracking\n4) A connection between two initiatives that creates urgency\n5) A prediction for their next 6-12 months", rows: 10 }),
+    React.createElement(Card, { icon: "\uD83D\uDCA1", title: "Wow Insights", color: "#6366F1", field: "wowInsights", tag: "Conversation Opener", placeholder: "1) A specific recent event most people missed\n2) A supply-chain or supplier risk threatening their business\n3) A hidden cost / off-contract spend leak they're probably not tracking\n4) A connection between two initiatives that creates urgency\n5) A prediction for their next 6-12 months", rows: 10 }),
   );
 }
 
@@ -8593,7 +8593,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
       var resp = await fetchWithRetry("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint with a 90% ACCURACY MANDATE. You ONLY output valid JSON objects. Never include any text outside the JSON. For EVERY person you include, you must have verified them against at least 2 public sources (LinkedIn, Xing, company website, press). Never guess or fabricate names.", messages: [{ role: "user", content: "Research current Business Unit leaders at \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ".\n\nInclude: division/BU heads, SVPs running business lines, procurement/vendor management leaders, and anyone with P&L responsibility.\n\n90% ACCURACY VERIFICATION PROTOCOL:\n1. For EACH person, verify via: (a) LinkedIn: \"{name}\" site:linkedin.com \"" + account.companyName + "\" (b) Xing: \"{name}\" site:xing.com \"" + account.companyName + "\" (c) Company website: \"" + account.companyName + "\" Vorstand OR management board (d) Departure check: \"{name}\" leaves OR verlässt \"" + account.companyName + "\"\n2. ONLY include if confirmed via AT LEAST 2 sources. State sources in mandate field: 'VERIFIED: [source1] + [source2]'\n3. If only 1 source, prefix name with '⚠️ ' and note 'SINGLE SOURCE'\n4. If ZERO sources confirm → DO NOT INCLUDE. Never guess names.\n5. Search for departures explicitly — anyone who left in 24 months must NOT be included.\n6. Better to return 2-3 verified leaders than 6 guessed names.\n\nReturn this exact JSON structure:\n{\"buLeaders\": [{\"name\": \"Full name (VERIFIED)\", \"title\": \"Current title\", \"bu\": \"Business Unit name\", \"mandate\": \"VERIFIED: [LinkedIn + company website]. Their strategic mandate\", \"talentChallenge\": \"Their hiring challenge\", \"phenomAngle\": \"How to position JAGGAER\", \"linkedinUrl\": \"Actual LinkedIn URL or empty string\"}]}" }] }),
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint with a 90% ACCURACY MANDATE. You ONLY output valid JSON objects. Never include any text outside the JSON. For EVERY person you include, you must have verified them against at least 2 public sources (LinkedIn, Xing, company website, press). Never guess or fabricate names.", messages: [{ role: "user", content: "Research current Business Unit leaders at \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ".\n\nInclude: division/BU heads, SVPs running business lines, procurement/vendor management leaders, and anyone with P&L responsibility.\n\n90% ACCURACY VERIFICATION PROTOCOL:\n1. For EACH person, verify via: (a) LinkedIn: \"{name}\" site:linkedin.com \"" + account.companyName + "\" (b) Xing: \"{name}\" site:xing.com \"" + account.companyName + "\" (c) Company website: \"" + account.companyName + "\" Vorstand OR management board (d) Departure check: \"{name}\" leaves OR verlässt \"" + account.companyName + "\"\n2. ONLY include if confirmed via AT LEAST 2 sources. State sources in mandate field: 'VERIFIED: [source1] + [source2]'\n3. If only 1 source, prefix name with '⚠️ ' and note 'SINGLE SOURCE'\n4. If ZERO sources confirm → DO NOT INCLUDE. Never guess names.\n5. Search for departures explicitly — anyone who left in 24 months must NOT be included.\n6. Better to return 2-3 verified leaders than 6 guessed names.\n\nReturn this exact JSON structure:\n{\"buLeaders\": [{\"name\": \"Full name (VERIFIED)\", \"title\": \"Current title\", \"bu\": \"Business Unit name\", \"mandate\": \"VERIFIED: [LinkedIn + company website]. Their strategic mandate\", \"talentChallenge\": \"Their procurement / sourcing challenge\", \"phenomAngle\": \"How to position JAGGAER\", \"linkedinUrl\": \"Actual LinkedIn URL or empty string\"}]}" }] }),
       }, 3, function(msg) { setEnrichStatus(msg); });
       var data = await resp.json();
       var rawText = (apiText(data) || "");
@@ -8665,7 +8665,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
       ),
       React.createElement("textarea", { value: newLeader.mandate, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, mandate: e.target.value }; }); }, placeholder: "Strategic mandate and KPIs...", rows: 2,
         style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", marginTop: 8, boxSizing: "border-box", resize: "vertical" } }),
-      React.createElement("textarea", { value: newLeader.talentChallenge, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, talentChallenge: e.target.value }; }); }, placeholder: "Their talent/hiring challenge...", rows: 2,
+      React.createElement("textarea", { value: newLeader.talentChallenge, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, talentChallenge: e.target.value }; }); }, placeholder: "Their procurement / sourcing challenge...", rows: 2,
         style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", marginTop: 8, boxSizing: "border-box", resize: "vertical" } }),
       React.createElement("textarea", { value: newLeader.phenomAngle, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, phenomAngle: e.target.value }; }); }, placeholder: "How to position JAGGAER to this person...", rows: 2,
         style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", marginTop: 8, boxSizing: "border-box", resize: "vertical" } }),
@@ -8702,7 +8702,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
           React.createElement("div", { style: { display: "grid", gap: 8, marginTop: 10 } },
             [
               { label: "\uD83C\uDFAF Mandate & KPIs", field: "mandate", ph: "Strategic mandate..." },
-              { label: "\uD83D\uDC65 Talent Challenge", field: "talentChallenge", ph: "Their hiring/talent challenge..." },
+              { label: "\uD83D\uDCE6 Procurement Challenge", field: "talentChallenge", ph: "Their procurement / sourcing challenge \u2014 savings targets, supplier risk, off-contract spend, cycle time..." },
               { label: "\uD83E\uDDE9 JAGGAER Angle", field: "phenomAngle", ph: "How to position JAGGAER to this person..." },
             ].map(function(f) {
               return React.createElement("div", { key: f.field },
@@ -8986,7 +8986,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
 
   // Readiness breakdown — group by score tier with WHY
   var readinessTiers = [
-    { label: "Ready (70%+)", color: "#0D9488", accs: accounts.filter(function(a) { return completionScore(a) >= 70; }), why: "Strong intel coverage across company, workforce and opportunity data" },
+    { label: "Ready (70%+)", color: "#0D9488", accs: accounts.filter(function(a) { return completionScore(a) >= 70; }), why: "Strong intel coverage across company, spend & supplier and opportunity data" },
     { label: "Building (30-69%)", color: "#F59E0B", accs: accounts.filter(function(a) { var s = completionScore(a); return s >= 30 && s < 70; }), why: "Partial data \u2014 key sections still need enrichment" },
     { label: "Early (< 30%)", color: "#DC2626", accs: accounts.filter(function(a) { return completionScore(a) < 30; }), why: "Minimal intelligence \u2014 run Intel Refresh or upload data" },
   ];
@@ -9683,7 +9683,7 @@ function ProspectDashboard() {
         const currentYear = new Date().getFullYear();
         const p1 = `You are a sales intelligence analyst researching "${acc.companyName}" (industry: ${acc.industry || "unknown"}). CRITICAL: Today is ${new Date().toISOString().split("T")[0]}. You MUST provide the most recent data available — use ${currentYear - 1} and ${currentYear} figures, NOT outdated data from earlier years. If ${currentYear} data is not available, state the most recent year explicitly. Return ONLY valid JSON (no markdown). Use "" for unknown fields. Be concise but factual with LATEST public data:
 {
-  "industry": "The company's primary industry / sector in 2-5 words (e.g. 'Automotive Manufacturing', 'Retail Banking', 'SaaS / HR Technology', 'Pharmaceuticals')",
+  "industry": "The company's primary industry / sector in 2-5 words (e.g. 'Automotive Manufacturing', 'Retail Banking', 'SaaS / Procurement Technology', 'Pharmaceuticals')",
   "atAGlance": "2-3 sentence company overview with ${currentYear - 1}/${currentYear} revenue and current employee count — state the year of data explicitly",
   "revenue": "Most recent annual revenue with currency — MUST include the fiscal year (e.g. FY${currentYear - 1}). Do NOT use data older than ${currentYear - 2}",
   "revenueGrowth": "YoY growth % and trend",
@@ -9718,24 +9718,24 @@ function ProspectDashboard() {
         const p2 = `You are a B2B sales strategist researching "${acc.companyName}" (industry: ${acc.industry || "unknown"}). CRITICAL: Today is ${new Date().toISOString().split("T")[0]}. Use the LATEST available data from ${currentYear - 1}-${currentYear}, not outdated information. Reference current leadership, recent strategic initiatives, and up-to-date market conditions. Return ONLY valid JSON. Use "" for unknown. Be specific to this company:
 {
   "hypothesis": "Core sales hypothesis: why this company needs a modern source-to-pay procurement platform now (2-3 sentences)",
-  "cioProblems": "CIO/CTO challenges: current HR tech stack limitations, digital transformation gaps, AI readiness",
+  "cioProblems": "CIO/CTO challenges: current ERP / procurement tech stack limitations, weak system integration, digital transformation gaps, AI readiness",
   "chroProblems": "CPO / Procurement challenges: maverick spend, poor spend visibility, supplier risk, manual source-to-pay processes, savings leakage, ESG compliance",
   "businessPain": "Quantified business pain: off-contract/maverick spend, missed savings, supplier and supply-chain risk exposure, manual PO/invoice processing cost, working-capital and compliance impact",
   "whyNow": "Why is now the right time to engage: trigger events, leadership changes, strategic shifts",
   "problemHypothesis": "Problem hypothesis connecting company challenges to procurement platform solution",
-  "workflowAssessment": "Current HR tech stack (ATS, HCM, LMS) and gaps",
+  "workflowAssessment": "Current ERP / source-to-pay stack (ERP, sourcing, contracts, eProcurement, AP) and gaps",
   "hrTechStack": "CRITICAL: ONLY include tools that are PUBLICLY CONFIRMED (press releases, job postings mentioning specific tools, vendor case studies, annual reports). Return EMPTY ARRAY [] if not confirmed. DO NOT GUESS. Format: [{category: ats/hcm/lms/perf/payroll/wfm/analytics/engagement, name: Exact vendor name, notes: Source of confirmation}]",
   "highestOpportunity": "Highest-impact wedge: strategic sourcing, spend analytics, supplier risk management, or procure-to-pay automation",
   "capabilityMatch": "Which platform capabilities map to which business needs",
   "proofPoints": "Relevant proof points or similar company case studies",
-  "personaValueMap": "Value proposition per persona: CHRO, CIO, CFO, hiring managers",
+  "personaValueMap": "Value proposition per persona: CPO, CIO, CFO, category managers",
   "outcomeStatement": "Measurable outcome statement: what we can deliver for this company",
   "quantifiedImpact": "Quantified ROI: addressable spend under management, sourcing savings %, cycle-time reduction, supplier-risk avoided",
   "executiveStory": "Narrative pitch story for the CEO (3-4 sentences)",
   "discoveryQuestions": "4 discovery questions to ask in a first meeting",
   "whyNowFraming": "Why-now framing for outreach timing",
   "nextSteps": "Recommended next steps: 3-4 actions with timeline",
-  "hyperCellTitle": "Provocative one-line headline about their talent challenge",
+  "hyperCellTitle": "Provocative one-line headline about their procurement / spend challenge",
   "hyperCellNarrative": "2-3 sentence hyper-cell narrative with quantified opportunity",
   "geoConflictImpact": "How geopolitical factors (conflicts, trade, regulation) affect this company",
   "microGrowthArea": "Specific emerging growth area creating new sourcing, supplier, and spend needs",
@@ -9766,8 +9766,8 @@ INCLUSION RULES:
 - Return 3-5 VERIFIED executives. 3 verified >> 8 guessed.
 
 {
-  "keySignals": ["signal 1 about hiring/growth", "signal 2 about leadership", "signal 3 about tech/AI", "signal 4 about financials", "signal 5 about workforce", "signal 6 about transformation", "signal 7 about market position", "signal 8 about talent pressure"],
-  "primarySponsor": "Name and title of the most relevant HR/People executive (VERIFIED current employee only)",
+  "keySignals": ["signal 1 about spend/growth", "signal 2 about leadership", "signal 3 about tech/AI", "signal 4 about financials", "signal 5 about supply chain / suppliers", "signal 6 about transformation", "signal 7 about market position", "signal 8 about cost & savings pressure"],
+  "primarySponsor": "Name and title of the most relevant Procurement / CPO executive (VERIFIED current employee only)",
   "secondaryContacts": "Name and title of CIO/CTO or other relevant executive (VERIFIED current employee only)",
   "leadNarrative": "One-sentence lead narrative for sales outreach",
   "discoveryAngle": "Key discovery angle: what to explore in first meeting",
@@ -9812,8 +9812,8 @@ DEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:
 - Strategy: ${c4ctx.strategy}
 - Key Signals: ${c4ctx.keySignals}
 - Challenges: ${c4ctx.challenges}
-- Workforce Strategy: ${c4ctx.workforce}
-- Hiring Trends: ${c4ctx.hiring}
+- Spend & Sourcing Strategy: ${c4ctx.workforce}
+- Sourcing Trends: ${c4ctx.hiring}
 - Employees: ${acc.employees || "N/A"}, Open Roles: ${acc.openRoles || "N/A"}
 - Known Problems: ${c4ctx.problems}
 - Use Cases: ${c4ctx.useCases}
@@ -9829,13 +9829,13 @@ Return this exact JSON structure:
   "buTalentNeeds": "Procurement, sourcing and supplier pressures on this BU \u2014 spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.",
   "phenomProductMatch": "Map 4-5 JAGGAER products to their SPECIFIC challenges listed above: '[Product] → [Their challenge] → [Expected impact with numbers]'",
   "phenomQuickWins": "3 things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above.",
-  "phenomROIStory": "12-month ROI using actual numbers: ${acc.employees || "N"} employees, ${acc.openRoles || "N"} open roles. Specific $ amounts.",
-  "wowInsights": "5 insights connecting dots across the intelligence above that the CHRO wouldn't expect: (1) recent event most missed, (2) competitive talent threat, (3) hidden cost, (4) urgency connection between initiatives, (5) 6-12 month prediction. Each 2-3 sentences with data.",
+  "phenomROIStory": "12-month ROI using actual numbers: addressable spend, active supplier count, sourcing and invoice volumes. Specific $ amounts (realised savings, cycle-time reduction, working capital freed).",
+  "wowInsights": "5 insights connecting dots across the intelligence above that the CPO wouldn't expect: (1) recent event most missed, (2) supply-chain / supplier risk threat, (3) hidden off-contract cost, (4) urgency connection between initiatives, (5) 6-12 month prediction. Each 2-3 sentences with data.",
   "buLeaders": [
-    {"name": "Full name", "title": "Exact current title", "bu": "Business Unit name", "mandate": "Strategic mandate", "talentChallenge": "Hiring challenge", "phenomAngle": "How to position JAGGAER", "linkedinUrl": ""},
+    {"name": "Full name", "title": "Exact current title", "bu": "Business Unit name", "mandate": "Strategic mandate", "talentChallenge": "Procurement / sourcing challenge", "phenomAngle": "How to position JAGGAER", "linkedinUrl": ""},
     {"name": "Second BU leader", "title": "Title", "bu": "BU", "mandate": "Mandate", "talentChallenge": "Challenge", "phenomAngle": "Angle", "linkedinUrl": ""},
     {"name": "Third leader", "title": "Title", "bu": "BU", "mandate": "Mandate", "talentChallenge": "Challenge", "phenomAngle": "Angle", "linkedinUrl": ""},
-    {"name": "Procurement/Vendor leader", "title": "Title", "bu": "Procurement", "mandate": "Mandate", "talentChallenge": "How they evaluate HR tech", "phenomAngle": "Angle", "linkedinUrl": ""}
+    {"name": "Procurement/Vendor leader", "title": "Title", "bu": "Procurement", "mandate": "Mandate", "talentChallenge": "How they evaluate procurement / source-to-pay tech", "phenomAngle": "Angle", "linkedinUrl": ""}
   ]
 }`;
         const d4 = await callClaudeAPI(key, p4, 4000);
