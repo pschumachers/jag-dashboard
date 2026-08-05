@@ -9762,14 +9762,14 @@ Before including ANY person, you MUST run ALL 4 verification checks:
   d) Departure check: Search "{person name}" leaves OR departure OR verlässt OR wechselt "${acc.companyName}" — confirm NO exit news
 
 INCLUSION RULES:
-- Include ONLY if confirmed via AT LEAST 2 of the 4 checks above.
+- Prefer people confirmed via AT LEAST 2 of the 4 checks. But for the PRIORITY personas, if you find a REAL named holder via even ONE credible source (LinkedIn, Xing, company page, press), INCLUDE them with the ⚠️ single-source flag rather than omitting them. An unfilled persona is worse than a flagged real candidate. Never invent a name.
 - In the background field, state: "VERIFIED: [source 1] + [source 2]" with specific evidence.
 - If only 1 source, prefix name with "⚠️ " and note "SINGLE SOURCE — verify before outreach".
 - If ZERO sources confirm a person → DO NOT INCLUDE. Zero tolerance for guessing or fabricating names.
 - Search for DEPARTURES explicitly — people who left in the last 24 months MUST NOT be included.
 - For keyQuote: ONLY real public quotes with source attribution. Never fabricate — use empty string if none found.
 - For linkedinUrl: actual URL or empty string. Never guess URLs.
-- Return 3-5 VERIFIED executives. 3 verified >> 8 guessed.
+- Return 5 to 8 people and actively COVER these personas: Procurement / CPO, Strategic Sourcing, Category Management, Finance and IT / ERP Systems. Search for the named holder of EACH before concluding a persona is empty. A single-source ⚠️ candidate in the correct persona beats an empty persona; never fabricate.
 
 WHO TO FIND — this is a PROCUREMENT and SOURCE TO PAY sale, so prioritise in THIS order:
 1. Chief Procurement Officer / VP Procurement / Head of Procurement (the PRIMARY SPONSOR; department "Procurement / CPO").
@@ -9778,6 +9778,7 @@ WHO TO FIND — this is a PROCUREMENT and SOURCE TO PAY sale, so prioritise in T
 4. Head of Supplier Management / Supply Chain Risk (department "Supplier Management & Risk").
 5. CFO / Finance Director who signs off procurement spend and savings (Economic Buyer; department "Finance").
 6. Head of IT / ERP / Digital Procurement who owns integration (department "IT / ERP Systems").
+Run a SPECIFIC named search for each persona: "${acc.companyName} Chief Procurement Officer", "${acc.companyName} VP Procurement", "${acc.companyName} Head of Procurement", "${acc.companyName} Head of Strategic Sourcing", "${acc.companyName} Head of Category Management", "${acc.companyName} Head of Supplier Management", "${acc.companyName} CFO", "${acc.companyName} Head of Procurement Systems OR ERP". A single-source ⚠️ candidate in the correct persona beats an empty persona.
 Do NOT lead with HR or recruiting leaders; they are not procurement buyers.
 For EVERY executive set "department" to exactly one of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, Supply Chain & Operations, IT / ERP Systems, Finance, Digital & Transformation, Other. Use "Procurement / CPO" for any senior procurement role.
 
@@ -9799,7 +9800,7 @@ For EVERY executive set "department" to exactly one of: Procurement / CPO, Strat
     {"severity": "MEDIUM", "title": "Challenge title", "businessChallenge": "Description", "solution": "Solution", "proofPoint": ""}
   ]
 }`;
-        const d3p = callClaudeAPI(key, p3, 3500);
+        const d3p = callClaudeAPI(key, p3, 5000);
         // Calls 1-3 are independent — run them concurrently to cut new-account time ~3x
         const [d1, d2, d3] = await Promise.all([d1p, d2p, d3p]);
 
