@@ -9771,17 +9771,27 @@ INCLUSION RULES:
 - For linkedinUrl: actual URL or empty string. Never guess URLs.
 - Return 3-5 VERIFIED executives. 3 verified >> 8 guessed.
 
+WHO TO FIND — this is a PROCUREMENT and SOURCE TO PAY sale, so prioritise in THIS order:
+1. Chief Procurement Officer / VP Procurement / Head of Procurement (the PRIMARY SPONSOR; department "Procurement / CPO").
+2. Head of Strategic Sourcing / Global Sourcing (Key Influencer; department "Strategic Sourcing").
+3. Head of Category Management (department "Category Management").
+4. Head of Supplier Management / Supply Chain Risk (department "Supplier Management & Risk").
+5. CFO / Finance Director who signs off procurement spend and savings (Economic Buyer; department "Finance").
+6. Head of IT / ERP / Digital Procurement who owns integration (department "IT / ERP Systems").
+Do NOT lead with HR or recruiting leaders; they are not procurement buyers.
+For EVERY executive set "department" to exactly one of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, Supply Chain & Operations, IT / ERP Systems, Finance, Digital & Transformation, Other. Use "Procurement / CPO" for any senior procurement role.
+
 {
   "keySignals": ["signal 1 about spend/growth", "signal 2 about leadership", "signal 3 about tech/AI", "signal 4 about financials", "signal 5 about supply chain / suppliers", "signal 6 about transformation", "signal 7 about market position", "signal 8 about cost & savings pressure"],
   "primarySponsor": "Name and title of the most relevant Procurement / CPO executive (VERIFIED current employee only)",
-  "secondaryContacts": "Name and title of CIO/CTO or other relevant executive (VERIFIED current employee only)",
+  "secondaryContacts": "Name and title of the Finance/CFO or Head of Sourcing who would co-sign a source-to-pay decision (VERIFIED current employee only)",
   "leadNarrative": "One-sentence lead narrative for sales outreach",
   "discoveryAngle": "Key discovery angle: what to explore in first meeting",
   "proofPoint": "Most relevant customer case study or proof point",
   "executives": [
-    {"name": "Executive 1 full name (VERIFIED on LinkedIn/Xing)", "title": "Their exact current title", "roleType": "Primary Sponsor", "department": "HR Leadership", "background": "2-3 sentence career background + verification source", "priorities": "Their top priorities", "keyQuote": "A REAL public quote with source — or empty string if none found", "relevance": "Why they matter for this deal", "outreachAngles": "2 outreach angles to engage them", "linkedinUrl": "LinkedIn profile URL (https://linkedin.com/in/...) or empty string", "reportsTo": "Name of their direct manager"},
-    {"name": "Executive 2 full name (VERIFIED)", "title": "Their exact current title", "roleType": "Key Influencer", "department": "Procurement / CPO", "background": "2-3 sentence background + verification", "priorities": "Their top priorities", "keyQuote": "Real quote or empty string", "relevance": "Why they matter", "outreachAngles": "2 outreach angles", "linkedinUrl": "", "reportsTo": ""},
-    {"name": "Executive 3 full name (VERIFIED)", "title": "Their exact current title", "roleType": "Budget Authority", "department": "IT / Digital", "background": "2-3 sentence background + verification", "priorities": "Their top priorities", "keyQuote": "Real quote or empty string", "relevance": "Why they matter", "outreachAngles": "2 outreach angles", "linkedinUrl": "", "reportsTo": ""}
+    {"name": "Executive 1 full name (VERIFIED on LinkedIn/Xing)", "title": "Their exact current title", "roleType": "Primary Sponsor", "department": "Procurement / CPO", "background": "2-3 sentence career background + verification source", "priorities": "Their top priorities", "keyQuote": "A REAL public quote with source — or empty string if none found", "relevance": "Why they matter for this deal", "outreachAngles": "2 outreach angles to engage them", "linkedinUrl": "LinkedIn profile URL (https://linkedin.com/in/...) or empty string", "reportsTo": "Name of their direct manager"},
+    {"name": "Executive 2 full name (VERIFIED)", "title": "Their exact current title", "roleType": "Key Influencer", "department": "Strategic Sourcing", "background": "2-3 sentence background + verification", "priorities": "Their top priorities", "keyQuote": "Real quote or empty string", "relevance": "Why they matter", "outreachAngles": "2 outreach angles", "linkedinUrl": "", "reportsTo": ""},
+    {"name": "Executive 3 full name (VERIFIED)", "title": "Their exact current title", "roleType": "Budget Authority", "department": "Finance", "background": "2-3 sentence background + verification", "priorities": "Their top priorities", "keyQuote": "Real quote or empty string", "relevance": "Why they matter", "outreachAngles": "2 outreach angles", "linkedinUrl": "", "reportsTo": ""}
   ],
   "challenges": [
     {"severity": "CRITICAL", "title": "Challenge title", "businessChallenge": "Description", "solution": "How procurement platform solves it", "proofPoint": "Relevant proof point"},
