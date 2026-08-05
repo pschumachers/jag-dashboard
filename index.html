@@ -3238,15 +3238,15 @@ function MetricCard({ value, label, sub }) {
         background: C.card,
         border: `1px solid ${C.border}`,
         borderRadius: 10,
-        padding: "16px",
+        padding: "12px 14px",
         flex: 1,
-        minWidth: 120,
-        textAlign: "center",
+        minWidth: 160,
+        textAlign: "left",
       },
     },
-    /*#__PURE__*/ React.createElement("div", { style: { fontSize: (value && value.length > 60) ? 13 : 22, fontWeight: 700, color: C.blue, whiteSpace: "pre-wrap", lineHeight: 1.5, textAlign: (value && value.length > 60) ? "left" : "center" } }, value || "—"),
-    /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, color: C.muted, marginTop: 2 } }, label),
-    sub && /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, color: C.teal, marginTop: 2, whiteSpace: "pre-wrap", lineHeight: 1.5, textAlign: "left" } }, sub),
+    /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
+    /*#__PURE__*/ React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: C.blue, whiteSpace: "pre-wrap", lineHeight: 1.45, wordBreak: "break-word" } }, value || "—"),
+    sub && /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.teal, marginTop: 3, whiteSpace: "pre-wrap", lineHeight: 1.45, wordBreak: "break-word" } }, sub),
   );
 }
 function TagInput({ tags, onChange, placeholder }) {
@@ -4959,7 +4959,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
         /*#__PURE__*/ React.createElement(FieldLabel, null, "Revenue (e.g. $9.71B)"),
-        /*#__PURE__*/ React.createElement(Input, {
+        /*#__PURE__*/ React.createElement(TextArea, {
+          rows: 2,
           value: account.revenue,
           onChange: (v) => update("revenue", v),
           placeholder: "e.g. $9.71B",
@@ -4969,7 +4970,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
         /*#__PURE__*/ React.createElement(FieldLabel, null, "Revenue Growth YoY"),
-        /*#__PURE__*/ React.createElement(Input, {
+        /*#__PURE__*/ React.createElement(TextArea, {
+          rows: 2,
           value: account.revenueGrowth,
           onChange: (v) => update("revenueGrowth", v),
           placeholder: "e.g. +5% organic",
@@ -4979,7 +4981,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
         /*#__PURE__*/ React.createElement(FieldLabel, null, "Employees"),
-        /*#__PURE__*/ React.createElement(Input, {
+        /*#__PURE__*/ React.createElement(TextArea, {
+          rows: 2,
           value: account.employees,
           onChange: (v) => update("employees", v),
           placeholder: "e.g. 48,900",
@@ -4989,7 +4992,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
         /*#__PURE__*/ React.createElement(FieldLabel, null, "Employee Growth YoY"),
-        /*#__PURE__*/ React.createElement(Input, {
+        /*#__PURE__*/ React.createElement(TextArea, {
+          rows: 2,
           value: account.employeeGrowth,
           onChange: (v) => update("employeeGrowth", v),
           placeholder: "e.g. +1.88%",
@@ -4999,7 +5003,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
         /*#__PURE__*/ React.createElement(FieldLabel, null, "Open Roles (approx.)"),
-        /*#__PURE__*/ React.createElement(Input, {
+        /*#__PURE__*/ React.createElement(TextArea, {
+          rows: 2,
           value: account.openRoles,
           onChange: (v) => update("openRoles", v),
           placeholder: "e.g. ~700",
@@ -5009,7 +5014,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
         /*#__PURE__*/ React.createElement(FieldLabel, null, "Glassdoor Rating"),
-        /*#__PURE__*/ React.createElement(Input, {
+        /*#__PURE__*/ React.createElement(TextArea, {
+          rows: 2,
           value: account.glassdoorRating,
           onChange: (v) => update("glassdoorRating", v),
           placeholder: "e.g. 3.9/5.0",
