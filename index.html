@@ -8999,10 +8999,22 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
 
   // All executives across all accounts for org chart + search
   var allExecs = [];
+  var _seenExec = new Set();
   accounts.forEach(function(a) {
     (a.executives || []).forEach(function(e) {
       if (e.name && e.name.length > 2) {
+        var k = a.id + "|" + e.name.toLowerCase().replace(/[^a-z]/g, "");
+        if (_seenExec.has(k)) return; _seenExec.add(k);
         allExecs.push({ ...e, accountId: a.id, companyName: a.companyName, industry: a.industry || "" });
+      }
+    });
+    (a.projectTeam || []).forEach(function(p) {
+      if (p.name && p.name.length > 2) {
+        var k = a.id + "|" + p.name.toLowerCase().replace(/[^a-z]/g, "");
+        if (_seenExec.has(k)) return; _seenExec.add(k);
+        var dep = p.role || "Other";
+        if (dep === "People / HR") dep = "People / HR Leadership";
+        allExecs.push({ ...p, department: dep, roleType: p.roleType || "Project Team", accountId: a.id, companyName: a.companyName, industry: a.industry || "" });
       }
     });
   });
