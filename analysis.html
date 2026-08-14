@@ -1,1527 +1,335 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JAGGAER — Territory & Market Analysis</title>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7fafc}</style>
-</head><body><div id="root"></div>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>How I Would Help Build Northern Europe for JAGGAER</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#1a1a1a;-webkit-font-smoothing:antialiased;-webkit-user-select:none;user-select:none}
+.wm{position:fixed;inset:0;pointer-events:none;z-index:40;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='150'%3E%3Ctext x='10' y='85' font-family='Helvetica,Arial,sans-serif' font-size='12.5' fill='%235b6b7f' fill-opacity='0.16' transform='rotate(-25 150 75)'%3Epschumachers@me.com | Confidential%3C/text%3E%3C/svg%3E");background-repeat:repeat}
+.gate{position:fixed;inset:0;z-index:100;background:linear-gradient(135deg,#fff4ed,#fdece4);display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-card{background:#fff;border-radius:16px;padding:30px 26px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.12);text-align:center}
+.gate-card h2{font-size:20px;font-weight:800;color:#1a1a1a}
+.gate-card p{font-size:13px;color:#718096;margin-top:8px;line-height:1.6}
+.gate-card input{width:100%;margin-top:18px;padding:14px;font-size:20px;text-align:center;letter-spacing:8px;border:2px solid #e2e8f0;border-radius:10px;outline:none}
+.gate-card input:focus{border-color:#d84315}
+.gate-card button{width:100%;margin-top:14px;padding:13px;font-size:15px;font-weight:700;color:#fff;background:#d84315;border:none;border-radius:10px;cursor:pointer}
+.gate-err{display:none;color:#c62828;font-size:12px;margin-top:10px;font-weight:600}
+.gate-foot{font-size:11px;color:#a0aec0;margin-top:18px}
+#app{display:none}
+.header{padding:24px 20px 20px;border-bottom:2px solid #e2e8f0;position:relative;z-index:1}
+.header h1{font-size:25px;font-weight:800;letter-spacing:-0.5px}
+.header p{font-size:14px;color:#718096;margin-top:6px}
+.container{padding:16px 20px;max-width:800px;position:relative;z-index:1}
+.intro{background:linear-gradient(135deg,#ecfeff,#f0fdf4);border-radius:12px;padding:18px;font-size:14px;color:#3d4a5c;line-height:1.7;margin-bottom:14px}
+.intro p{margin-bottom:12px}.intro p:last-child{margin-bottom:0}
+.icpbox{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#78500a;line-height:1.6;margin-bottom:16px}
+.icpbox b{color:#5b3c05}
+.collap{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:16px;background:#fff}
+.collap-h{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;cursor:pointer;font-size:16px;font-weight:800;gap:10px}
+.collap-ar{font-size:13px;color:#94a3b8;flex-shrink:0}
+.collap-b{display:none;padding:0 18px 16px}
+.collap.open .collap-b{display:block}
+.collap-b p{font-size:13px;color:#4a5568;line-height:1.7;margin-bottom:10px}
+.collap-b p:last-child{margin-bottom:0}
+.collap-b b{color:#1a1a1a}
+.collap-b .close{font-style:italic;color:#2e7d32}
+.countries{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.country-btn{padding:12px 8px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;text-align:center}
+.country-btn.active{border:2px solid #d84315;background:#fff4ed}
+.flag{font-size:28px;display:block;line-height:32px;height:32px}.name{font-size:12px;font-weight:600;color:#4a5568;margin-top:4px;display:block;margin-bottom:2px}
+.country-btn.active .name{color:#d84315}
+.cscore{font-size:16px;font-weight:700;color:#2d3748;margin-top:4px;display:block}
+.country-btn.active .cscore{color:#d84315}
+.detail-card{background:#fff;border-radius:12px;padding:16px;border:1px solid #e2e8f0;margin-bottom:12px}
+.detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.detail-name{font-size:18px;font-weight:700}
+.phase-badge{font-size:12px;font-weight:600;color:#fff;padding:4px 12px;border-radius:12px;white-space:nowrap}
+.score-row{padding:7px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.score-row:last-child{border-bottom:none}
+.score-top{display:flex;align-items:center;gap:8px}
+.score-label{font-size:13px;color:#718096;width:170px;flex-shrink:0}
+.score-bar-bg{flex:1;height:8px;background:#f0f4f8;border-radius:4px;overflow:hidden}
+.score-bar{height:100%;border-radius:4px}
+.score-val{font-size:14px;font-weight:600;color:#2d3748;width:36px;text-align:right}
+.score-why{display:none;padding:8px 12px;margin:6px 0 2px;background:#f8fafc;border-radius:8px;font-size:12px;color:#4a5568;line-height:1.6;border-left:3px solid #d84315}
+.score-why.open{display:block}
+.score-arrow{font-size:10px;color:#d84315;margin-left:4px}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:8px;border-top:2px solid #e2e8f0}
+.total-label{font-size:15px;font-weight:700}
+.total-val{font-size:24px;font-weight:800}
+.rec-box{border-radius:10px;padding:14px;margin-bottom:12px}
+.rec-title{font-size:14px;font-weight:700}
+.rec-body{font-size:13px;color:#4a5568;margin-top:4px;line-height:1.6}
+.contacts-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f8fafc;border-radius:8px;cursor:pointer;border:1px solid #e2e8f0;margin-bottom:12px;font-size:14px;font-weight:600;color:#4a5568}
+.contacts-toggle.open{background:#fff4ed;color:#d84315}
+.contacts-list{background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px;padding:12px 16px;margin-top:-12px;margin-bottom:12px}
+.contacts-list div{font-size:12px;color:#4a5568;padding:4px 0;line-height:1.5}
+.ranking{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.rank-card{background:#fff;border-radius:10px;padding:12px;border:1px solid #e2e8f0;text-align:center;cursor:pointer}
+.rank-pos{font-size:18px;font-weight:700}.rank-name{font-size:12px;color:#4a5568;margin-top:2px}
+.rank-score{font-size:11px;color:#a0aec0}
+.legend{display:flex;gap:14px;margin:16px 0;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px;font-size:12px;color:#718096}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.sources{border-top:1px solid #e2e8f0;padding-top:16px;margin-top:20px}
+.sources-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sources-head h3{font-size:14px;font-weight:700;color:#d84315}
+.refresh-btn{font-size:13px;font-weight:700;color:#fff;background:#d84315;border:none;border-radius:8px;padding:9px 16px;cursor:pointer}
+.sources div{font-size:11px;color:#a0aec0;line-height:1.6}
+.section-title{font-size:16px;font-weight:700;color:#d84315;margin:20px 0 10px}
+.tap-hint{font-size:11px;color:#a0aec0;margin-bottom:12px;font-style:italic}
+.foot{text-align:center;font-size:12px;color:#a0aec0;padding:22px 20px 30px;border-top:1px solid #e2e8f0;margin-top:24px}
+@media print{body{display:none}}
+</style>
+</head>
+<body oncontextmenu="return false">
+<div class="wm" id="wm"></div>
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <h2>Confidential market analysis</h2>
+    <p>Prepared for the JAGGAER Strategic AE role play. Enter the four digit code to continue.</p>
+    <input id="pin" type="tel" inputmode="numeric" maxlength="4" placeholder="&#183;&#183;&#183;&#183;" autocomplete="off" onkeydown="if(event.key==='Enter')checkPin()">
+    <button onclick="checkPin()">Unlock</button>
+    <div class="gate-err" id="pinerr">That code is not right. Please try again.</div>
+    <div class="gate-foot">Pascal Schumachers &#183; pschumachers@me.com</div>
+  </div>
+</div>
+
+<div id="app">
+<div class="header"><h1>How I Would Help Build Northern Europe for JAGGAER</h1><p>JAGGAER | Pascal Schumachers | 4 focus markets, 10 dimensions</p></div>
+<div class="container">
+
+<div class="intro">
+<p>JAGGAER is the market leader in source to pay, a Gartner Leader with more than 1,400 enterprise customers, and the procurement buyer does not sit in one country. That buyer sits in a headquarters, running direct and indirect spend across dozens of entities, and I am built to reach them wherever they are.</p>
+<p>This is the Northern Europe seat Bob is building, not the DACH seat, which is already filled. I lead with the Benelux and the UK, then the Nordics, with France opportunistic. The Benelux is my strongest edge: ten years in Amsterdam, fluent Dutch that also covers Flanders, my Apple Benelux history, and Bob has called it underserved. The UK is the home market, with the deepest and most mature CIPS procurement community in Europe.</p>
+<p>What follows is how I would build. I land the Benelux and the UK first through my network and JAGGAER references where they convert fastest, open the Nordics in phase two on the back of proof, and treat France opportunistically. I have built enterprise territories for 25 years, always turning an early presence into a mature business that sells on value.</p>
+<p>The analysis scores my focus markets across Bob's ten dimensions, against SAP Ariba, Coupa, Ivalua and GEP, with the regulatory tailwinds and the Ariba replacement cycle as the compelling events. DACH is shown at the end as a reference market because the seat is filled, but my deep network there is a cross border asset for the Northern Europe spend of German and Swiss headquartered groups.</p>
+</div>
+
+<div class="icpbox">
+<b>ICP (from Bob):</b> Fortune 100 to 500 and large enterprise in oil and gas, energy, utilities, banking, discrete manufacturing and public sector. <b>Personas:</b> CPO, COO, CFO, VP Supply Chain, VP Procurement. <b>Competitive set:</b> SAP Ariba, Coupa, Ivalua and GEP, with Zip and Oro watched on the newer intake and orchestration angle. <b>Drivers:</b> EU CSDDD, and LkSG for German headquartered multinationals operating in my region, legacy platform sunsetting and the Ariba replacement cycle, and the shift to strategic category management and AI embedded procurement.
+</div>
+
+<div class="collap" id="storyCard" style="border-left:5px solid #2e7d32">
+<div class="collap-h" style="color:#2e7d32" onclick="toggleCollap('storyCard')"><span>My track record: owning territories and beating entrenched incumbents</span><span class="collap-ar">&#9660;</span></div>
+<div class="collap-b">
+<p class="lead">JAGGAER already has the platform and the proof. The job is to convert that strength into won enterprise logos across Northern Europe, in a market where SAP Ariba, Coupa, Ivalua and GEP are the entrenched defaults. That is exactly the work I have done throughout my career: land in a market, build the territory from a standing start, and win against legacy platforms. It is the environment where I do my best work.</p>
+<p><b>EWB (later National Instruments).</b> Joined at around 80 employees globally. First on the ground in Germany and closed the biggest deal in the history of the company with the federal education market, building the territory from a standing start. The company was later acquired by National Instruments.</p>
+<p><b>Gladius, The Gambia.</b> Sent as CEO to launch the country operation from nothing. Pivoted the entire business model from hardware to turnkey delivery, scaled to around 50 people, and won the largest government contract in the company's history: immigration offices, police HQ, and central bank infrastructure.</p>
+<p><b>VMware AirWatch.</b> Joined at around 240 people globally as employee 169. Rode the hypergrowth and Dell EMC era as the organisation scaled past 2,000, selling enterprise mobility into large accounts, including in the Benelux.</p>
+<p><b>Phenom.</b> Employee seven in Europe and first on the ground in DACH. Built the region from zero into one of the strongest in the company, selling AI native technology against entrenched legacy platforms.</p>
+<p class="close">I have built and owned enterprise territories four times, always turning an early presence into a repeatable, value led engine, and always winning against the incumbent default. I bring that same playbook to JAGGAER's Northern Europe patch.</p>
+</div>
+</div>
+
+<div class="collap" id="guideCard" style="border-left:5px solid #0277bd">
+<div class="collap-h" style="color:#0277bd" onclick="toggleCollap('guideCard')"><span>A quick guide to reading this, Bob</span><span class="collap-ar">&#9660;</span></div>
+<div class="collap-b">
+<p>This is the market analysis I promised to bring to the role play. It is built to be read on a phone or a laptop, and everything opens with a tap. Here is how it works.</p>
+<p><b>Getting in.</b> You reached this by entering the four digit code 1987. If you close the page and come back, you will need it again. Nothing is stored on your device.</p>
+<p><b>The markets.</b> At the top you will see my four focus markets, each with a score out of 100: the Benelux, the UK, the Nordics and France. DACH sits at the end, greyed, because that seat is filled and it is shown for reference. Tap any card to open that market.</p>
+<p><b>The ten scores.</b> Inside each market I score the ten dimensions you set, from deal size potential to my personal network strength. Each score has a bar and a number out of ten. Green is strong, amber is middling, red is weak. <b>Tap any score to open my reasoning behind it.</b> That is where the real thinking sits, so it is worth opening a few.</p>
+<p><b>My network.</b> Under each market there is a line you can tap to open the senior contacts I hold in that country from my own network, procurement leaders, CIOs, CFOs and operators, alongside the priority target accounts in your ICP.</p>
+<p><b>The recommendation.</b> Each market ends with a short line on how I would actually play it. That is the practical takeaway if you are short on time.</p>
+<p><b>Below the markets.</b> There is a ranking of the four focus markets, an 18 month build plan you can open phase by phase, and the sources behind every claim.</p>
+<p>If you only do one thing, open the Benelux, my strongest edge, and the UK, the home market, and tap the top scores. I would happily walk you through the whole thing whenever suits.</p>
+</div>
+</div>
+
+<div class="countries" id="countries"></div>
+<div class="tap-hint">Tap any score to see the reasoning behind it</div>
+<div id="detail"></div>
+<div id="contacts-area"></div>
+<div class="section-title">Entry Sequence</div>
+<div class="ranking" id="ranking"></div>
+<div class="legend"><span><i style="background:#1baf7a"></i>High (8 to 10)</span><span><i style="background:#eda100"></i>Medium (5 to 7)</span><span><i style="background:#e34948"></i>Low (1 to 4)</span></div>
+
+<div class="section-title">18 Month Build Plan: From First Logos to Regional Engine</div>
+<div class="tap-hint">Tap each phase to expand</div>
+<div id="growth"></div>
+
+<div class="sources">
+<div class="sources-head"><h3>Sources</h3><button class="refresh-btn" id="refreshBtn" onclick="refreshSources()">Refresh</button></div>
+<div id="sources-list"></div>
+</div>
+</div>
+<div class="foot">&#169; 2026 Pascal Schumachers. All rights reserved. Confidential and proprietary. (v14)</div>
+</div>
+
 <script>
-const { useState } = React;
-const _open = {};
-function preOpen(key, i) {
-  if (!_open[key]) _open[key] = new Set();
-  _open[key].add(i);
+var EMBEDDED=(function(){try{return window.self!==window.top}catch(e){return true}})();
+const markets = [
+{"name":"Benelux","emoji":"🇳🇱","phase":"Phase 1: My edge","phaseColor":"#2e7d32","total":82,
+"scores":[
+{"l":"Deal size potential","s":8,"why":"Shell, Unilever, Philips, ASML, AB InBev and Solvay run large enterprise spend. Group standardisation deals reach six and seven figures, a notch below the very largest UK and German names."},
+{"l":"Target industry density","s":8,"why":"A strong match to Bob's ICP: oil and gas (Shell), energy (Q8, Vattenfall NL), banking (ING, ABN AMRO, KBC), discrete manufacturing (ASML, Philips, Damen) and public sector, plus chemicals in Solvay and AkzoNobel."},
+{"l":"Procurement maturity","s":8,"why":"Pragmatic, ROI driven procurement teams with defined categories. When the value case is quantified they move faster than most European markets."},
+{"l":"Multinational density","s":8,"why":"A high concentration of global headquarters for the size of the market, with complex multi entity operations that centralise procurement."},
+{"l":"Digital adoption","s":9,"why":"Among the most digitally advanced markets in Europe, so buyers are comfortable adopting modern cloud source to pay."},
+{"l":"Regulatory drivers","s":8,"why":"EU CSDDD supplier due diligence applies, and Dutch and Belgian enterprises act early on sustainability and supplier transparency. Belgium adds a mandatory electronic invoicing trigger from 2026."},
+{"l":"Competitive whitespace","s":8,"why":"Bob called the Benelux underserved. SAP Ariba and Coupa are present but not entrenched, and Ivalua and GEP are thin here, so there are fewer incumbent footprints to displace."},
+{"l":"Partner ecosystem","s":7,"why":"The major integrators and advisory firms are established in Amsterdam and Brussels, giving solid partner routes into the enterprise base."},
+{"l":"Spend under management","s":8,"why":"Large, complex direct and indirect spend pools across manufacturing, energy and consumer goods, with clear room to bring more under management."},
+{"l":"Personal network strength","s":10,"why":"My strongest patch. Ten years in Amsterdam, fluent Dutch covering Flanders, my Apple Benelux history, and direct contacts at Unilever, Damen, Euroclear, Brussels Airport and Ballast Nedam."}],
+"rec":"Lead here. Language, a decade of local network and a market Bob has already called underserved make this the fastest route to early qualified pipeline. My edge is sharpest in the Benelux.",
+"contacts":[
+"Giovanni Cambréa Alonso : IT and Telecom Procurement, Unilever (my connection)",
+"Hans Quivooij : CISO, Damen, relationship from my VMware days (my connection)",
+"Stephanie Coolen - de Gouw : Head of Purchasing, Ballast Nedam (my connection)",
+"Helene Wang : Category Manager, IT Business Applications, Euroclear, Brussels (my connection)",
+"Patrick Timmerman : Procurement Consultant, Brussels Airport (my connection)",
+"Frits Schonenberg : Procurement Adviser, Oosterlengte (my connection)",
+"Mireille Hulleman : Procurement Coordinator, Gemeente Buren, public sector (my connection)",
+"Chiara Massa : Procurement Manager, Q8Oils, energy (my connection)",
+"Sylvia Paardekooper-van der Vis : Project Controller, Oasen, utilities (my connection)",
+"Shell, Philips, ASML, ING and Solvay : priority target accounts across oil and gas, discrete manufacturing, banking and chemicals"],
+"sources":[["JAGGAER: source to pay platform","https://www.jaggaer.com/"],["EU CSDDD supply chain directive","https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainability-due-diligence-responsible-business_en"],["Belgium B2B electronic invoicing mandate","https://finance.belgium.be/en"],["Invest in Holland: industry base","https://investinholland.com/doing-business-here/industries/"]]},
+
+{"name":"UK","emoji":"🇬🇧","phase":"Phase 1: Home market","phaseColor":"#2e7d32","total":78,
+"scores":[
+{"l":"Deal size potential","s":9,"why":"FTSE 100 scale. BP, Shell, GSK, HSBC, National Grid and BAE run very large spend, so individual standardisation deals are among the biggest in the patch."},
+{"l":"Target industry density","s":9,"why":"An excellent ICP match: oil and gas (BP, Shell), energy and utilities (National Grid, Centrica, SSE), banking (HSBC, Barclays, Lloyds, NatWest), discrete manufacturing (BAE, Rolls-Royce) and a large public sector."},
+{"l":"Procurement maturity","s":9,"why":"The most professionalised procurement community in Europe, anchored by CIPS. Buyers understand source to pay value and run structured evaluations."},
+{"l":"Multinational density","s":9,"why":"A dense cluster of global headquarters across energy, pharma, consumer goods and financial services that centralise procurement decisions."},
+{"l":"Digital adoption","s":8,"why":"High cloud and SaaS adoption across enterprise, with active procurement transformation programmes."},
+{"l":"Regulatory drivers","s":6,"why":"Outside the EU CSDDD mandate directly after Brexit, though UK groups with EU operations are still caught, so the regulatory clock is softer than on the Continent."},
+{"l":"Competitive whitespace","s":5,"why":"The most contested market in the patch. SAP Ariba, Coupa, GEP and Basware are all well established, so wins require sharp differentiation on direct spend and orchestration."},
+{"l":"Partner ecosystem","s":8,"why":"A strong integrator and advisory presence, and JAGGAER has an established UK footprint to build on."},
+{"l":"Spend under management","s":9,"why":"Enormous enterprise spend across energy, banking and manufacturing, with large opportunities to consolidate onto one platform."},
+{"l":"Personal network strength","s":6,"why":"This is my base, and I hold senior contacts at GSK, Barclays, Vodafone and Lonza, but my direct procurement network is thinner here than in the Benelux."}],
+"rec":"Run in parallel with the Benelux from day one. The home market with the deepest procurement community and the largest deals, but also the most competitive, so I lead on direct spend and JAGGAER differentiation rather than price.",
+"contacts":[
+"Regis Simard : President, Global Supply Chain, GSK (my connection)",
+"James Beranek : Director of Sourcing, Lonza (my connection)",
+"Bert Steininger : Service Operations, Vodafone (my connection)",
+"Rob Etheridge : Managing Director, Barclays (my connection)",
+"BP, National Grid, HSBC, Barclays, BAE Systems and Rolls-Royce : priority target accounts across oil and gas, utilities, banking and discrete manufacturing"],
+"sources":[["JAGGAER: UK and Ireland","https://www.jaggaer.com/"],["CIPS: procurement profession","https://www.cips.org/"],["Gartner: Source to Pay Suites","https://www.gartner.com/en/documents"]]},
+
+{"name":"Nordics","emoji":"🇸🇪","phase":"Phase 2: Months 6 to 12","phaseColor":"#0277bd","total":68,
+"scores":[
+{"l":"Deal size potential","s":7,"why":"Fewer names than the UK, but the industrial and pharma leaders such as Volvo, Ericsson, Maersk and Novo Nordisk run substantial spend."},
+{"l":"Target industry density","s":8,"why":"A strong ICP match: energy (Equinor, Orsted, Statkraft, Neste), discrete manufacturing (Volvo, Scania, Ericsson, KONE, Wartsila), banking (Nordea, SEB), shipping (Maersk) and pharma (Novo Nordisk)."},
+{"l":"Procurement maturity","s":7,"why":"Well run, consensus driven procurement functions that value sustainability and total cost over headline price."},
+{"l":"Multinational density","s":7,"why":"A solid set of global headquarters relative to population, operating across many countries."},
+{"l":"Digital adoption","s":9,"why":"The highest digital maturity in Europe, so buyers are early adopters of modern cloud procurement."},
+{"l":"Regulatory drivers","s":8,"why":"EU CSDDD applies and sustainability driven procurement is unusually advanced, which pulls supplier transparency and compliance tooling forward."},
+{"l":"Competitive whitespace","s":6,"why":"Basware is a Nordic company with a home advantage, so there is a strong regional incumbent to work around, though JAGGAER wins on direct and manufacturing depth."},
+{"l":"Partner ecosystem","s":6,"why":"A capable integrator base, though smaller than the UK and DACH ecosystems."},
+{"l":"Spend under management","s":7,"why":"Meaningful industrial and energy spend pools, with sustainability programmes driving more spend into managed processes."},
+{"l":"Personal network strength","s":3,"why":"Thin here today, with contacts at KONE, Telenor and Tetra Pak, so early entry leans on references and partners rather than a personal network."}],
+"rec":"Phase two, opened on the back of Benelux and UK proof. Lead with sustainability driven procurement and high digital adoption. Attractive market, but Basware has a home advantage and my direct network is thin, so references do the work.",
+"contacts":[
+"Heidi Oksanen : Sourcing Category Manager, KONE, Finland (my connection)",
+"Adolfo Orive : President and CEO, Tetra Pak (my connection)",
+"Andreas Thorsrud : Support and Operations, Telenor (my connection)",
+"Equinor, Orsted, Volvo, Ericsson, Maersk, Nordea and Novo Nordisk : priority target accounts across energy, discrete manufacturing, shipping, banking and pharma"],
+"sources":[["JAGGAER","https://www.jaggaer.com/"],["EU CSDDD supply chain directive","https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainability-due-diligence-responsible-business_en"],["EU electronic invoicing and VIDA","https://taxation-customs.ec.europa.eu/vat-digital-age_en"]]},
+
+{"name":"France","emoji":"🇫🇷","phase":"Opportunistic","phaseColor":"#e65100","total":61,
+"scores":[
+{"l":"Deal size potential","s":8,"why":"CAC 40 giants such as TotalEnergies, Airbus, BNP Paribas and Schneider Electric are very large spenders, so the individual deals are big when they land."},
+{"l":"Target industry density","s":8,"why":"A deep ICP match: oil and gas (TotalEnergies), energy and utilities (EDF, Engie, Veolia), banking (BNP Paribas, Societe Generale, Credit Agricole), discrete manufacturing (Airbus, Safran, Renault, Schneider) and public sector."},
+{"l":"Procurement maturity","s":6,"why":"Sophisticated procurement functions, but Ivalua is a French headquartered incumbent with strong local presence, so buyers often have a domestic default to displace."},
+{"l":"Multinational density","s":7,"why":"A large CAC 40 base with global operations, though access without local presence is the constraint."},
+{"l":"Digital adoption","s":6,"why":"Solid but not leading, with a domestic preference in enterprise software that favours local vendors."},
+{"l":"Regulatory drivers","s":7,"why":"EU CSDDD applies and the French electronic invoicing reform phases in across 2026 and 2027, creating a compliance trigger."},
+{"l":"Competitive whitespace","s":3,"why":"The most contested of my markets. Ivalua is on home turf and SAP Ariba is established, so whitespace is narrow and wins need a very sharp differentiation."},
+{"l":"Partner ecosystem","s":6,"why":"The integrators are present, but partner routes would carry more of the early load given my thin direct presence."},
+{"l":"Spend under management","s":7,"why":"Very large enterprise spend pools, but the reachable share is limited by language and the local incumbent."},
+{"l":"Personal network strength","s":3,"why":"Limited direct relationships and no French language, so entry depends on partners and English speaking global procurement teams."}],
+"rec":"Opportunistic only. Follow strong inbound and partner led deals rather than building here early. Needs French language and local presence to do properly, and Ivalua is strong on home turf, so it sits behind the rest of the patch.",
+"contacts":[
+"Olivier Taraud : Divisional CIO, IT and Digital, Thermo Fisher Scientific (my connection)",
+"Olivier Corvilain : CISO, Thales Cyber Solutions (my connection)",
+"TotalEnergies, EDF, Engie, Airbus, BNP Paribas and Schneider Electric : priority target accounts; Ivalua is strong on home turf, so France stays opportunistic"],
+"sources":[["France electronic invoicing reform 2026 to 2027","https://www.impots.gouv.fr/"],["Ivalua (local competitor)","https://www.ivalua.com/"],["JAGGAER","https://www.jaggaer.com/"]]},
+
+{"name":"DACH","emoji":"🇩🇪","phase":"Reference: seat filled","phaseColor":"#90a4ae","ref":true,"total":88,
+"scores":[
+{"l":"Deal size potential","s":10,"why":"The largest source to pay market in Europe, with seven figure deals realistic across the DAX and large Mittelstand. Attractive, but this seat is filled."},
+{"l":"Target industry density","s":9,"why":"A deep ICP match in discrete manufacturing, automotive, chemicals and banking, exactly JAGGAER's heartland, with Zeiss and Continental already live."},
+{"l":"Procurement maturity","s":9,"why":"Mature, well staffed procurement functions with CPO level ownership, many on legacy tools or partial Ariba."},
+{"l":"Multinational density","s":10,"why":"The densest cluster of global procurement headquarters in Europe: Siemens, BMW, BASF, Bosch, Bayer and many more."},
+{"l":"Digital adoption","s":7,"why":"Historically cautious on cloud, now accelerating under the SAP ECC end of maintenance clock."},
+{"l":"Regulatory drivers","s":9,"why":"The origin of LkSG plus EU CSDDD and the German electronic invoicing rollout make supplier compliance a live driver, including for the Northern Europe operations of German groups."},
+{"l":"Competitive whitespace","s":6,"why":"SAP Ariba has strong incumbency in its home market, which is also the wedge for JAGGAER on direct materials."},
+{"l":"Partner ecosystem","s":8,"why":"A deep integrator and advisory ecosystem runs the S/4HANA and procurement transformation programmes."},
+{"l":"Spend under management","s":10,"why":"The largest managed spend pools in Europe across manufacturing and industry."},
+{"l":"Personal network strength","s":10,"why":"My deepest network by far, with more than fifty procurement, IT and finance contacts at BMW, Siemens Healthineers, ABB, Roche, Deutsche Bank, Mercedes-Benz, Covestro and more."}],
+"rec":"This seat is filled by the existing DACH Strategic AE, so it is not my patch. I show it because my deepest network sits here, and because German and Swiss headquartered multinationals run large Northern European operations that fall inside my markets, where LkSG and CSDDD make supplier compliance live. I would use these relationships to land the Northern Europe spend of DACH headquartered groups, in coordination with the DACH AE.",
+"contacts":[
+"Maximilian Lohmüller : Lead, R&D and Procurement Division, BMW Group (my connection)",
+"Michelle Joos : Co-Head of Corporate Procurement, ABB (my connection)",
+"Yannick Anglade : Global Procurement Category Lead, Software, ABB (my connection)",
+"Gerardo Caballero and Eszter Varga : Global Category Managers, Roche (my connections)",
+"Stefano Bertini : Head of Software and Cloud Procurement, Swisscom (my connection)",
+"Katrin Lehmann : CIO, Mercedes-Benz (my connection)",
+"Markus Sontheimer : CIO, Brenntag (my connection)",
+"Alan Hippe : Group CFO, Roche (my connection)",
+"More than fifty DACH procurement, IT and finance connections in total, used as a cross border asset for the Northern Europe spend of German and Swiss headquartered groups"],
+"sources":[["Supply Chain Due Diligence Act (LkSG)","https://www.csr-in-deutschland.de/EN/Business-Human-Rights/Supply-Chain-Act/supply-chain-act.html"],["EU CSDDD supply chain directive","https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainability-due-diligence-responsible-business_en"],["JAGGAER","https://www.jaggaer.com/"]]}
+];
+let active=0,contactsOpen=false,openScores={};
+function barColor(v){return v>=8?"#1baf7a":v>=5?"#eda100":"#e34948"}
+function toggleScore(idx){openScores[active+"-"+idx]=!openScores[active+"-"+idx];render()}
+function selectCountry(i){active=i;contactsOpen=false;openScores={};render()}
+function render(){
+  var m=markets[active];
+  document.getElementById("countries").innerHTML=markets.map(function(mk,i){
+    return "<div class='country-btn "+(i===active?"active":"")+"'"+(mk.ref?" style='opacity:0.7'":"")+" onclick='selectCountry("+i+")'><span class='flag'>"+mk.emoji+"</span><span class='name'>"+mk.name+"</span><span class='cscore'>"+mk.total+"/100</span></div>";
+  }).join("");
+  var scoreHtml=m.scores.map(function(s,i){
+    var key=active+"-"+i;var isOpen=openScores[key];
+    return "<div class='score-row' onclick='toggleScore("+i+")'><div class='score-top'><span class='score-label'>"+s.l+" <span class='score-arrow'>"+(isOpen?"▲":"▼")+"</span></span><div class='score-bar-bg'><div class='score-bar' style='width:"+s.s*10+"%;background:"+barColor(s.s)+"'></div></div><span class='score-val'>"+s.s+"/10</span></div><div class='score-why "+(isOpen?"open":"")+"'>"+s.why+"</div></div>";
+  }).join("");
+  document.getElementById("detail").innerHTML="<div class='detail-card'><div class='detail-header'><div class='detail-name'>"+m.emoji+" "+m.name+"</div><div class='phase-badge' style='background:"+m.phaseColor+"'>"+m.phase+"</div></div>"+scoreHtml+"<div class='total-row'><span class='total-label'>Overall score</span><span class='total-val'>"+m.total+"/100</span></div></div><div class='rec-box' style='background:#fff7ed;border-left:4px solid "+m.phaseColor+"'><div class='rec-title' style='color:"+m.phaseColor+"'>Recommendation</div><div class='rec-body'>"+m.rec+"</div></div>";
+  var ca=document.getElementById("contacts-area");
+  if(m.contacts&&m.contacts.length>0){
+    var toggle="<div class='contacts-toggle "+(contactsOpen?"open":"")+"' onclick='contactsOpen=!contactsOpen;render()'><span>"+(contactsOpen?"Hide":"My network and targets in "+m.name)+"</span><span>"+(contactsOpen?"▲":"🔒")+"</span></div>";
+    var list=contactsOpen?"<div class='contacts-list'>"+m.contacts.map(function(c){return "<div>"+c+"</div>"}).join("")+"</div>":"";
+    ca.innerHTML=toggle+list;
+  }else{ca.innerHTML="";}
+  var sl=m.sources||[];
+  var srcHtml=sl.map(function(s){return "<div><a href='"+s[1]+"' target='_blank' style='color:#d84315;text-decoration:none'>"+s[0]+"</a></div>"}).join("");
+  document.getElementById("sources-list").innerHTML=srcHtml;
+  var sorted=markets.filter(function(x){return !x.ref}).sort(function(a,b){return b.total-a.total});
+  document.getElementById("ranking").innerHTML=sorted.map(function(mk,i){return "<div class='rank-card' onclick='selectCountry("+markets.indexOf(mk)+")'><div class='rank-pos'>#"+(i+1)+" "+mk.emoji+"</div><div class='rank-name'>"+mk.name+"</div><div class='rank-score'>"+mk.total+"/100</div></div>"}).join("");
 }
-function useOpenSet(key) {
-  const [, force] = useState(0);
-  if (!_open[key]) _open[key] = new Set();
-  const set = _open[key];
-  return {
-    isOpen: i => set.has(i),
-    toggle: i => {
-      set.has(i) ? set.delete(i) : set.add(i);
-      force(x => x + 1);
-    }
-  };
+function refreshSources(){var b=document.getElementById("refreshBtn");var t=b.textContent;b.textContent="Refreshed";render();setTimeout(function(){b.textContent=t;},1200);}
+
+var phases = [
+  {title:"Phase 1: Land the Benelux and the UK (Months 1 to 6)",color:"#2e7d32",
+   items:["Master the JAGGAER source to pay story and where we beat SAP Ariba, Coupa, Ivalua and GEP on direct materials and manufacturing depth, and watch Zip and Oro on the intake and orchestration angle","Build the named account list across the Benelux and the UK in Bob's ICP: oil and gas, energy, utilities, banking, discrete manufacturing and public sector, Fortune 100 to 500","Activate my network: Benelux through ten years in Amsterdam and fluent Dutch, with Unilever, Damen, Euroclear and Brussels Airport, and the UK through GSK, Barclays, Vodafone and Lonza","Lead with compelling events: the SAP Ariba replacement cycle, EU CSDDD, and LkSG for German headquartered multinationals operating in my region","Use Zeiss and Continental as JAGGAER manufacturing references, and target the buying committee: CPO, COO, CFO, VP Supply Chain and VP Procurement","Pipeline target: three times quota coverage building within ninety days, with a weekly cadence with Bob on pipeline, learnings and competitive intelligence"]},
+  {title:"Phase 2: First wins and open the Nordics (Months 6 to 12)",color:"#0277bd",
+   items:["Close one to two flagship deals in the Benelux and the UK to anchor the patch","Open the Nordics on the back of that proof, leading with sustainability driven procurement and high digital adoption: Equinor, Orsted, Volvo, Ericsson, Maersk, Nordea and Novo Nordisk","Build joint selling motions with the advisory and integrator ecosystem (Deloitte, PwC, EY, KPMG, Accenture, Capgemini)","Quantify value in every deal: faster sourcing cycles, faster invoice processing, more spend under management, strategic category management and AI embedded procurement","Coordinate with the DACH AE to reach the Northern Europe operations and spend of German and Swiss headquartered groups"]},
+  {title:"Phase 3: Systematise the patch (Months 12 to 18)",color:"#6a1b9a",
+   items:["Reach a run rate of three to five strategic deals per year","Land and expand inside won logos: add supplier management, contracts, quality and analytics modules to grow annual contract value","Build a repeatable enterprise playbook: clear ICP, MEDDICC qualification, a value framework and mutual close plans mapped to CPO, COO, CFO, VP Supply Chain and VP Procurement","Deepen the partner ecosystem so partners generate a growing share of qualified pipeline","Begin opportunistic France motions through partners and English speaking global procurement teams"]},
+  {title:"Phase 4: Regional leadership (Months 18 to 36)",color:"#c62828",
+   items:["Become the reference Strategic AE for Northern Europe source to pay","Grow annual contract value through multi year, multi module enterprise agreements and consistent quota overachievement","Enter France opportunistically through partners and inbound, accepting that Ivalua is strong on home turf and French language and local presence are needed to do it properly","Move toward player coach: feed competitive intelligence to Bob and marketing, and help onboard newer AEs into the Northern Europe motion","Vision: Northern Europe becomes one of JAGGAER's strongest regions within three years"]}
+];
+var openPhase = {};
+function togglePhase(i){openPhase[i]=!openPhase[i];renderGrowth()}
+function renderGrowth(){
+  document.getElementById("growth").innerHTML=phases.map(function(p,i){
+    var isOpen=openPhase[i];
+    return "<div style='border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;margin-bottom:8px;cursor:pointer' onclick='togglePhase("+i+")'>" +
+      "<div style='padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:"+(isOpen?p.color:"#f7fafc")+";color:"+(isOpen?"#fff":"#2d3748")+"'>" +
+      "<span style='font-weight:700;font-size:15px'>"+p.title+"</span>" +
+      "<span style='font-size:14px'>"+(isOpen?"▲":"▼")+"</span></div>" +
+      (isOpen?"<div style='padding:14px 16px;background:#fff;border-top:1px solid #e2e8f0'>" +
+      p.items.map(function(item){return "<div style='font-size:13px;color:#4a5568;padding:4px 0;line-height:1.6'>• "+item+"</div>"}).join("") +
+      "</div>":"") + "</div>";
+  }).join("");
 }
-const SECTIONS = {
-  now: {
-    icon: "▶",
-    label: "NOW",
-    color: "#c62828"
-  },
-  timeline: {
-    icon: "🗺️",
-    label: "Timeline",
-    color: "#00695c"
-  },
-  numbers: {
-    icon: "🔢",
-    label: "Numbers",
-    color: "#01579b"
-  },
-  open: {
-    icon: "⚠️",
-    label: "Open Items",
-    color: "#e65100"
-  },
-  roleplay: {
-    icon: "🎭",
-    label: "Role Play",
-    color: "#ad1457"
-  },
-  dealrev: {
-    icon: "📊",
-    label: "Deal Review",
-    color: "#6a1b9a"
-  },
-  role: {
-    icon: "💼",
-    label: "Role & Comp",
-    color: "#2e7d32"
-  },
-  territory: {
-    icon: "🌍",
-    label: "Territory",
-    color: "#0e7490"
-  },
-  bob: {
-    icon: "🎯",
-    label: "Bob Intel",
-    color: "#37474f"
-  },
-  company: {
-    icon: "🏢",
-    label: "Company",
-    color: "#0277bd"
-  }
-};
-const s = {
-  title: {
-    fontSize: 19,
-    fontWeight: 800,
-    letterSpacing: -0.3
-  },
-  card: {
-    background: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
-  },
-  dTitle: {
-    fontSize: 14,
-    fontWeight: 700
-  },
-  dText: {
-    fontSize: 14,
-    color: "#4a5568",
-    marginTop: 6,
-    lineHeight: 1.5
-  },
-  statGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 10
-  },
-  statCard: {
-    background: "#fff",
-    borderRadius: 12,
-    padding: 14,
-    textAlign: "center",
-    border: "1px solid #e2e8f0"
-  },
-  statVal: {
-    fontSize: 24,
-    fontWeight: 800
-  },
-  statLab: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "#718096",
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-    marginTop: 2
-  },
-  chip: {
-    background: "#fff",
-    border: "1px solid #e2e8f0",
-    borderRadius: 20,
-    padding: "6px 14px",
-    fontSize: 13,
-    color: "#2d3748",
-    fontWeight: 500
-  },
-  tip: {
-    background: "#fffde7",
-    borderRadius: 10,
-    padding: 14,
-    fontSize: 14,
-    color: "#795548",
-    border: "1px solid #fff9c4",
-    lineHeight: 1.5
-  }
-};
-const bullets = (arr, color) => arr.map((t, i) => React.createElement("div", {
-  key: i,
-  style: {
-    fontSize: 14,
-    color: color || "#33691e",
-    lineHeight: 1.55,
-    marginBottom: 6
-  }
-}, "• ", t));
-const Jump = ({
-  go,
-  to,
-  children
-}) => React.createElement("span", {
-  onClick: () => go(to),
-  style: {
-    color: "#0277bd",
-    fontWeight: 700,
-    cursor: "pointer",
-    textDecoration: "underline",
-    textUnderlineOffset: 2
-  }
-}, children);
-const BackTo = ({
-  go,
-  to,
-  label
-}) => React.createElement("div", {
-  onClick: () => go(to),
-  style: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    fontSize: 13,
-    fontWeight: 700,
-    color: "#0277bd",
-    cursor: "pointer",
-    marginBottom: 4
-  }
-}, "← ", label);
-const Now = ({
-  go
-}) => React.createElement("div", {
-  style: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 14
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.title,
-    color: "#c62828"
-  }
-}, "Where I am now"), React.createElement("div", {
-  style: {
-    borderRadius: 12,
-    padding: 16,
-    background: "linear-gradient(135deg,#0277bd,#01579b)",
-    color: "#fff"
-  }
-}, React.createElement("div", {
-  style: {
-    fontSize: 12,
-    fontWeight: 700,
-    opacity: 0.85,
-    letterSpacing: 1
-  }
-}, "FRONT RUNNER · JAGGAER confirmed"), React.createElement("div", {
-  style: {
-    fontSize: 22,
-    fontWeight: 800,
-    marginTop: 4
-  }
-}, "Tomorrow: Role Play with Bob"), React.createElement("div", {
-  style: {
-    fontSize: 14,
-    marginTop: 4,
-    opacity: 0.92
-  }
-}, "Fri 14 Aug · 75 min live discovery · scenario given on the spot, no prep by design")), React.createElement("div", {
-  style: {
-    display: "flex",
-    gap: 8,
-    flexWrap: "wrap"
-  }
-}, React.createElement(Jump, {
-  go: go,
-  to: "roleplay"
-}, "Role Play prep →"), React.createElement("span", {
-  style: {
-    color: "#cbd5e0"
-  }
-}, "·"), React.createElement(Jump, {
-  go: go,
-  to: "dealrev"
-}, "Deal Review (Wed) →"), React.createElement("span", {
-  style: {
-    color: "#cbd5e0"
-  }
-}, "·"), React.createElement(Jump, {
-  go: go,
-  to: "numbers"
-}, "Numbers →"), React.createElement("span", {
-  style: {
-    color: "#cbd5e0"
-  }
-}, "·"), React.createElement(Jump, {
-  go: go,
-  to: "bob"
-}, "Bob intel →"), React.createElement("span", {
-  style: {
-    color: "#cbd5e0"
-  }
-}, "·"), React.createElement(Jump, {
-  go: go,
-  to: "timeline"
-}, "Timeline →")), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #ad1457",
-    background: "#fce4ec"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#ad1457"
-  }
-}, "🎭 Tomorrow's role play — the one rule"), React.createElement("div", {
-  style: {
-    ...s.dText,
-    color: "#880e4f"
-  }
-}, "Scenario given live, no prep by design. Bob tests how you THINK, learn and adapt — not what you know. No product needed.", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", null, "INTERRUPT while he briefs"), " (Ernesto's tip). Pounce on the vague noun: \"invoicing where exactly?\" The universal three: how long a client & what do they have · who raised it & who owns it · why look NOW.", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", null, "Bob talks a lot"), " — his long runways are your opening. Steer, don't wait. Don't go quiet to be polite."), React.createElement("div", {
-  style: {
-    fontSize: 13,
-    marginTop: 8,
-    lineHeight: 1.9
-  }
-}, React.createElement(Jump, {
-  go: go,
-  to: "roleplay"
-}, "Open full Role Play prep + live capture →"), React.createElement("br", null), React.createElement("span", {
-  onClick: () => {
-    preOpen("rp", 11);
-    go("roleplay");
-  },
-  style: {
-    color: "#ad1457",
-    fontWeight: 700,
-    cursor: "pointer",
-    textDecoration: "underline",
-    textUnderlineOffset: 2
-  }
-}, "Jump to the playback / VSD script →"))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #01579b",
-    background: "#e1f5fe"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#01579b"
-  }
-}, "🔢 Numbers — say identically (on his transcript)"), React.createElement("div", {
-  style: {
-    ...s.dText,
-    color: "#01579b"
-  }
-}, React.createElement("strong", null, "$1.1M ACV"), " · 3-year term · ", React.createElement("strong", null, "~$800K services"), " (excluded from quota)", React.createElement("br", null), "Value case ", React.createElement("strong", null, "€8.8M ≈ $9.3M/yr"), " (2022 rate) · payback Q1 · signed Jan 2023", React.createElement("br", null), "FY25: ", React.createElement("strong", null, "$2.65M closed, 170%"), " of $1.6M quota · #1 DACH of 60")), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #6a1b9a"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#6a1b9a"
-  }
-}, "📊 Wed's deal review — the 5 slides (outcome-first)"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["1. The deal I won twice — $1.1M ACV, why it mattered", "2. Discovery — what I learned that I didn't know at the start", "3. Stakeholders & power — the room, and how I influenced it", "4. Nov 2022 — the deal nearly died, four moves to save it", "5. Outcome & self-critique — the honest miss + what I changed"], "#4a148c"))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #c62828",
-    background: "#fce4ec"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#c62828"
-  }
-}, "🎯 Wed's 3 hardest questions"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["$9.3M value on a $1.1M deal — own the multiple, it's built on THEIR numbers.", "If you ran it again? — multi-thread the incoming leadership orbit earlier.", "HR to procurement? — buyer changes, motion doesn't. Domain in 90 days."], "#880e4f"))), React.createElement("div", {
-  style: s.tip
-}, React.createElement("strong", null, "Carry into this round too:"), " equity/LTI, the £150K → total-package reframe, and reporting line. Not for the deck — raise in the final chat. ", React.createElement(Jump, {
-  go: go,
-  to: "open"
-}, "Open the Open Items tab →")), React.createElement("div", {
-  style: {
-    ...s.tip,
-    background: "#e8f5e9",
-    border: "1px solid #c8e6c9",
-    color: "#2e7d32"
-  }
-}, React.createElement("strong", null, "The run:"), " Fri 14 role play → Wed 19 deal review → Thu 20 final check → Fri 21 potential offer. This tab re-points to each meeting as you go."));
-const Timeline = ({
-  go
-}) => {
-  const stages = [{
-    d: "Done",
-    t: "Yasmine pre-call",
-    c: "#2e7d32",
-    note: "Recruiter screen, Gillespie Manners. Confirmed no procurement exp needed, base £130–250K, Europe-wide Strategic AE. Scored 7/10."
-  }, {
-    d: "Done",
-    t: "Jennifer HR screen (21 Jul)",
-    c: "#2e7d32",
-    note: "Passed, invited forward live. Four topics: new business, end-to-end, deal sizes, attainment. £150K base + 1mo notice logged."
-  }, {
-    d: "Done",
-    t: "OMG assessment (28 Jul)",
-    c: "#2e7d32",
-    note: "Sales candidate assessment, passed. Feedback back within hours: front runner."
-  }, {
-    d: "Done",
-    t: "1st conversation with Bob (7 Aug)",
-    c: "#2e7d32",
-    note: "SVP Sales Europe. Went deep on numbers & method. He sold to you the last 20 min. Confirmed: role is Northern Europe (UK/Benelux/Nordics), NOT DACH."
-  }, {
-    d: "TOMORROW",
-    t: "Role Play with Bob (Fri 14 Aug)",
-    c: "#c62828",
-    note: "75 min live discovery. Scenario on the spot, no prep. Interrupt, dig, run disciplined discovery. See NOW tab."
-  }, {
-    d: "Wed 19",
-    t: "Deal Review with Bob",
-    c: "#e65100",
-    note: "Siemens Healthineers 5-slide deck, ~20 min present + 20 Q&A."
-  }, {
-    d: "Thu 20",
-    t: "Final check",
-    c: "#e65100",
-    note: "Short, with Bob or a peer. Finalise fit."
-  }, {
-    d: "Fri 21",
-    t: "Potential offer",
-    c: "#e65100",
-    note: "If all land. Your decision date vs other offers."
-  }];
-  return React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 12
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.title,
-      color: "#00695c"
-    }
-  }, "The whole journey, in order"), stages.map((x, i) => React.createElement("div", {
-    key: i,
-    style: {
-      ...s.card,
-      borderLeft: `4px solid ${x.c}`
-    }
-  }, React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700,
-      color: x.c
-    }
-  }, x.t), React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 700,
-      color: "#fff",
-      background: x.c,
-      padding: "2px 10px",
-      borderRadius: 10
-    }
-  }, x.d)), React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "#4a5568",
-      marginTop: 6,
-      lineHeight: 1.5
-    }
-  }, x.note))), React.createElement("div", {
-    style: s.tip
-  }, React.createElement("strong", null, "Recruiters:"), " Yasmine (lead, was on leave) · Federica (covering) · Ernesto (JAGGAER internal TA, works with Bob). Jennifer ran the HR screen."), React.createElement("div", {
-    style: {
-      fontSize: 13
-    }
-  }, React.createElement(Jump, {
-    go: go,
-    to: "bob"
-  }, "See the full Bob conversation detail →")));
-};
-const Numbers = ({
-  go
-}) => React.createElement("div", {
-  style: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 14
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.title,
-    color: "#01579b"
-  }
-}, "The Numbers — locked & consistent"), React.createElement(BackTo, {
-  go: go,
-  to: "now",
-  label: "Back to NOW"
-}), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #01579b"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#01579b"
-  }
-}, "Siemens Healthineers deal (the deal review deal)"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["$1.1M ACV new business · 3-year term (~$3.3M TCV) · plus ~$800K services", "Services excluded from my quota number — say this, it shows discipline", "Value case: €8.8M ≈ $9.3M/yr (2022 rate, near parity) · payback Q1", "€5.79M process efficiency + €1.39M agency reduction, all their numbers", "631% ROI year one, 804% over three years · signed Jan 2023"], "#01579b"))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #2e7d32"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#2e7d32"
-  }
-}, "My track record (as told to Yasmine, Jennifer & Bob)"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["FY25: $2.65M closed, 170% of target, #1 DACH of 60 globally", "Quota progression: $1.3M → $1.5M → $1.6M, hit every year", "Average deal $500K–$700K, expansions past $2M, 3–5 deals/year", "VMware AirWatch: DACH from zero, 250%, President's Club", "Apple: 150%, worldwide achievement award (Benelux market)"]))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #6a1b9a",
-    background: "#f3e5f5"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#6a1b9a"
-  }
-}, "Their scale numbers (Siemens, from their RFP)"), React.createElement("div", {
-  style: {
-    ...s.dText,
-    color: "#4a148c"
-  }
-}, "13,000 hires/yr · ~150 recruiters · 98-day time-to-fill · 500 agency hires/yr. These are the basis of the value case — built ", React.createElement("em", null, "with"), " them, not ", React.createElement("em", null, "at"), " them.")), React.createElement("div", {
-  style: s.tip
-}, React.createElement("strong", null, "On a recorded call:"), " these must match the role-play transcript word for word. Verify $1.1M / €8.8M / ~$800K out loud before Wed."));
-const OpenItems = ({
-  go
-}) => React.createElement("div", {
-  style: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 12
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.title,
-    color: "#e65100"
-  }
-}, "Open items — don't let these slip"), React.createElement(BackTo, {
-  go: go,
-  to: "now",
-  label: "Back to NOW"
-}), [{
-  t: "Equity / LTI",
-  c: "#c62828",
-  note: "Untouched since Jennifer. Federica digging out the answer. Vista-owned, so ask how equity works under PE. Raise in the final chat."
-}, {
-  t: "The £150K base",
-  c: "#c62828",
-  note: "Logged low by Jennifer against a £130–250K range for a Sales Director-level seat. Reframe to TOTAL PACKAGE, do not re-confirm 150."
-}, {
-  t: "Reporting line",
-  c: "#e65100",
-  note: "To Bob directly, or into the VP for UK/Nordics/Benelux? Bob mentioned that VP as a possible interviewer. Confirm."
-}, {
-  t: "Team attainment",
-  c: "#e65100",
-  note: "What % of AEs hit quota in Europe last year, and what separated the top performers? Ask Bob."
-}, {
-  t: "Process length after Wed",
-  c: "#0277bd",
-  note: "Confirmed: Thu final chat → Fri offer. Watch this vs your other offers landing this week."
-}].map((x, i) => React.createElement("div", {
-  key: i,
-  style: {
-    ...s.card,
-    borderLeft: `4px solid ${x.c}`
-  }
-}, React.createElement("div", {
-  style: {
-    fontSize: 15,
-    fontWeight: 700,
-    color: x.c
-  }
-}, x.t), React.createElement("div", {
-  style: {
-    fontSize: 13,
-    color: "#4a5568",
-    marginTop: 5,
-    lineHeight: 1.5
-  }
-}, x.note))));
-const RolePlay = ({
-  go
-}) => {
-  const {
-    isOpen,
-    toggle
-  } = useOpenSet("rp");
-  const [cap, setCap] = useState({
-    problem: "",
-    cost: "",
-    power: "",
-    success: ""
-  });
-  const [flash, setFlash] = useState(false);
-  const boxes = [{
-    key: "problem",
-    label: "PROBLEM",
-    hint: "What hurts, their words",
-    color: "#c62828",
-    bg: "#ffebee"
-  }, {
-    key: "cost",
-    label: "COST / NUMBER",
-    hint: "Time, money, risk",
-    color: "#e65100",
-    bg: "#fff3e0"
-  }, {
-    key: "power",
-    label: "POWER",
-    hint: "Who owns / signs",
-    color: "#4a148c",
-    bg: "#f3e5f5"
-  }, {
-    key: "success",
-    label: "SUCCESS",
-    hint: "12-mo win",
-    color: "#2e7d32",
-    bg: "#f1f8e9"
-  }];
-  const playback = () => {
-    const p = [];
-    if (cap.problem) p.push("your number one problem is " + cap.problem);
-    if (cap.cost) p.push("it is costing you roughly " + cap.cost);
-    if (cap.power) p.push("the person who owns it is " + cap.power);
-    if (cap.success) p.push("and success in twelve months looks like " + cap.success);
-    return p.length ? "Let me make sure I have this right before we go further. " + p.join(", ") + ". Have I got that right, or is there anything you would change?" : "Fill the four boxes and your playback line builds here.";
-  };
-  const scripts = [["1. Opening frame", "\"Before I dive in, let me tell you how I run a first conversation. I won't pitch you today. I want to understand your business, because I can't help you until I know where it hurts. So I'll ask a lot of questions — stop me if I head the wrong way.\""], ["2. Current state", "\"Walk me through how a purchase happens today, from someone needing something to the supplier being paid. Where does it break? And is procurement central, or does each unit buy its own way?\""], ["3. The hypersell", "\"I look for the one area where I can prove value fastest. Which part of the organisation feels the most pain right now? If we solved one thing in 90 days that made you look good, what would it be?\""], ["4. Quantify + business case (in their numbers)", "\"Rank your three biggest pains — what's number one and why? What does it cost you today, in time, margin or risk? How did you get that figure? I only build a case on your numbers, never my assumptions — so whatever I bring back is yours.\""], ["5. Why now (the compelling event)", "The trigger question. Bob will check whether you dig for it.\n\nSAY: \"Help me understand the timing — why are you looking at this now rather than last year or next? Is there a deadline, an audit, a board mandate, a contract ending? And what happens if nothing changes in the next twelve months?\""], ["6. Reason to care (Challenger reframe)", "\"Let me challenge that. If we save you 15k and the solution costs 100k, your CFO won't care — I'd rather surface that now. And from what you've said, the real cost may sit over here, not where you first pointed. What would have to be true for this to be worth a seven-figure investment?\""], ["7. Pull back when they lean in", "When they get keen, lean back — makes them sell you, proves it's real.\n\nSAY: \"Before we get ahead of ourselves — this might not even be the right fit, and I'd rather find that out now than waste your time. How much of a priority is this really, against everything else on your plate?\""], ["8. Winning position (what does success mean to YOU)", "\"What would make this a genuine success for you? What are you actually trying to achieve? Let's get clear on what 'good' looks like, so later it's obvious whether something meets the bar or not.\""], ["9. Access to power (MEDDPICC spine)", "\"Who owns this decision? Who signs, who loses if it fails? Help me understand how a decision like this really gets made here, and who'd champion it if it stalled. I wouldn't put a proposal together without the economic buyer in a workshop — no access to power tells me whether this is real.\""], ["10. Personal win", "\"What does a successful project mean for you personally this year? If I understand what makes you look good, I can help you get there. And when I'm stuck reaching someone — how would you get to them?\""], ["11. Joint success plan (build it together)", "\"Let's build a plan together to actually get you to that success — what would the steps look like, on your side and mine, and who'd need to be involved? I want to bring you to the outcome, not just hand you a tool.\""], ["12. Playback = the VSD (closer)", "This IS Bob's VSD, done live. Unprompted.\n\nSAY: \"Let me play that back. Problem X, costing Y, owned by Z, success looks like this. Right? Anything you'd change?\""]];
-  const frameworks = [["Business case in their numbers", "SHOW it: refuse assumptions, ask for their figures.\n\nSAY: \"I don't want to build you a case on my assumptions. Can you help me with your actual figures — what's this costing you today, and where does that number come from? That way whatever I bring back is yours, not mine.\""], ["Winning position", "SHOW it: get them to agree the decision criteria out loud.\n\nSAY: \"If you were choosing between a few options here, what would actually make the difference for you? Let's agree what 'good' looks like now, so later it's clear whether something meets the bar.\""], ["Joint success plan", "SHOW it: co-own the next steps.\n\nSAY: \"Say we did decide this is worth pursuing — what would the next steps look like, on your side and mine? Who'd need to be involved, and by when?\""], ["MEDDPICC (question spine)", "SHOW it: cover the elements, never say the acronym.\n\nSAY: \"Help me understand a few things: how you'd measure success, who owns the budget, how a decision like this actually gets made here, and who inside would champion it if it stalled.\""], ["Pull back when they lean in (strip-line)", "SHOW it: when they get keen, lean back — makes them sell you, proves it's real.\n\nSAY: \"Before we get ahead of ourselves — this might not even be the right fit, and I'd rather find that out now than waste your time. How much of a priority is this really, against everything else on your plate?\""], ["Challenger reframe", "SHOW it: push back when they're anchored on the wrong problem.\n\nSAY: \"Can I push back gently? You've framed this as an X problem, but from what you've told me the real cost is over here in Y. If that's right, fixing the first thing wouldn't move the needle much — should we be looking at the bigger one?\""]];
-  return React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 12
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.title,
-      color: "#ad1457"
-    }
-  }, "Role Play prep (live discovery)"), React.createElement(BackTo, {
-    go: go,
-    to: "now",
-    label: "Back to NOW"
-  }), React.createElement("div", {
-    style: {
-      borderRadius: 12,
-      padding: 14,
-      background: "linear-gradient(135deg,#fce4ec,#f3e5f5)",
-      fontSize: 13,
-      color: "#4a5568",
-      lineHeight: 1.5
-    }
-  }, "Scenario given live on the spot, no prep by design. They test how you think, learn and adapt. No product needed. You may get coaching mid-call — absorb it visibly."), React.createElement("div", {
-    style: {
-      ...s.card,
-      borderLeft: "4px solid #c62828",
-      background: "#ffebee"
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.dTitle,
-      color: "#c62828"
-    }
-  }, "⚡ Ernesto's tip: INTERRUPT"), React.createElement("div", {
-    style: {
-      ...s.dText,
-      color: "#880e4f"
-    }
-  }, "Interrupt Bob WHILE he briefs. Don't wait politely. Pounce on the vague noun. React to his actual word — the win is him saying \"invoicing\" and you cutting in \"invoicing where?\" before he finishes. Two or three sharp digs, not a barrage."), React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "#880e4f",
-      lineHeight: 1.75,
-      marginTop: 10
-    }
-  }, React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "He says a client/company →"), React.createElement("br", null), "\"Sorry to jump in — how long have they been with us, brand new or years in?\"", React.createElement("br", null), "\"Before you go on, what do they run today, ours or a rival?\"", React.createElement("br", null), "\"Quick one — how big are we talking, revenue, sites, headcount?\"", React.createElement("br", null), "\"And are they single-market or global? Where does the buying actually sit?\"", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "\"They have a problem with X\" →"), React.createElement("br", null), "\"Can I stop you there — a problem for whom, the buyers, suppliers, finance?\"", React.createElement("br", null), "\"When you say X, is that speed, cost, accuracy or compliance?\"", React.createElement("br", null), "\"Is this new, or something they've limped along with for years?\"", React.createElement("br", null), "\"And how are they coping today — a workaround, manual, a rival tool?\"", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "\"They want to improve / transform\" →"), React.createElement("br", null), "\"Let me pause you — what does good actually look like, and how would they measure it?\"", React.createElement("br", null), "\"Is this a nice-to-have, or is something forcing their hand?\"", React.createElement("br", null), "\"Have they tried to fix this before? What happened?\"", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "A stakeholder / sponsor →"), React.createElement("br", null), "\"Mind if I pull on that — what's their role, and do they actually own this decision?\"", React.createElement("br", null), "\"Who signs the cheque here?\"", React.createElement("br", null), "\"Who loses most if it fails? That tells me who really cares.\"", React.createElement("br", null), "\"Do we have access to the economic buyer, or am I stuck with a project team?\"", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "A number (spend / volume) →"), React.createElement("br", null), "\"Hold that thought — is that their figure, or our estimate?\"", React.createElement("br", null), "\"Is that growing, flat, or under pressure right now?\"", React.createElement("br", null), "\"And what's that costing them today if nothing changes?\"", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "A timeline / deadline →"), React.createElement("br", null), "\"Quick one while it's fresh — what's driving that date, a contract end, audit, board mandate?\"", React.createElement("br", null), "\"And what happens to them if they miss it?\"", React.createElement("br", null), React.createElement("br", null), React.createElement("strong", {
-    style: {
-      color: "#c62828"
-    }
-  }, "Reset-control power moves →"), React.createElement("br", null), "\"Before we go further — what does success look like for them, in their words?\"", React.createElement("br", null), "\"Help me understand the 'why now' — what changed?\"", React.createElement("br", null), "\"Who's the one person who has to say yes for this to happen?\""), React.createElement("div", {
-    style: {
-      marginTop: 10,
-      padding: "8px 10px",
-      background: "#fff",
-      borderRadius: 8,
-      border: "1px dashed #ef9a9a",
-      fontSize: 13,
-      color: "#c62828",
-      fontWeight: 700,
-      lineHeight: 1.6
-    }
-  }, "The four you'll always want: (1) who owns it & who signs? (2) what's it costing today? (3) why look NOW? (4) what does success look like in 12 months?")), React.createElement("div", {
-    style: {
-      ...s.card,
-      borderLeft: "4px solid #2e7d32",
-      background: "#e8f5e9"
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.dTitle,
-      color: "#2e7d32"
-    }
-  }, "Bob talks a lot — use it"), React.createElement("div", {
-    style: {
-      ...s.dText,
-      color: "#33691e"
-    }
-  }, "His long runways are your opening to interrupt. Steer, don't wait: \"that's helpful — can I pull one thread?\" The catch: don't go quiet to be polite. The more he talks, the more you dig.")), React.createElement("div", {
-    style: {
-      ...s.card,
-      border: "2px solid #ad1457"
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 800,
-      color: "#ad1457",
-      marginBottom: 8
-    }
-  }, "🎙️ Live Capture"), React.createElement("div", {
-    style: s.statGrid
-  }, boxes.map(b => React.createElement("div", {
-    key: b.key,
-    style: {
-      background: b.bg,
-      borderRadius: 10,
-      padding: 10,
-      border: "1px solid #e2e8f0"
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 800,
-      color: b.color
-    }
-  }, b.label), React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: "#a0aec0",
-      marginBottom: 4
-    }
-  }, b.hint), React.createElement("textarea", {
-    value: cap[b.key],
-    onChange: e => setCap({
-      ...cap,
-      [b.key]: e.target.value
-    }),
-    style: {
-      width: "100%",
-      minHeight: 56,
-      border: "none",
-      background: "transparent",
-      fontSize: 14,
-      fontFamily: "inherit",
-      color: "#2d3748",
-      resize: "vertical",
-      outline: "none",
-      boxSizing: "border-box"
-    }
-  })))), React.createElement("div", {
-    style: {
-      marginTop: 10,
-      background: "#fafafa",
-      borderRadius: 10,
-      padding: 12,
-      border: "1px dashed #ce93d8"
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 800,
-      color: "#ad1457",
-      marginBottom: 5
-    }
-  }, "▶ PLAYBACK LINE"), React.createElement("div", {
-    style: {
-      fontSize: 14,
-      color: "#2d3748",
-      fontStyle: "italic",
-      lineHeight: 1.55
-    }
-  }, playback()), React.createElement("div", {
-    onClick: () => {
-      navigator.clipboard?.writeText(playback());
-      setFlash(true);
-      setTimeout(() => setFlash(false), 1500);
-    },
-    style: {
-      marginTop: 8,
-      display: "inline-block",
-      background: flash ? "#2e7d32" : "#ad1457",
-      color: "#fff",
-      padding: "6px 13px",
-      borderRadius: 8,
-      fontSize: 12,
-      fontWeight: 700,
-      cursor: "pointer"
-    }
-  }, flash ? "✓ Copied" : "Copy"))), React.createElement("div", {
-    style: {
-      ...s.card,
-      borderLeft: "4px solid #37474f",
-      background: "#eceff1"
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.dTitle,
-      color: "#37474f"
-    }
-  }, "🧭 All Bob's frameworks are woven into the flow below"), React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "#455a64",
-      lineHeight: 1.6,
-      marginTop: 4
-    }
-  }, "Business case (4) · Why now (5) · Challenger (6) · Pull back (7) · Winning position (8) · MEDDPICC (9) · Joint success plan (11) · VSD playback (12). Show them as behaviour; save the actual words for Wed's deal review. Pull back and Challenger are the senior moves — use one of each.")), React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700,
-      color: "#ad1457"
-    }
-  }, "Discovery scripts (tap)"), (() => {
-    const stepC = ["#37474f", "#0277bd", "#00838f", "#00695c", "#f57f17", "#c62828", "#e65100", "#6a1b9a", "#4a148c", "#ad1457", "#2e7d32", "#1565c0"];
-    return scripts.map((r, i) => {
-      const c = stepC[i % stepC.length];
-      return React.createElement("div", {
-        key: i,
-        id: "rp-s" + (i + 1),
-        style: {
-          borderRadius: 12,
-          overflow: "hidden",
-          border: "1px solid #e2e8f0",
-          borderLeft: "5px solid " + c
-        }
-      }, React.createElement("div", {
-        onClick: () => toggle(i),
-        style: {
-          padding: "12px 14px",
-          display: "flex",
-          justifyContent: "space-between",
-          background: isOpen(i) ? c : "#f7fafc",
-          color: isOpen(i) ? "#fff" : c,
-          cursor: "pointer",
-          fontSize: 14,
-          fontWeight: 700
-        }
-      }, React.createElement("span", null, r[0]), React.createElement("span", null, isOpen(i) ? "▲" : "▼")), isOpen(i) && React.createElement("div", {
-        style: {
-          padding: "12px 14px",
-          fontSize: 14,
-          color: "#4a5568",
-          background: "#fff",
-          borderTop: "1px solid #e2e8f0",
-          lineHeight: 1.6
-        }
-      }, r[1]));
-    });
-  })());
-};
-const DealReview = ({
-  go
-}) => {
-  const {
-    isOpen,
-    toggle
-  } = useOpenSet("dr");
-  const slides = [["1. The deal & why it mattered", "2-3 min exec summary. $1.1M ACV, why you believed it was real. Siemens carve-out from Siemens global + $16bn Varian acquisition made HR rebuild urgent."], ["2. Qualification, discovery & pain", "How your understanding evolved: TA point solution → carve-out → record-vs-experience gap → Varian made it urgent. State what you learned that you didn't know at the start."], ["3. Stakeholders, power & strategy", "The room: Board (CHRO economic buyer), gatekeepers, regional talent leadership, delivery layer. Multi-threaded, live workshops, value case in their numbers, security & works council up front."], ["4. Negotiation & closing", "Nov 2022: new leader took ownership, deal nearly died. Four moves: new deal / re-sold vision / kept committee warm / fresh deadline. Never discounted, competed on depth. Signed Jan 2023, wider scope."], ["5. Outcome, lessons & self-critique", "Outcome: multi-year global platform, wave 1 US/Canada/Varian. The honest miss: didn't multi-thread the incoming leadership orbit. Now: no RFP without access to power + the hypersell."]];
-  const qa = [["$9.3M value on a $1.1M deal — high?", "Annual value vs annual licence cost. Strong multiple because the pain was expensive: agency spend + 98-day fill on 13,000 roles. Every figure is theirs; payback Q1."], ["3 years to close — too slow?", "Strategic platform decision through carve-out, migration, $16bn acquisition. The timeline was theirs, not drift. Lesson since: force a compelling event earlier where one exists."], ["Who was the economic buyer?", "The CHRO — board sponsor, owned mandate and budget. Tested it by requiring her in an executive exchange before workshops. No access to power, no deal."], ["What did you concede vs refuse?", "Conceded: their paper, EU hosting clauses, their timeline where it kept pace. Refused: discounting to win, and skipping access to power. Competed on depth."], ["How did you forecast it in November?", "Had been commit for year-end; the leadership change is the risk I under-weighted. Moved it out rather than sandbag, re-qualified from the top, re-forecast to Q1."], ["Run it again — one change?", "Multi-thread the incoming-leadership orbit far earlier. A $1.1M deal shouldn't hinge on one arrival. I now map sponsor tenure and succession risk in qualification."], ["HR tech → procurement?", "Buyer changes, motion doesn't: Fortune-scale, multi-stakeholder, C-suite, ROI in their numbers. Domain in 90 days; the selling took 15 years and I have it."]];
-  return React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 12
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.title,
-      color: "#6a1b9a"
-    }
-  }, "Deal Review prep (Siemens Healthineers)"), React.createElement(BackTo, {
-    go: go,
-    to: "now",
-    label: "Back to NOW"
-  }), React.createElement("div", {
-    style: {
-      borderRadius: 12,
-      padding: 14,
-      background: "#f3e5f5",
-      fontSize: 13,
-      color: "#4a148c",
-      lineHeight: 1.5
-    }
-  }, "4-5 slides, 20 min present + 20 Q&A. Deck is a separate file. Present outcome-first, ~30-45s a slide, let Bob pull detail. Names verbal only (recorded call)."), React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700,
-      color: "#6a1b9a"
-    }
-  }, "The 5 slides (tap)"), slides.map((r, i) => React.createElement("div", {
-    key: i,
-    style: {
-      borderRadius: 12,
-      overflow: "hidden",
-      border: "1px solid #e2e8f0"
-    }
-  }, React.createElement("div", {
-    onClick: () => toggle("s" + i),
-    style: {
-      padding: "12px 14px",
-      display: "flex",
-      justifyContent: "space-between",
-      background: isOpen("s" + i) ? "#6a1b9a" : "#f7fafc",
-      color: isOpen("s" + i) ? "#fff" : "#2d3748",
-      cursor: "pointer",
-      fontSize: 14,
-      fontWeight: 700
-    }
-  }, React.createElement("span", null, r[0]), React.createElement("span", null, isOpen("s" + i) ? "▲" : "▼")), isOpen("s" + i) && React.createElement("div", {
-    style: {
-      padding: "12px 14px",
-      fontSize: 14,
-      color: "#4a5568",
-      background: "#fff",
-      borderTop: "1px solid #e2e8f0",
-      lineHeight: 1.6
-    }
-  }, r[1]))), React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700,
-      color: "#6a1b9a",
-      marginTop: 6
-    }
-  }, "Hardest Q&A (tap)"), qa.map((r, i) => React.createElement("div", {
-    key: i,
-    style: {
-      borderRadius: 12,
-      overflow: "hidden",
-      border: "1px solid #e2e8f0"
-    }
-  }, React.createElement("div", {
-    onClick: () => toggle("q" + i),
-    style: {
-      padding: "12px 14px",
-      display: "flex",
-      justifyContent: "space-between",
-      background: isOpen("q" + i) ? "#c62828" : "#f7fafc",
-      color: isOpen("q" + i) ? "#fff" : "#2d3748",
-      cursor: "pointer",
-      fontSize: 14,
-      fontWeight: 700
-    }
-  }, React.createElement("span", {
-    style: {
-      flex: 1
-    }
-  }, "Q: ", r[0]), React.createElement("span", null, isOpen("q" + i) ? "▲" : "▼")), isOpen("q" + i) && React.createElement("div", {
-    style: {
-      padding: "12px 14px",
-      fontSize: 14,
-      color: "#4a5568",
-      background: "#fafafa",
-      borderTop: "1px solid #e2e8f0",
-      lineHeight: 1.6
-    }
-  }, r[1]))));
-};
-const RoleComp = ({
-  go
-}) => React.createElement("div", {
-  style: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 14
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.title,
-    color: "#2e7d32"
-  }
-}, "Strategic Account Executive — Northern Europe"), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #2e7d32",
-    background: "#e8f5e9"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dText,
-    color: "#33691e",
-    marginTop: 0
-  }
-}, React.createElement("strong", null, "Key shift from the Bob call:"), " this is NOT the DACH seat (already filled by a manufacturing/auto specialist). Bob is hiring for UK, Benelux, Nordics + some France. Benelux is underserved — your Apple Benelux history, 10 Amsterdam years and fluent Dutch are now central.")), React.createElement("div", {
-  style: s.statGrid
-}, [{
-  v: "~£1.5M",
-  l: "Quota after ramp"
-}, {
-  v: "3–5",
-  l: "Strategic deals/yr"
-}, {
-  v: "£130–250K",
-  l: "Base range"
-}, {
-  v: "2x OTE",
-  l: "Uncapped"
-}].map((x, i) => React.createElement("div", {
-  key: i,
-  style: s.statCard
-}, React.createElement("div", {
-  style: {
-    ...s.statVal,
-    color: "#2e7d32"
-  }
-}, x.v), React.createElement("div", {
-  style: s.statLab
-}, x.l)))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #2e7d32"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#2e7d32"
-  }
-}, "Confirmed"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["Strategic AE = Sales Director level. Very few across the company", "IC new-business hunter, greenfield, multi-country", "No procurement experience required — complex SaaS selling is enough", "Support: BDR, Solution Advisors, Pre-sales", "Bob O'Leary hiring manager: SVP Sales Europe, Dublin-based"]))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #37474f"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle
-  }
-}, "Bob's methodology (mirror it)"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["VSD (Value Summary Document) — play back, customer verifies", "Business case in their numbers, 3 pages, iterative", "Joint success plan — agreed steps & owners", "Winning position — what you do a rival can't, get them to align", "MEDDPICC to qualify · Sandler strip-line · Challenger reframe"], "#4a5568"))), React.createElement("div", {
-  style: s.tip
-}, React.createElement("strong", null, "Ownership:"), " Vista Equity (since 2024). CEO Andrew Roscoe. Billion-dollar acquisition mandate over 4 years, M&A already targeted. Growth = opportunity for top performers; Bob framed a 24-month \"what's next for Pascal\"."));
-const Territory = ({
-  go
-}) => {
-  const [active, setActive] = useState(0);
-  const markets = [{
-    name: "Benelux",
-    emoji: "🇳🇱",
-    phase: "Phase 1: my edge",
-    color: "#2e7d32",
-    total: 72,
-    detail: "Bob called it underserved. 10 yrs Amsterdam, fluent Dutch (covers Flanders), Dutch judiciary win at Apple. Shell, Unilever, Philips, ASML. Pragmatic buyers: show ROI, they move.",
-    rec: "Lead here. Language and network compress the entry curve."
-  }, {
-    name: "DACH",
-    emoji: "🇩🇪",
-    phase: "Phase 1: my logos",
-    color: "#2e7d32",
-    total: 80,
-    detail: "Largest source to pay market in Europe. Zeiss and Continental are already JAGGAER customers. Siemens, BMW, BASF, Bayer, Bosch and ThyssenKrupp are prime targets. I closed Siemens Healthineers, BMW, Adidas and DHL here.",
-    rec: "Run parallel with Benelux. My manufacturing and automotive logos open procurement doors."
-  }, {
-    name: "France",
-    emoji: "🇫🇷",
-    phase: "Phase 2",
-    color: "#e65100",
-    total: 60,
-    detail: "Bob mentioned some work in France. Large enterprise base, needs local presence and language. Opportunistic rather than core.",
-    rec: "Opportunistic. Follow strong inbound."
-  }, {
-    name: "UK",
-    emoji: "🇬🇧",
-    phase: "Covered by 2nd AE",
-    color: "#90a4ae",
-    total: 82,
-    detail: "Now owned by the second Strategic AE (UK and Ireland). Strong market, FTSE 100 and mature procurement, but not my patch. Useful for JAGGAER references only.",
-    rec: "Not my territory. Coordinate, do not compete."
-  }, {
-    name: "Nordics",
-    emoji: "🇸🇪",
-    phase: "Covered by 2nd AE",
-    color: "#90a4ae",
-    total: 74,
-    detail: "Now owned by the second Strategic AE. Ericsson, Volvo, Maersk, Novo Nordisk. High digital adoption but not my patch.",
-    rec: "Not my territory. Coordinate, do not compete."
-  }];
-  const m = markets[active];
-  return React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 12
-    }
-  }, React.createElement("div", {
-    style: {
-      ...s.title,
-      color: "#0e7490"
-    }
-  }, "Northern Europe territory"), React.createElement("div", {
-    style: {
-      borderRadius: 12,
-      padding: 14,
-      background: "linear-gradient(135deg,#ecfeff,#f5f3ff)",
-      fontSize: 13,
-      color: "#4a5568",
-      lineHeight: 1.5
-    }
-  }, "Updated after the Bob call and the second Strategic AE hire: JAGGAER has now filled the UK and Ireland and Nordics territory, so this plan focuses on my patch. Benelux and DACH lead, France opportunistic. UK and Nordics are shown for reference only."), React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 6,
-      overflowX: "auto"
-    }
-  }, markets.map((mk, i) => React.createElement("div", {
-    key: i,
-    onClick: () => setActive(i),
-    style: {
-      padding: "8px 12px",
-      borderRadius: 8,
-      border: active === i ? "2px solid #0e7490" : "1px solid #e2e8f0",
-      background: active === i ? "#ecfeff" : "#fff",
-      cursor: "pointer",
-      textAlign: "center",
-      minWidth: 72
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 18
-    }
-  }, mk.emoji), React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 600,
-      color: active === i ? "#0e7490" : "#4a5568"
-    }
-  }, mk.name)))), React.createElement("div", {
-    style: {
-      ...s.card
-    }
-  }, React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 8
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 16,
-      fontWeight: 700
-    }
-  }, m.emoji, " ", m.name), React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 600,
-      color: "#fff",
-      background: m.color,
-      padding: "3px 10px",
-      borderRadius: 12
-    }
-  }, m.phase)), React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "#4a5568",
-      lineHeight: 1.55
-    }
-  }, m.detail), React.createElement("div", {
-    style: {
-      marginTop: 10,
-      background: "#ecfdf5",
-      borderRadius: 8,
-      padding: 10,
-      borderLeft: `4px solid ${m.color}`
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 13,
-      fontWeight: 700,
-      color: m.color
-    }
-  }, "Recommendation"), React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "#4a5568",
-      marginTop: 3
-    }
-  }, m.rec))), React.createElement("div", {
-    style: s.tip
-  }, React.createElement("strong", null, "ICP (from Bob):"), " oil & gas, energy, utilities, banking, discrete manufacturing, public sector. Competitors: SAP Ariba, Coupa, Ivalua, GEP; watch Zip & Oro on intake/orchestration."));
-};
-const BobIntel = ({
-  go
-}) => React.createElement("div", {
-  style: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 12
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.title,
-    color: "#37474f"
-  }
-}, "Bob O'Leary — read the man"), React.createElement(BackTo, {
-  go: go,
-  to: "now",
-  label: "Back to NOW"
-}), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #1565c0",
-    background: "#e3f2fd"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#1565c0"
-  }
-}, "🗣️ The 1st conversation (7 Aug) — what happened"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["One hour, went very well. He spent the last ~20 min selling the role to YOU — a strong buying signal.", "Drilled the numbers live and did the maths himself: the Siemens deal, $1.1M ACV, 170%, 3-5 deals. It all held under cross-examination.", "THE BIG REVEAL: this is not the DACH seat. He has a DACH strategic AE already. He is hiring for Northern Europe — UK, Benelux, Nordics, some France. Benelux underserved.", "Walked you through his full deal methodology (VSD, business case, joint success plan, winning position, MEDDPICC/Sandler/Challenger).", "Vista ownership: CEO Andrew Roscoe, billion-dollar acquisition mandate over 4 years, framed a 24-month 'what is next for Pascal'.", "His close: 'it is not a fight, it is a dance.' You sent a LinkedIn note echoing it."], "#0d47a1")), React.createElement("div", {
-  style: {
-    fontSize: 13,
-    marginTop: 8
-  }
-}, React.createElement(Jump, {
-  go: go,
-  to: "role"
-}, "Role & Comp detail →"), "  ·  ", React.createElement(Jump, {
-  go: go,
-  to: "territory"
-}, "Territory plan →"))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #37474f"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle
-  }
-}, "Who he is"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["SVP Sales Europe, Dublin-based, summers in the Algarve. Married, 3 daughters.", "13 yrs Salesforce (9 roles), then 2.5 yrs GEP (JAGGAER competitor), now JAGGAER.", "Not from procurement — digital transformation & AI background, like you.", "Leads ~50 people, VPs per region (UK, France, Germany, Italy, Spain).", "Bridge between US leadership and the European team."], "#4a5568"))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #2e7d32"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#2e7d32"
-  }
-}, "What he scores (from Jen)"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["Strong discovery, executive credibility, disciplined qualification", "Challenger + value-based selling, business case in their numbers", "Judgment to qualify out with no compelling case", "Outcome first, then strategy. Concise answers."]))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #c62828",
-    background: "#fce4ec"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#c62828"
-  }
-}, "Candidate killers — avoid"), React.createElement("div", {
-  style: {
-    marginTop: 8
-  }
-}, bullets(["Vague deal numbers (why the numbers must match his transcript)", "Overly long answers", "Relationship selling with no discovery or commercial insight"], "#880e4f"))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #00695c",
-    background: "#e0f2f1"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#00695c"
-  }
-}, "Online, use one naturally"), React.createElement("div", {
-  style: {
-    ...s.dText,
-    color: "#004d40"
-  }
-}, "Betsson (Feb): praised collaboration \"from the very early stages\" — mirrors your blueprinting line. Daimler Truck (Jul, Vienna): JAGGAER One for indirect procurement. His ethos: \"it's a dance, not a fight.\"")));
-const Company = ({
-  go
-}) => React.createElement("div", {
-  style: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 14
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.title,
-    color: "#0277bd"
-  }
-}, "JAGGAER"), React.createElement("div", {
-  style: s.statGrid
-}, [{
-  v: "1995",
-  l: "Founded (ex-SciQuest)"
-}, {
-  v: "1,300+",
-  l: "Employees"
-}, {
-  v: "1,400+",
-  l: "Customers · $2.9T spend"
-}, {
-  v: "Vista EP",
-  l: "PE owner, 2024"
-}].map((x, i) => React.createElement("div", {
-  key: i,
-  style: s.statCard
-}, React.createElement("div", {
-  style: {
-    ...s.statVal,
-    color: "#0277bd"
-  }
-}, x.v), React.createElement("div", {
-  style: s.statLab
-}, x.l)))), React.createElement("div", {
-  style: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 8
-  }
-}, ["🏆 Gartner Visionary S2P", "📈 IDC MarketScape Leader", "🤖 AI across every module", "🌍 30+ yrs procurement"].map((c, i) => React.createElement("div", {
-  key: i,
-  style: s.chip
-}, c))), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #0277bd"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#0277bd"
-  }
-}, "What they sell"), React.createElement("div", {
-  style: s.dText
-}, "JAGGAER One: intelligent Source-to-Pay platform. 8 modules — Sourcing, Contracts, Spend, Category, eProcurement, Supply Chain Collaboration, Invoicing, Payments. Handles direct + indirect on one platform (their differentiator). Integrates SAP, Oracle, Workday.")), React.createElement("div", {
-  style: {
-    ...s.card,
-    borderLeft: "4px solid #e65100"
-  }
-}, React.createElement("div", {
-  style: {
-    ...s.dTitle,
-    color: "#e65100"
-  }
-}, "Buyers & results"), React.createElement("div", {
-  style: s.dText
-}, "Personas: CPO, COO, CFO, VP Supply Chain/Procurement. Fortune 100–500. Results they cite: 90% pricing-accuracy savings, 85% invoice time savings, 58% faster sourcing. Customers: Zeiss, Continental, TK Elevator, Daimler Truck.")));
-const CONTENT = {
-  now: Now,
-  timeline: Timeline,
-  numbers: Numbers,
-  open: OpenItems,
-  roleplay: RolePlay,
-  dealrev: DealReview,
-  role: RoleComp,
-  territory: Territory,
-  bob: BobIntel,
-  company: Company
-};
-function JaggaerDashboard() {
-  const embedded = function () {
-    try {
-      return window.self !== window.top;
-    } catch (e) {
-      return true;
-    }
-  }();
-  const [active, setActive] = useState(embedded ? "territory" : "now");
-  const [scale, setScale] = useState(1);
-  const Active = CONTENT[active];
-  const go = embedded ? function () {} : setActive;
-  const zbtn = {
-    width: 30,
-    height: 30,
-    borderRadius: 8,
-    background: "rgba(255,255,255,0.18)",
-    color: "#fff",
-    fontWeight: 800,
-    fontSize: 14,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    border: "1px solid rgba(255,255,255,0.35)",
-    userSelect: "none"
-  };
-  return React.createElement("div", {
-    style: {
-      fontFamily: "'Avenir','Segoe UI','Helvetica Neue',sans-serif",
-      background: "#f0f4f8",
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column"
-    }
-  }, !embedded && React.createElement("div", {
-    style: {
-      background: "linear-gradient(135deg,#01579b,#0277bd)",
-      padding: "14px 18px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    }
-  }, React.createElement("div", null, React.createElement("div", {
-    style: {
-      fontSize: 19,
-      fontWeight: 800,
-      color: "#fff"
-    }
-  }, "JAGGAER · Strategic AE"), React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: "#81d4fa",
-      marginTop: 2
-    }
-  }, "Front runner · Next: Role Play with Bob")), React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 4
-    }
-  }, React.createElement("div", {
-    style: zbtn,
-    onClick: () => setScale(v => Math.max(0.8, +(v - 0.1).toFixed(2)))
-  }, "A-"), React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: "#81d4fa",
-      minWidth: 34,
-      textAlign: "center"
-    }
-  }, Math.round(scale * 100), "%"), React.createElement("div", {
-    style: zbtn,
-    onClick: () => setScale(v => Math.min(1.6, +(v + 0.1).toFixed(2)))
-  }, "A+"))), !embedded && React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 6,
-      padding: "10px 12px",
-      overflowX: "auto",
-      background: "#fff",
-      borderBottom: "1px solid #e2e8f0",
-      WebkitOverflowScrolling: "touch"
-    }
-  }, Object.entries(SECTIONS).map(([k, sec]) => React.createElement("div", {
-    key: k,
-    onClick: () => setActive(k),
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 3,
-      padding: "8px 12px",
-      borderRadius: 10,
-      cursor: "pointer",
-      minWidth: 62,
-      background: active === k ? sec.color : "transparent",
-      color: active === k ? "#fff" : "#4a5568",
-      border: active === k ? "none" : "1px solid #e2e8f0"
-    }
-  }, React.createElement("span", {
-    style: {
-      fontSize: 16
-    }
-  }, sec.icon), React.createElement("span", {
-    style: {
-      fontSize: 11,
-      fontWeight: 600,
-      whiteSpace: "nowrap"
-    }
-  }, sec.label)))), React.createElement("div", {
-    style: {
-      flex: 1,
-      padding: 16,
-      overflowY: "auto"
-    }
-  }, React.createElement("div", {
-    style: {
-      zoom: scale
-    }
-  }, React.createElement(Active, {
-    go: go
-  }))));
-}
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(JaggaerDashboard));
-</script></body></html>
+function toggleCollap(id){var e=document.getElementById(id);e.classList.toggle("open");var ar=e.querySelector(".collap-ar");if(ar)ar.textContent=e.classList.contains("open")?"▲":"▼";}
+function launch(){document.getElementById("gate").style.display="none";document.getElementById("app").style.display="block";render();renderGrowth();}
+function checkPin(){var v=document.getElementById("pin").value;if(v==="1987"){launch();}else{document.getElementById("pinerr").style.display="block";}}
+if(EMBEDDED){launch();}
+else{var p=document.getElementById("pin");if(p)p.focus();}
+</script>
+</body>
+</html>
