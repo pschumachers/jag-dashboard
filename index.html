@@ -72,6 +72,10 @@ function normName(s){ return String(s == null ? "" : s).replace(/[⚠️❗❕]/
 function dedupeByName(arr){ if (!Array.isArray(arr)) return arr; var seen = {}, out = []; for (var i = 0; i < arr.length; i++) { var it = arr[i]; var k = normName(it && it.name); if (!k) { out.push(it); continue; } if (!seen[k]) { seen[k] = 1; out.push(it); } } return out; }
 // Format a stored timestamp (ISO or date-only) as a readable date and time
 function fmtStamp(s){ if (!s) return "Not yet"; try { var d = new Date(s); if (isNaN(d.getTime())) return s; var hasTime = String(s).indexOf("T") > -1; return d.toLocaleString("en-GB", hasTime ? { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" } : { day: "2-digit", month: "short", year: "numeric" }); } catch (e) { return s; } }
+// Normalise a signal for fuzzy de-duplication: lowercase, drop [source] tags and punctuation
+function normSig(s){ return String(s == null ? "" : s).toLowerCase().replace(/\[[^\]]*\]/g, " ").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim(); }
+// Remove duplicate/near-duplicate signals (short vs expanded versions), keeping the fullest, preserving order
+function dedupeSignals(arr){ if (!Array.isArray(arr)) return arr; var items = []; for (var i = 0; i < arr.length; i++) { items.push({ s: arr[i], i: i, n: typeof arr[i] === "string" ? normSig(arr[i]) : "" }); } var order = items.slice().sort(function(a,b){ return b.n.length - a.n.length; }); var kept = [], keptN = []; for (var j = 0; j < order.length; j++) { var c = order[j]; if (!c.n) { kept.push(c); continue; } var dup = false; var cKey = c.n.split(" ").slice(0, 12).join(" "); for (var k = 0; k < keptN.length; k++) { var kn = keptN[k]; if (kn.indexOf(c.n) > -1 || c.n.indexOf(kn) > -1) { dup = true; break; } if (kn.split(" ").slice(0, 12).join(" ") === cKey) { dup = true; break; } } if (!dup) { kept.push(c); keptN.push(c.n); } } kept.sort(function(a,b){ return a.i - b.i; }); return kept.map(function(x){ return x.s; }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2629,7 +2633,7 @@ async function exportToXLSX(account) {
     ["KEY SIGNALS", ""],
   ]
     .concat(
-      (account.keySignals || []).map(function (s, i) {
+      dedupeSignals(account.keySignals || []).map(function (s, i) {
         return ["  Signal " + (i + 1), s];
       }),
     )
@@ -3490,7 +3494,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         if (k === "keySignals" && Array.isArray(v) && v.length > 0) {
           const existing = account.keySignals || [];
           const merged = [...existing, ...v.filter(s => typeof s === "string" && s.length > 5 && !existing.includes(s))];
-          update("keySignals", merged);
+          update("keySignals", dedupeSignals(merged));
           updatedCount++;
           updatedFields.push("keySignals");
         } else if (typeof v === "string" && v.length > 5 && (!account[k] || account[k].length < v.length)) {
@@ -3722,7 +3726,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         if (k === "keySignals" && Array.isArray(v) && v.length > 0) {
           const existing = account.keySignals || [];
           const merged = [...existing, ...v.filter(s => typeof s === "string" && s.length > 5 && !existing.includes(s))];
-          update("keySignals", merged);
+          update("keySignals", dedupeSignals(merged));
           updatedCount++;
           updatedFields.push("keySignals");
         } else if (typeof v === "string" && v.length > 5) {
@@ -4220,7 +4224,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         if (Array.isArray(v) && v.length > 0 && k === "keySignals") {
           const existing = account.keySignals || [];
           const merged = [...existing, ...v.filter(s => typeof s === "string" && s.length > 5 && !existing.includes(s))];
-          update("keySignals", merged);
+          update("keySignals", dedupeSignals(merged));
           updatedCount++;
           updatedFields.push("keySignals");
         } else if (typeof v === "string" && v.length > 2) {
@@ -4443,7 +4447,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         if (Array.isArray(v) && v.length > 0 && k === "keySignals") {
           const existing = account.keySignals || [];
           const merged = [...existing, ...v.filter(s => typeof s === "string" && s.length > 5 && !existing.includes(s))];
-          update("keySignals", merged);
+          update("keySignals", dedupeSignals(merged));
           updatedCount++;
           updatedFields.push("keySignals");
         } else if (typeof v === "string" && v.length > 2) {
@@ -4898,7 +4902,7 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
       let count = 0;
       if (result.atAGlance && result.atAGlance.length > 10) { const ex = account.atAGlance || ""; update("atAGlance", result.atAGlance); count++; }
       if (result.hypothesis && result.hypothesis.length > 10) { const ex = account.hypothesis || ""; update("hypothesis", result.hypothesis); count++; }
-      if (result.keySignals && Array.isArray(result.keySignals)) { const existing = account.keySignals || []; const merged = [...existing, ...result.keySignals.filter(s => typeof s === "string" && s.length > 5 && !existing.includes(s))]; update("keySignals", merged); count++; }
+      if (result.keySignals && Array.isArray(result.keySignals)) { const existing = account.keySignals || []; const merged = [...existing, ...result.keySignals.filter(s => typeof s === "string" && s.length > 5 && !existing.includes(s))]; update("keySignals", dedupeSignals(merged)); count++; }
       ["primarySponsor", "leadNarrative", "discoveryAngle", "proofPoint"].forEach(f => {
         if (result[f] && typeof result[f] === "string" && result[f].length > 5) {
           const ex = account[f] || "";
@@ -5037,8 +5041,8 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
     ),
     /*#__PURE__*/ React.createElement(FieldLabel, null, "Key Signals (press Enter to add)"),
     /*#__PURE__*/ React.createElement(TagInput, {
-      tags: account.keySignals,
-      onChange: (v) => update("keySignals", v),
+      tags: dedupeSignals(account.keySignals),
+      onChange: (v) => update("keySignals", dedupeSignals(v)),
       placeholder: "e.g. M&A integration, ERP migration, maverick spend, supplier risk\u2026",
     }),
     /*#__PURE__*/ React.createElement(
