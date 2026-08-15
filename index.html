@@ -76,6 +76,8 @@ function fmtStamp(s){ if (!s) return "Not yet"; try { var d = new Date(s); if (i
 function normSig(s){ return String(s == null ? "" : s).toLowerCase().replace(/\[[^\]]*\]/g, " ").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim(); }
 // Remove duplicate/near-duplicate signals (short vs expanded versions), keeping the fullest, preserving order
 function dedupeSignals(arr){ if (!Array.isArray(arr)) return arr; var items = []; for (var i = 0; i < arr.length; i++) { items.push({ s: arr[i], i: i, n: typeof arr[i] === "string" ? normSig(arr[i]) : "" }); } var order = items.slice().sort(function(a,b){ return b.n.length - a.n.length; }); var kept = [], keptN = []; for (var j = 0; j < order.length; j++) { var c = order[j]; if (!c.n) { kept.push(c); continue; } var dup = false; var cKey = c.n.split(" ").slice(0, 12).join(" "); for (var k = 0; k < keptN.length; k++) { var kn = keptN[k]; if (kn.indexOf(c.n) > -1 || c.n.indexOf(kn) > -1) { dup = true; break; } if (kn.split(" ").slice(0, 12).join(" ") === cKey) { dup = true; break; } } if (!dup) { kept.push(c); keptN.push(c.n); } } kept.sort(function(a,b){ return a.i - b.i; }); return kept.map(function(x){ return x.s; }); }
+// Clean every list field on an account so no view can show duplicates (runs as data loads)
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({}, a, { keySignals: dedupeSignals(a.keySignals || []), executives: dedupeByName(a.executives || []), projectTeam: dedupeByName(a.projectTeam || []), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -9557,7 +9559,7 @@ function ProspectDashboard() {
         initAccounts().forEach(def => {
           if (!loadedIds.has(def.id)) merged.push(def);
         });
-        setAccounts(merged);
+        setAccounts(merged.map(cleanAccountLists));
         setSyncStatus(db && auth && auth.currentUser ? "synced" : "local");
       } else {
         setSyncStatus(db && auth && auth.currentUser ? "synced" : "local");
@@ -9607,8 +9609,9 @@ function ProspectDashboard() {
               if (accSnap.exists) accs.push(accSnap.data());
             }
             if (accs.length > 0) {
-              setAccounts(accs);
-              try { localStorage.setItem("jaggaer_accounts", JSON.stringify(accs)); } catch(e) {}
+              const cleanAccs = accs.map(cleanAccountLists);
+              setAccounts(cleanAccs);
+              try { localStorage.setItem("jaggaer_accounts", JSON.stringify(cleanAccs)); } catch(e) {}
               setSyncStatus("synced");
             }
           } catch(e) {
