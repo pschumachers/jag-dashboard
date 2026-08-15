@@ -66,6 +66,12 @@ const db = __fb_db;
 const firebaseAvailable = __fb_available;
 // Safe string coerce — handles arrays, objects, null, undefined
 const safeStr = (v) => { if (v == null) return ""; if (typeof v === "string") return v; if (Array.isArray(v)) return v.join(", "); if (typeof v === "object") return JSON.stringify(v); return String(v); };
+// Normalise a person name for de-duplication: strip warning flags, titles, punctuation, extra spaces
+function normName(s){ return String(s == null ? "" : s).replace(/[⚠️❗❕]/g, "").replace(/^\s*(dr|prof|dipl|ing|mr|mrs|ms|mx|herr|frau)\.?\s+/i, "").replace(/[.,]/g, "").replace(/\s+/g, " ").trim().toLowerCase(); }
+// Remove duplicate people by normalised name, keeping the first occurrence
+function dedupeByName(arr){ if (!Array.isArray(arr)) return arr; var seen = {}, out = []; for (var i = 0; i < arr.length; i++) { var it = arr[i]; var k = normName(it && it.name); if (!k) { out.push(it); continue; } if (!seen[k]) { seen[k] = 1; out.push(it); } } return out; }
+// Format a stored timestamp (ISO or date-only) as a readable date and time
+function fmtStamp(s){ if (!s) return "Not yet"; try { var d = new Date(s); if (isNaN(d.getTime())) return s; var hasTime = String(s).indexOf("T") > -1; return d.toLocaleString("en-GB", hasTime ? { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" } : { day: "2-digit", month: "short", year: "numeric" }); } catch (e) { return s; } }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -3505,7 +3511,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           updatedCount++;
           updatedFields.push("exec: " + newExec.name);
         });
-        update("executives", existing);
+        update("executives", dedupeByName(existing));
       }
       // Merge project team
       if (result.projectTeam && Array.isArray(result.projectTeam)) {
@@ -3517,7 +3523,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           updatedCount++;
           updatedFields.push("team: " + member.name);
         });
-        update("projectTeam", existingTeam);
+        update("projectTeam", dedupeByName(existingTeam));
       }
       // Merge HR tech stack
       if (result.hrTechStack && Array.isArray(result.hrTechStack)) {
@@ -3539,7 +3545,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const newHistory = [...uploadHistory, { filename: "\uD83D\uDCAC " + sourceName, date: now, fields: updatedCount, updatedFields: updatedFields }];
       setUploadHistory(newHistory);
       update("_uploadHistory", newHistory);
-      update("lastUpdated", now);
+      update("lastUpdated", new Date().toISOString());
 
       const summary = result.conversationSummary ? "\n" + result.conversationSummary : "";
       setUploadProgress("\u2705 Extracted " + updatedCount + " fields from conversation" + summary);
@@ -3752,7 +3758,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           updatedCount++;
           updatedFields.push("exec: " + newExec.name);
         });
-        update("executives", existing);
+        update("executives", dedupeByName(existing));
       }
       // Merge project team
       if (result.projectTeam && Array.isArray(result.projectTeam)) {
@@ -3764,7 +3770,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           updatedCount++;
           updatedFields.push("team: " + member.name);
         });
-        update("projectTeam", existingTeam);
+        update("projectTeam", dedupeByName(existingTeam));
       }
       // Merge HR tech stack
       if (result.hrTechStack && Array.isArray(result.hrTechStack)) {
@@ -3792,7 +3798,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const newHistory = [...uploadHistory, { filename: "\uD83C\uDFA4 Gong: " + sourceName, date: now, fields: updatedCount, updatedFields: updatedFields }];
       setUploadHistory(newHistory);
       update("_uploadHistory", newHistory);
-      update("lastUpdated", now);
+      update("lastUpdated", new Date().toISOString());
 
       setUploadProgress("\u2705 Extracted " + updatedCount + " fields from Gong call" + (result.callSummary ? "\n" + result.callSummary : ""));
       setGongText("");
@@ -4015,7 +4021,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const newHistory = [...uploadHistory, { filename: "JAGGAER: " + sourceName, date: now, fields: updatedCount, updatedFields: updatedFields }];
       setUploadHistory(newHistory);
       update("_uploadHistory", newHistory);
-      update("lastUpdated", now);
+      update("lastUpdated", new Date().toISOString());
 
       setUploadProgress("\u2705 JAGGAER Intel: Updated " + updatedCount + " fields across 5 sections: " + updatedFields.slice(0, 6).join(", ") + (updatedFields.length > 6 ? " +" + (updatedFields.length - 6) + " more" : ""));
       setTimeout(() => setUploadProgress(""), 15000);
@@ -4244,7 +4250,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
             addedExecs.push(newExec.name);
           }
         });
-        update("executives", existingExecs);
+        update("executives", dedupeByName(existingExecs));
         if (addedExecs.length > 0) updatedFields.push("executives (" + addedExecs.join(", ") + ")");
       }
 
@@ -4263,7 +4269,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           addedTeam.push(member.name);
         });
         if (addedTeam.length > 0) {
-          update("projectTeam", existingTeam);
+          update("projectTeam", dedupeByName(existingTeam));
           updatedCount += addedTeam.length;
           updatedFields.push("projectTeam (" + addedTeam.join(", ") + ")");
         }
@@ -4294,7 +4300,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const newHistory = [...uploadHistory, { filename: "\uD83D\uDD17 " + displayName, date: now, fields: updatedCount, updatedFields: updatedFields }];
       setUploadHistory(newHistory);
       update("_uploadHistory", newHistory);
-      update("lastUpdated", now);
+      update("lastUpdated", new Date().toISOString());
 
       setUploadProgress("\u2705 Updated " + updatedCount + " fields: " + updatedFields.slice(0, 8).join(", ") + (updatedFields.length > 8 ? " +" + (updatedFields.length - 8) + " more" : ""));
       setUrlInput("");
@@ -4475,7 +4481,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
             addedExecs.push(newExec.name);
           }
         });
-        update("executives", existingExecs);
+        update("executives", dedupeByName(existingExecs));
         if (addedExecs.length > 0) updatedFields.push("executives (" + addedExecs.join(", ") + ")");
       }
 
@@ -4494,7 +4500,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           addedTeam.push(member.name);
         });
         if (addedTeam.length > 0) {
-          update("projectTeam", existingTeam);
+          update("projectTeam", dedupeByName(existingTeam));
           updatedCount += addedTeam.length;
           updatedFields.push("projectTeam (" + addedTeam.join(", ") + ")");
         }
@@ -4525,7 +4531,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const newHistory = [...uploadHistory, { filename: file.name, date: now, fields: updatedCount, updatedFields: updatedFields }];
       setUploadHistory(newHistory);
       update("_uploadHistory", newHistory);
-      update("lastUpdated", now);
+      update("lastUpdated", new Date().toISOString());
 
       setUploadProgress("\u2705 Updated " + updatedCount + " fields: " + updatedFields.slice(0, 8).join(", ") + (updatedFields.length > 8 ? " +" + (updatedFields.length - 8) + " more" : ""));
       setTimeout(() => setUploadProgress(""), 12000);
@@ -5651,7 +5657,7 @@ function ExecutiveMappingSection({ account, update, claudeApiKey }) {
         existingNames.push(newExec.name.toLowerCase());
         addedCount++;
       });
-      update("executives", existing);
+      update("executives", dedupeByName(existing));
     }
     // Merge project team
     if (result.projectTeam && Array.isArray(result.projectTeam)) {
@@ -5668,7 +5674,7 @@ function ExecutiveMappingSection({ account, update, claudeApiKey }) {
         existingTeamNames.push(member.name.toLowerCase());
         addedCount++;
       });
-      update("projectTeam", existingTeam);
+      update("projectTeam", dedupeByName(existingTeam));
     }
   };
 
@@ -7203,10 +7209,10 @@ function CampaignSection({ account, update, claudeApiKey }) {
   const [expandedStep, setExpandedStep] = useState(null);
   const [exporting, setExporting] = useState(false);
   const campaigns = account.campaigns || [];
-  const allPeople = [
+  const allPeople = dedupeByName([
     ...(account.executives || []).map(e => ({ ...e, type: "exec" })),
     ...(account.projectTeam || []).map(m => ({ ...m, type: "team" })),
-  ].filter(p => p.name && p.name.length > 2);
+  ].filter(p => p.name && p.name.length > 2));
 
   const getCampaign = (personName) => campaigns.find(c => c.personName && c.personName.toLowerCase() === personName.toLowerCase());
 
@@ -7614,7 +7620,7 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
         { style: { color: C.text, fontSize: 13 } },
         /*#__PURE__*/ React.createElement("strong", null, "Auto-Updates Active"),
         " \u2014 Account intelligence refreshes daily via scheduled agent. Last update: ",
-        account.lastUpdated || "Not yet",
+        fmtStamp(account.lastUpdated),
       ),
     ),
     /*#__PURE__*/ React.createElement(
@@ -9327,7 +9333,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
             },
               React.createElement("div", null,
                 React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: "#1E293B" } }, a.companyName),
-                React.createElement("div", { style: { fontSize: 11, color: "#6B7280" } }, "\uD83D\uDCC5 " + a.lastUpdated),
+                React.createElement("div", { style: { fontSize: 11, color: "#6B7280" } }, "\uD83D\uDCC5 " + fmtStamp(a.lastUpdated)),
               ),
               miniRing(score),
             );
