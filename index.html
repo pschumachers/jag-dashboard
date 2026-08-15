@@ -2387,8 +2387,8 @@ function buildAccountHTML(account) {
     ["Revenue", account.revenue],
     ["Growth", account.revenueGrowth],
     ["Employees", account.employees],
-    ["Open Roles", account.openRoles],
-    ["Glassdoor", account.glassdoorRating],
+    ["COGS", account.cogs],
+    ["Core ERP / S2P", account.erpSystem],
     ["Stage", account.stage],
     ["Priority", account.priority],
   ];
@@ -2604,9 +2604,8 @@ async function exportToXLSX(account) {
     ["Revenue", account.revenue || ""],
     ["Revenue Growth", account.revenueGrowth || ""],
     ["Employees", account.employees || ""],
-    ["Employee Growth", account.employeeGrowth || ""],
-    ["Open Roles", account.openRoles || ""],
-    ["Glassdoor Rating", account.glassdoorRating || ""],
+    ["COGS (cost of sales)", account.cogs || ""],
+    ["Core ERP / S2P stack", account.erpSystem || ""],
     ["Priority", account.priority || ""],
     ["Stage", account.stage || ""],
     ["Account Owner", account.accountOwner || ""],
@@ -2917,6 +2916,8 @@ const emptyAccount = (id, name = "") => ({
   employeeGrowth: "",
   openRoles: "",
   glassdoorRating: "",
+  cogs: "",
+  erpSystem: "",
   hypothesis: "",
   keySignals: [],
   primarySponsor: "",
@@ -4140,7 +4141,8 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           revenue: "Revenue figure if mentioned",
           revenueGrowth: "Revenue growth if mentioned",
           employees: "Employee count if mentioned",
-          employeeGrowth: "Employee growth if mentioned",
+          cogs: "Cost of sales or COGS if mentioned",
+          erpSystem: "ERP or source-to-pay systems if mentioned",
           coreBusiness: "Core business description",
           industryPosition: "Competitive position, market share",
           recentNews: "Key news, announcements, developments",
@@ -4361,7 +4363,8 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           revenue: "Revenue figure if mentioned",
           revenueGrowth: "Revenue growth if mentioned",
           employees: "Employee count if mentioned",
-          employeeGrowth: "Employee growth if mentioned",
+          cogs: "Cost of sales or COGS if mentioned",
+          erpSystem: "ERP or source-to-pay systems if mentioned",
           coreBusiness: "Core business description from document",
           industryPosition: "Competitive position, market share",
           recentNews: "Key news, announcements, developments mentioned",
@@ -4943,14 +4946,13 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement(MetricCard, {
         value: account.employees,
         label: "Employees",
-        sub: account.employeeGrowth,
       }),
       /*#__PURE__*/ React.createElement(MetricCard, {
-        value: account.openRoles,
-        label: "Open Roles",
-        sub: "Active Hiring",
+        value: account.cogs,
+        label: "COGS (cost of sales)",
+        sub: "Direct spend base",
       }),
-      /*#__PURE__*/ React.createElement(MetricCard, { value: account.glassdoorRating, label: "Glassdoor Rating" }),
+      /*#__PURE__*/ React.createElement(MetricCard, { value: account.erpSystem, label: "Core ERP / S2P" }),
     ),
     /*#__PURE__*/ React.createElement(
       "div",
@@ -4991,34 +4993,23 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement(
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
-        /*#__PURE__*/ React.createElement(FieldLabel, null, "Employee Growth YoY"),
+        /*#__PURE__*/ React.createElement(FieldLabel, null, "COGS (cost of sales)"),
         /*#__PURE__*/ React.createElement(TextArea, {
           rows: 2,
-          value: account.employeeGrowth,
-          onChange: (v) => update("employeeGrowth", v),
-          placeholder: "e.g. +1.88%",
+          value: account.cogs,
+          onChange: (v) => update("cogs", v),
+          placeholder: "e.g. €14.2bn FY2025",
         }),
       ),
       /*#__PURE__*/ React.createElement(
         "div",
         { style: { flex: "1 1 140px", minWidth: 140 } },
-        /*#__PURE__*/ React.createElement(FieldLabel, null, "Open Roles (approx.)"),
+        /*#__PURE__*/ React.createElement(FieldLabel, null, "Core ERP / S2P stack"),
         /*#__PURE__*/ React.createElement(TextArea, {
           rows: 2,
-          value: account.openRoles,
-          onChange: (v) => update("openRoles", v),
-          placeholder: "e.g. ~700",
-        }),
-      ),
-      /*#__PURE__*/ React.createElement(
-        "div",
-        { style: { flex: "1 1 140px", minWidth: 140 } },
-        /*#__PURE__*/ React.createElement(FieldLabel, null, "Glassdoor Rating"),
-        /*#__PURE__*/ React.createElement(TextArea, {
-          rows: 2,
-          value: account.glassdoorRating,
-          onChange: (v) => update("glassdoorRating", v),
-          placeholder: "e.g. 3.9/5.0",
+          value: account.erpSystem,
+          onChange: (v) => update("erpSystem", v),
+          placeholder: "e.g. SAP S/4HANA, SAP Ariba",
         }),
       ),
     ),
@@ -5042,7 +5033,7 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
     /*#__PURE__*/ React.createElement(TagInput, {
       tags: account.keySignals,
       onChange: (v) => update("keySignals", v),
-      placeholder: "e.g. M&A integration, 700+ open roles, Employer brand issues\u2026",
+      placeholder: "e.g. M&A integration, ERP migration, maverick spend, supplier risk\u2026",
     }),
     /*#__PURE__*/ React.createElement(
       "div",
@@ -5109,7 +5100,7 @@ function CompanyFundamentalsSection({ account, update }) {
         "industryPosition",
         "Market rank, key competitors, competitive pressures, recent wins/losses…",
       ],
-      ["🌍", "Scale & Footprint", "scaleFootprint", "Headcount, office locations, countries, business units…"],
+      ["🌍", "Scale & Footprint", "scaleFootprint", "Spend scale, office locations, countries, business units…"],
       [
         "🏛️",
         "Ownership & Structure",
@@ -9706,8 +9697,8 @@ function ProspectDashboard() {
   "revenue": "Most recent annual revenue as a SHORT figure only: amount, currency and fiscal year, no sentences (e.g. £4.5bn FY${currentYear - 1})",
   "revenueGrowth": "Year on year revenue growth as a SHORT figure only, no sentences (e.g. +46% YoY)",
   "employees": "Current total headcount as a SHORT figure only, no sentences (e.g. approx 18,600)",
-  "openRoles": "Approximate number of current open roles as a SHORT figure only, no sentences (e.g. approx 2,400)",
-  "glassdoorRating": "Glassdoor overall rating out of 5 as a SHORT figure only, no sentences (e.g. 4.3/5)",
+  "cogs": "Most recent annual cost of sales or COGS as a SHORT figure only: amount, currency and fiscal year, no sentences (e.g. €14.2bn FY2025)",
+  "erpSystem": "Primary ERP plus any known source-to-pay or procurement systems as a SHORT phrase only, no sentences (e.g. SAP S/4HANA, SAP Ariba)",
   "coreBusiness": "Core business description, products/services, market position",
   "industryPosition": "Key competitors and market share",
   "scaleFootprint": "Global presence, offices, countries",
@@ -9843,7 +9834,7 @@ DEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:
 - Challenges: ${c4ctx.challenges}
 - Spend & Sourcing Strategy: ${c4ctx.workforce}
 - Sourcing Trends: ${c4ctx.hiring}
-- Employees: ${acc.employees || "N/A"}, Open Roles: ${acc.openRoles || "N/A"}
+- Employees: ${acc.employees || "N/A"}, COGS: ${acc.cogs || "N/A"}, Core ERP: ${acc.erpSystem || "N/A"}
 - Known Problems: ${c4ctx.problems}
 - Use Cases: ${c4ctx.useCases}
 
