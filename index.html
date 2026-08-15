@@ -69,7 +69,7 @@ const safeStr = (v) => { if (v == null) return ""; if (typeof v === "string") re
 // Normalise a person name for de-duplication: strip warning flags, titles, punctuation, extra spaces
 function normName(s){ return String(s == null ? "" : s).replace(/[⚠️❗❕]/g, "").replace(/^\s*(dr|prof|dipl|ing|mr|mrs|ms|mx|herr|frau)\.?\s+/i, "").replace(/[.,]/g, "").replace(/\s+/g, " ").trim().toLowerCase(); }
 // Remove duplicate people by normalised name, keeping the first occurrence
-function dedupeByName(arr){ if (!Array.isArray(arr)) return arr; var seen = {}, out = []; for (var i = 0; i < arr.length; i++) { var it = arr[i]; var k = normName(it && it.name); if (!k) { out.push(it); continue; } if (!seen[k]) { seen[k] = 1; out.push(it); } } return out; }
+function dedupeByName(arr){ if (!Array.isArray(arr)) return arr; var seen = {}, out = []; for (var i = 0; i < arr.length; i++) { var it = arr[i]; var k = normName(it && (it.name || it.title)); if (!k) { out.push(it); continue; } if (!seen[k]) { seen[k] = 1; out.push(it); } } return out; }
 // Format a stored timestamp (ISO or date-only) as a readable date and time
 function fmtStamp(s){ if (!s) return "Not yet"; try { var d = new Date(s); if (isNaN(d.getTime())) return s; var hasTime = String(s).indexOf("T") > -1; return d.toLocaleString("en-GB", hasTime ? { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" } : { day: "2-digit", month: "short", year: "numeric" }); } catch (e) { return s; } }
 // Normalise a signal for fuzzy de-duplication: lowercase, drop [source] tags and punctuation
@@ -3541,7 +3541,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
             updatedFields.push("tech: " + tool.name);
           }
         });
-        if (existingStack.length > (account.hrTechStack || []).length) update("hrTechStack", existingStack);
+        if (existingStack.length > (account.hrTechStack || []).length) update("hrTechStack", dedupeByName(existingStack));
       }
 
       // Record in upload history
@@ -3788,7 +3788,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
             updatedFields.push("tech: " + tool.name);
           }
         });
-        if (existingStack.length > (account.hrTechStack || []).length) update("hrTechStack", existingStack);
+        if (existingStack.length > (account.hrTechStack || []).length) update("hrTechStack", dedupeByName(existingStack));
       }
       // Save call summary to transcripts section
       if (result.callSummary) {
@@ -3994,7 +3994,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           });
           updatedCount++;
         });
-        update("challenges", existingChallenges);
+        update("challenges", dedupeByName(existingChallenges));
         updatedFields.push("challenges");
       }
 
@@ -4293,7 +4293,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           }
         });
         if (addedTools.length > 0) {
-          update("hrTechStack", existingStack);
+          update("hrTechStack", dedupeByName(existingStack));
           updatedCount += addedTools.length;
           updatedFields.push("hrTechStack (" + addedTools.join(", ") + ")");
         }
@@ -4524,7 +4524,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           }
         });
         if (addedTools.length > 0) {
-          update("hrTechStack", existingStack);
+          update("hrTechStack", dedupeByName(existingStack));
           updatedCount += addedTools.length;
           updatedFields.push("hrTechStack (" + addedTools.join(", ") + ")");
         }
@@ -5410,7 +5410,7 @@ function HRTechStackSection({ account, update, claudeApiKey }) {
         existingNames.push(tool.name.toLowerCase());
         added++;
       });
-      if (added > 0) update("hrTechStack", existing);
+      if (added > 0) update("hrTechStack", dedupeByName(existing));
     }
     if (result.hrTechNotes && result.hrTechNotes.length > 5) {
       const cur = account.hrTechNotes || "";
@@ -5421,7 +5421,7 @@ function HRTechStackSection({ account, update, claudeApiKey }) {
   const addTool = (category) => {
     if (!newToolName.trim()) return;
     const updated = [...stack, { category: category, name: newToolName.trim(), notes: newToolNotes.trim(), source: "manual" }];
-    update("hrTechStack", updated);
+    update("hrTechStack", dedupeByName(updated));
     setNewToolName("");
     setNewToolNotes("");
     setAddingTool(null);
@@ -5434,7 +5434,7 @@ function HRTechStackSection({ account, update, claudeApiKey }) {
   const updateToolNotes = (idx, notes) => {
     const updated = [...stack];
     updated[idx] = { ...updated[idx], notes: notes };
-    update("hrTechStack", updated);
+    update("hrTechStack", dedupeByName(updated));
   };
 
   return /*#__PURE__*/ React.createElement(
@@ -5702,7 +5702,7 @@ function ExecutiveMappingSection({ account, update, claudeApiKey }) {
   const updateTeamMember = (i, field, value) => {
     const updated = [...team];
     updated[i] = { ...updated[i], [field]: value };
-    update("projectTeam", updated);
+    update("projectTeam", dedupeByName(updated));
   };
 
   const removeTeamMember = (i) => {
@@ -5741,7 +5741,7 @@ function ExecutiveMappingSection({ account, update, claudeApiKey }) {
         }
       }
       updated[i] = current;
-      update("projectTeam", updated);
+      update("projectTeam", dedupeByName(updated));
     } catch (err) { alert("Enrich error: " + err.message); }
     setTeamEnrichingIdx(null);
   };
@@ -5783,7 +5783,7 @@ function ExecutiveMappingSection({ account, update, claudeApiKey }) {
           });
           existingNames.push(member.name.toLowerCase());
         });
-        update("projectTeam", existing);
+        update("projectTeam", dedupeByName(existing));
       }
     } catch (err) { alert("Error discovering team: " + err.message); }
     setDiscoveringTeam(false);
@@ -5961,7 +5961,7 @@ INCLUSION RULES:
             merged.push({ ...leader, department: leader.department || "Other", linkedinUrl: leader.linkedinUrl || "", reportsTo: leader.reportsTo || "" });
           }
         });
-        update("executives", merged);
+        update("executives", dedupeByName(merged));
       }
     } catch (err) { alert("Error discovering leaders: " + err.message); }
     setDiscovering(false);
@@ -6483,7 +6483,7 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
           merged.push({ severity: ch.severity || "HIGH", title: "[JAGGAER] " + ch.title, businessChallenge: ch.businessChallenge || "", solution: ch.solution || "", proofPoint: ch.proofPoint || "" });
           added++;
         });
-        update("challenges", merged);
+        update("challenges", dedupeByName(merged));
         setEnrichStatus("\u2705 Added " + added + " JAGGAER-mapped challenges");
       }
       setTimeout(() => setEnrichStatus(""), 8000);
@@ -6494,7 +6494,7 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
   const updateChallenge = (i, field, value) => {
     const challenges = [...account.challenges];
     challenges[i] = { ...challenges[i], [field]: value };
-    update("challenges", challenges);
+    update("challenges", dedupeByName(challenges));
   };
   const addChallenge = () => {
     update("challenges", [
@@ -8614,15 +8614,15 @@ function BULeadersSection({ account, update, claudeApiKey }) {
             existingNames.push(l.name.toLowerCase());
           }
         });
-        update("buLeaders", existing);
+        update("buLeaders", dedupeByName(existing));
       }
       setEnrichStatus("Done! Found " + (parsed.buLeaders || []).length + " BU leaders.");
     } catch(e) { setEnrichStatus("Error: " + e.message); }
     setEnriching(false);
   };
 
-  var removeLeader = function(idx) { var n = [...leaders]; n.splice(idx, 1); update("buLeaders", n); };
-  var updateLeaderField = function(idx, field, val) { var n = [...leaders]; n[idx] = { ...n[idx], [field]: val }; update("buLeaders", n); };
+  var removeLeader = function(idx) { var n = [...leaders]; n.splice(idx, 1); update("buLeaders", dedupeByName(n)); };
+  var updateLeaderField = function(idx, field, val) { var n = [...leaders]; n[idx] = { ...n[idx], [field]: val }; update("buLeaders", dedupeByName(n)); };
 
   var addNewLeader = function() {
     if (!newLeader.name || newLeader.name.length < 2) return;
