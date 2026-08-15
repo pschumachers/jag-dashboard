@@ -79,7 +79,7 @@ function dedupeSignals(arr){ if (!Array.isArray(arr)) return arr; var items = []
 // Keep only the n most substantive signals (by length), preserving reading order, to stop the section overloading
 function capSignals(arr, n){ if (!Array.isArray(arr) || arr.length <= n) return arr; var idx = arr.map(function(s,i){ return { s: s, i: i, l: (typeof s === "string" ? s.length : 0) }; }); idx.sort(function(a,b){ return b.l - a.l; }); return idx.slice(0, n).sort(function(a,b){ return a.i - b.i; }).map(function(x){ return x.s; }); }
 // Clean every list field on an account so no view can show duplicates (runs as data loads)
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []), projectTeam: dedupeByName(a.projectTeam || []), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []), projectTeam: dedupeByName(a.projectTeam || []), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2932,6 +2932,13 @@ const emptyAccount = (id, name = "") => ({
   glassdoorRating: "",
   cogs: "",
   erpSystem: "",
+  compellingEvent: "",
+  compellingDeadline: "",
+  compellingCost: "",
+  oppFit: "",
+  oppTiming: "",
+  oppValue: "",
+  oppRationale: "",
   hypothesis: "",
   keySignals: [],
   primarySponsor: "",
@@ -6639,6 +6646,70 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
     ),
   );
 }
+function PillRow({ options, value, onSelect, colorMap }) {
+  return React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } },
+    options.map(function (opt) {
+      var active = value === opt;
+      var col = (colorMap && colorMap[opt]) || C.teal;
+      return React.createElement("button", { key: opt, onClick: function () { onSelect(active ? "" : opt); },
+        style: { padding: "8px 14px", borderRadius: 20, cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: active ? 700 : 500,
+          border: active ? "2px solid " + col : "1.5px solid " + C.border, background: active ? col : "transparent", color: active ? "#fff" : C.muted } }, opt);
+    })
+  );
+}
+
+function OpportunityScoreSection({ account, update }) {
+  var fitColors = { "Strong fit": "#059669", "Possible fit": "#D97706", "Weak fit": "#EA580C", "Not a fit": "#6B7280" };
+  var timeColors = { "This quarter": "#059669", "Next quarter": "#0D9488", "This year": "#D97706", "Next year": "#6366F1", "Unlikely": "#DC2626" };
+  return React.createElement(
+    "div",
+    null,
+    React.createElement(SectionHeader, { title: "Opportunity Rating", badge: "Qualify", badgeColor: "#059669" }),
+    React.createElement(
+      Card,
+      null,
+      React.createElement(FieldLabel, null, "Is this a real opportunity?"),
+      React.createElement(PillRow, { options: ["Strong fit", "Possible fit", "Weak fit", "Not a fit"], value: account.oppFit, onSelect: function (v) { update("oppFit", v); }, colorMap: fitColors }),
+      React.createElement("div", { style: { height: 16 } }),
+      React.createElement(FieldLabel, null, "Likely to close"),
+      React.createElement(PillRow, { options: ["This quarter", "Next quarter", "This year", "Next year", "Unlikely"], value: account.oppTiming, onSelect: function (v) { update("oppTiming", v); }, colorMap: timeColors }),
+      React.createElement("div", { style: { height: 16 } }),
+      React.createElement(FieldLabel, null, "Potential value (ACV / TCV)"),
+      React.createElement(TextArea, { value: account.oppValue, onChange: function (v) { update("oppValue", v); }, placeholder: "e.g. €400K ACV, about €1.2M TCV over 3 years", rows: 2 }),
+      React.createElement("div", { style: { height: 16 } }),
+      React.createElement(FieldLabel, null, "Why this rating"),
+      React.createElement(TextArea, { value: account.oppRationale, onChange: function (v) { update("oppRationale", v); }, placeholder: "Fit, urgency (compelling event), budget, access to power, competition — the reasoning behind the score…", rows: 3 })
+    )
+  );
+}
+
+function CompellingEventSection({ account, update }) {
+  var extras = [
+    ["📅", "Deadline / Timeline", "compellingDeadline", "When does the clock run out? The specific date or window that forces a decision…"],
+    ["⚠️", "Cost of Waiting", "compellingCost", "What happens if they wait 6 to 12 months? Missed savings, compliance exposure, integration risk, continued spend leakage…"],
+  ];
+  return React.createElement(
+    "div",
+    null,
+    React.createElement(SectionHeader, { title: "Compelling Event", badge: "Why Now", badgeColor: "#DC2626" }),
+    React.createElement(
+      Card,
+      { style: { borderLeft: "4px solid #DC2626", background: "#FEF2F2" } },
+      React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: "#DC2626", marginBottom: 6 } }, "The Compelling Event"),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 8, lineHeight: 1.5 } }, "The dated, external trigger that forces this company to act by a deadline. This is the clock — different from the Hyper-Cell, which is the value hook."),
+      React.createElement(TextArea, { value: account.compellingEvent, onChange: function (v) { update("compellingEvent", v); }, placeholder: "e.g. Siemens AG carve-out and deconsolidation deadline; SAP ECC 2027 end of life; mandatory e-invoicing go-live; Varian integration…", rows: 4 })
+    ),
+    extras.map(function (row) {
+      return React.createElement(
+        Card,
+        { key: row[2], style: { marginTop: 12 } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 8 } }, row[0] + " " + row[1]),
+        React.createElement(TextArea, { value: account[row[2]], onChange: function (v) { update(row[2], v); }, placeholder: row[3], rows: 3 })
+      );
+    })
+  );
+}
+
 function OutcomeFramingSection({ account, update }) {
   return /*#__PURE__*/ React.createElement(
     "div",
@@ -9368,12 +9439,14 @@ const SUPER_SECTIONS = [
     { id: "geopolitics", label: "Geo-Politics" },
   ]},
   { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
+    { id: "oppscore", label: "Opportunity Rating" },
     { id: "bugrowth", label: "BU Growth & JAGGAER" },
     { id: "buleaders", label: "BU Leaders" },
     { id: "problems", label: "Problems" },
     { id: "usecases", label: "Use Cases" },
     { id: "challenges", label: "Challenges" },
     { id: "outcomes", label: "Outcomes" },
+    { id: "compelling", label: "Compelling Event" },
     { id: "hypercell", label: "Hyper-Cell" },
     { id: "proofpoints", label: "Proof Points" },
   ]},
@@ -9715,6 +9788,7 @@ function ProspectDashboard() {
   "employees": "Current total headcount as a SHORT figure only, no sentences (e.g. approx 18,600)",
   "cogs": "Most recent annual cost of sales or COGS as a SHORT figure only: amount, currency and fiscal year, no sentences (e.g. €14.2bn FY2025)",
   "erpSystem": "Primary ERP plus any known source-to-pay or procurement systems as a SHORT phrase only, no sentences (e.g. SAP S/4HANA, SAP Ariba)",
+  "compellingEvent": "The single strongest dated, external trigger forcing this company to act on procurement now: carve-out, M&A or IPO deadlines, SAP ECC 2027 end of life, e-invoicing mandate go-live dates, refinancing or cost-savings mandates, regulatory deadlines. State the specific date or window and why it forces action. 1 to 2 sentences.",
   "coreBusiness": "Core business description, products/services, market position",
   "industryPosition": "Key competitors and market share",
   "scaleFootprint": "Global presence, offices, countries",
@@ -10709,6 +10783,8 @@ Return this exact JSON structure:
             /*#__PURE__*/ React.createElement(HRTechStackSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "executives" &&
             /*#__PURE__*/ React.createElement(ExecutiveMappingSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
+          activeSection === "oppscore" &&
+            /*#__PURE__*/ React.createElement(OpportunityScoreSection, { account: account, update: update }),
           activeSection === "bugrowth" &&
             /*#__PURE__*/ React.createElement(BUGrowthJAGGAERSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "buleaders" &&
@@ -10721,6 +10797,8 @@ Return this exact JSON structure:
             /*#__PURE__*/ React.createElement(BusinessChallengesSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "outcomes" &&
             /*#__PURE__*/ React.createElement(OutcomeFramingSection, { account: account, update: update }),
+          activeSection === "compelling" &&
+            /*#__PURE__*/ React.createElement(CompellingEventSection, { account: account, update: update }),
           activeSection === "hypercell" &&
             /*#__PURE__*/ React.createElement(HyperCellSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "geopolitics" &&
