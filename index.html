@@ -5801,6 +5801,7 @@ function ExecutiveMappingSection({ account, update, claudeApiKey }) {
     "Supply Chain & Operations": { bg: "#EDE9FE", text: "#7C3AED", icon: "\uD83D\uDE9A" },
     "IT / ERP Systems": { bg: "#E0E7FF", text: "#4F46E5", icon: "\uD83D\uDCBB" },
     "Finance": { bg: "#FEE2E2", text: "#DC2626", icon: "\uD83D\uDCB0" },
+    "Executive Board": { bg: "#F1F5F9", text: "#334155", icon: "\uD83C\uDFDB\uFE0F" },
     "Other": { bg: C.bg, text: C.muted, icon: "\uD83D\uDC64" },
   };
 
@@ -5847,7 +5848,7 @@ If CONFIRMED still at company, return ONLY valid JSON (no markdown):
 
 {
   "title": "Their exact current title at ${account.companyName}",
-  "department": "One of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, Supply Chain & Operations, IT / ERP Systems, Finance, Digital & Transformation, Other",
+  "department": "One of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, Supply Chain & Operations, IT / ERP Systems, Finance, Digital & Transformation, Executive Board, Other. Put CEO, CFO, COO, CTO, CIO, CHRO and other top/managing board members under 'Executive Board'.",
   "roleType": "One of: Primary Sponsor, Key Influencer, Budget Authority, Tech Oversight, Compliance Gate, Integration Lead",
   "background": "VERIFIED: [LinkedIn/Xing/company website]. 2-3 sentence career background",
   "priorities": "Their top 3-4 stated priorities or focus areas",
@@ -9025,7 +9026,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
   });
 
   // Department groups for org chart
-  var DEPT_ORDER = ["Procurement / CPO", "Strategic Sourcing", "Category Management", "Supplier Management & Risk", "Supply Chain & Operations", "IT / ERP Systems", "Finance", "Digital & Transformation", "Other"];
+  var DEPT_ORDER = ["Procurement / CPO", "Strategic Sourcing", "Category Management", "Supplier Management & Risk", "Supply Chain & Operations", "IT / ERP Systems", "Finance", "Digital & Transformation", "Executive Board", "Other"];
   var deptGroups = {};
   DEPT_ORDER.forEach(function(d) { deptGroups[d] = []; });
   allExecs.forEach(function(e) {
@@ -9044,7 +9045,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
       (e.roleType || "").toLowerCase().includes(q);
   }).slice(0, 20) : [];
 
-  var deptColor = { "Procurement / CPO": "#3B82F6", "Strategic Sourcing": "#7C3AED", "Category Management": "#0D9488", "Supplier Management & Risk": "#F59E0B", "Supply Chain & Operations": "#DC2626", "IT / ERP Systems": "#6366F1", "Finance": "#10B981", "Digital & Transformation": "#D97706", "Other": "#6B7280" };
+  var deptColor = { "Procurement / CPO": "#3B82F6", "Strategic Sourcing": "#7C3AED", "Category Management": "#0D9488", "Supplier Management & Risk": "#F59E0B", "Supply Chain & Operations": "#DC2626", "IT / ERP Systems": "#6366F1", "Finance": "#10B981", "Digital & Transformation": "#D97706", "Executive Board": "#334155", "Other": "#6B7280" };
 
   // Helper: mini progress ring
   var miniRing = function(score, size) {
@@ -9787,7 +9788,7 @@ INCLUSION RULES:
 - Search for DEPARTURES explicitly — people who left in the last 24 months MUST NOT be included.
 - For keyQuote: ONLY real public quotes with source attribution. Never fabricate — use empty string if none found.
 - For linkedinUrl: actual URL or empty string. Never guess URLs.
-- Return 5 to 8 people and actively COVER these personas: Procurement / CPO, Strategic Sourcing, Category Management, Finance and IT / ERP Systems. Search for the named holder of EACH before concluding a persona is empty. A single-source ⚠️ candidate in the correct persona beats an empty persona; never fabricate.
+- Return 6 to 10 people and actively COVER these personas: Procurement / CPO, Strategic Sourcing, Category Management, Finance and IT / ERP Systems. Search for the named holder of EACH before concluding a persona is empty. A single-source ⚠️ candidate in the correct persona beats an empty persona; never fabricate.
 
 WHO TO FIND — this is a PROCUREMENT and SOURCE TO PAY sale, so prioritise in THIS order:
 1. Chief Procurement Officer / VP Procurement / Head of Procurement (the PRIMARY SPONSOR; department "Procurement / CPO").
@@ -9797,8 +9798,8 @@ WHO TO FIND — this is a PROCUREMENT and SOURCE TO PAY sale, so prioritise in T
 5. CFO / Finance Director who signs off procurement spend and savings (Economic Buyer; department "Finance").
 6. Head of IT / ERP / Digital Procurement who owns integration (department "IT / ERP Systems").
 Run a SPECIFIC named search for each persona: "${acc.companyName} Chief Procurement Officer", "${acc.companyName} VP Procurement", "${acc.companyName} Head of Procurement", "${acc.companyName} Head of Strategic Sourcing", "${acc.companyName} Head of Category Management", "${acc.companyName} Head of Supplier Management", "${acc.companyName} CFO", "${acc.companyName} Head of Procurement Systems OR ERP". A single-source ⚠️ candidate in the correct persona beats an empty persona.
-HARD EXCLUSIONS: never include a CHRO, Head of HR, Head of People, Head of Talent, recruiting, marketing or sales leader. They are not part of a procurement buying committee and only add noise. The ONLY non-procurement people allowed are the CEO (at most one, as context) and a CFO, COO, CTO or CIO where they clearly own procurement, spend or ERP. Do NOT pad the list to hit a number: if you cannot verify a real holder of a procurement persona, leave that persona out entirely rather than substituting an unrelated executive. Six accurate procurement and finance names beat eight padded with HR and general management. Actively try to fill Strategic Sourcing, Category Management, Supplier Management and IT / ERP Systems with named searches before giving up on them.
-For EVERY executive set "department" to exactly one of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, Supply Chain & Operations, IT / ERP Systems, Finance, Digital & Transformation, Other. Use "Procurement / CPO" for any senior procurement role.
+ALSO capture the full top executive or managing board and set their department to "Executive Board": CEO, CFO, COO, CTO, CIO, CHRO and other board members belong here as the leadership overview, HR at board level included. This is separate from the procurement buying committee. Keep the procurement buckets (Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, IT / ERP Systems, Finance) for people who actually own those functions; do not pad those procurement buckets with HR, marketing or sales — route any board-level HR or general management to "Executive Board" instead. If you cannot verify a real holder of a procurement persona, leave that persona empty rather than substituting an unrelated name. Actively run named searches to fill Strategic Sourcing, Category Management, Supplier Management and IT / ERP Systems before giving up on them. Return up to 10 people so both the Executive Board and the procurement committee are covered.
+For EVERY executive set "department" to exactly one of: Procurement / CPO, Strategic Sourcing, Category Management, Supplier Management & Risk, Supply Chain & Operations, IT / ERP Systems, Finance, Digital & Transformation, Executive Board, Other. Use "Procurement / CPO" for any senior procurement role. Put CEO, CFO, COO, CTO, CIO, CHRO and other top or managing board members under "Executive Board".
 
 {
   "keySignals": ["signal 1 about spend/growth", "signal 2 about leadership", "signal 3 about tech/AI", "signal 4 about financials", "signal 5 about supply chain / suppliers", "signal 6 about transformation", "signal 7 about market position", "signal 8 about cost & savings pressure"],
