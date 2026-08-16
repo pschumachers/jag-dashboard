@@ -110,8 +110,10 @@ function normDeal(d){
   });
   return out;
 }
+var DEFAULT_MUST_WEIGHTS = { buyer: 22, influencers: 15, competition: 10, win: 15, lose: 12, decision: 20, taught: 6 };
+function normWeights(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { var v = parseFloat(w[k]); out[k] = (isNaN(v) || v < 0) ? DEFAULT_MUST_WEIGHTS[k] : v; }); return out; }
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), dealObjectives: normDeal(a.dealObjectives) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), dealObjectives: normDeal(a.dealObjectives) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2975,6 +2977,7 @@ const emptyAccount = (id, name = "") => ({
   oppScore: "",
   oppSources: [],
   sevenMusts: normMusts(null),
+  mustWeights: normWeights(null),
   dealObjectives: normDeal(null),
   hypothesis: "",
   keySignals: [],
@@ -6984,6 +6987,15 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
     checks[idx] = !checks[idx];
     setMust(key, "checks", checks);
   }
+  var weights = normWeights(account.mustWeights);
+  function setWeight(key, val) {
+    var v = parseFloat(val); if (isNaN(v) || v < 0) v = 0; if (v > 100) v = 100;
+    var nw = Object.assign({}, weights); nw[key] = v; update("mustWeights", nw);
+  }
+  var wTotal = 0; MUSTS.forEach(function (m) { wTotal += weights[m.key]; });
+  var likAcc = 0; MUSTS.forEach(function (m) { likAcc += weights[m.key] * (musts[m.key].checks.filter(Boolean).length / 5); });
+  var likelihood = wTotal > 0 ? Math.round(likAcc / wTotal * 100) : 0;
+  var likCol = likelihood >= 70 ? "#059669" : likelihood >= 40 ? "#D97706" : "#DC2626";
 
   var draftMusts = async function () {
     if (!claudeApiKey) { alert("Set your API key first (🔑 button in header)"); return; }
@@ -7006,16 +7018,16 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
         oppFit: account.oppFit || "", oppTiming: account.oppTiming || ""
       };
       var schema = {
-        buyer: { summary: "text", checks: [false, false, false, false, false] },
-        influencers: { summary: "text", checks: [false, false, false, false, false] },
-        competition: { summary: "text", checks: [false, false, false, false, false] },
-        win: { summary: "text", checks: [false, false, false, false, false] },
-        lose: { summary: "text", checks: [false, false, false, false, false] },
-        decision: { summary: "text", checks: [false, false, false, false, false] },
-        taught: { summary: "text", checks: [false, false, false, false, false] }
+        buyer: { summary: "text", checks: [false, false, false, false, false], weight: 22 },
+        influencers: { summary: "text", checks: [false, false, false, false, false], weight: 15 },
+        competition: { summary: "text", checks: [false, false, false, false, false], weight: 10 },
+        win: { summary: "text", checks: [false, false, false, false, false], weight: 15 },
+        lose: { summary: "text", checks: [false, false, false, false, false], weight: 12 },
+        decision: { summary: "text", checks: [false, false, false, false, false], weight: 20 },
+        taught: { summary: "text", checks: [false, false, false, false, false], weight: 6 }
       };
       var checkList = MUSTS.map(function (m) { return m.n + ". " + m.title + " checks: " + m.checks.join(" | "); }).join("\n");
-      var prompt = "You are a senior JAGGAER source-to-pay sales strategist filling in a 7 Musts deal qualification for a procurement software opportunity. Use ONLY the intelligence below (plus public knowledge of this company and the JAGGAER competitive set: SAP Ariba, Coupa, Ivalua, GEP, Zip, Oro). For each of the 7 Musts write a 2 to 4 sentence quick summary grounded in the intel, and set the 5 checks.\n\nCRITICAL on the checks: only set a check to true when the intel genuinely evidences it. These represent things the seller has actually confirmed through real conversations. Most checks should be false at an early stage. Setting a check true with no basis is worse than leaving it false. When you are not sure, leave it false and explain what still needs confirming in the summary.\n\nThe 5 checks per Must, in order:\n" + checkList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (checks are arrays of 5 booleans in the order listed above):\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Keep summaries specific to this account, not generic. Reference the compelling event, named people and competitors where known.";
+      var prompt = "You are a senior JAGGAER source-to-pay sales strategist filling in a 7 Musts deal qualification for a procurement software opportunity. Use ONLY the intelligence below (plus public knowledge of this company and the JAGGAER competitive set: SAP Ariba, Coupa, Ivalua, GEP, Zip, Oro). For each of the 7 Musts write a 2 to 4 sentence quick summary grounded in the intel, set the 5 checks, and set a weight.\n\nCRITICAL on the checks: only set a check to true when the intel genuinely evidences it. These represent things the seller has actually confirmed through real conversations. Most checks should be false at an early stage. Setting a check true with no basis is worse than leaving it false. When you are not sure, leave it false and explain what still needs confirming in the summary.\n\nWEIGHTS: weight is an integer 0 to 100 for how much that Must drives the probability this specific deal closes. The 7 weights MUST add up to 100. Tune them to this deal: if access to the economic buyer is the make or break, weight buyer higher; if a hard decision date and procurement process dominate, weight decision higher. Do not just repeat the defaults.\n\nThe 5 checks per Must, in order:\n" + checkList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (checks are arrays of 5 booleans in the order listed above; weight is an integer, all seven summing to 100):\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Keep summaries specific to this account, not generic. Reference the compelling event, named people and competitors where known.";
       var resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -7029,7 +7041,8 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
       var result = extractJSON(raw);
       var keys = ["buyer", "influencers", "competition", "win", "lose", "decision", "taught"];
       var next = Object.assign({}, musts);
-      var filled = 0;
+      var newWeights = {};
+      var filled = 0, wGot = 0;
       keys.forEach(function (k) {
         var r = result[k];
         if (!r || typeof r !== "object") return;
@@ -7037,8 +7050,13 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
         if (typeof r.summary === "string" && r.summary.length > 5) { cur.summary = r.summary; filled++; }
         if (Array.isArray(r.checks)) { var cs = r.checks.slice(0, 5).map(Boolean); while (cs.length < 5) cs.push(false); cur.checks = cs; }
         next[k] = cur;
+        var wv = parseFloat(r.weight); if (!isNaN(wv) && wv >= 0) { newWeights[k] = wv; wGot++; }
       });
-      if (filled) { update("sevenMusts", normMusts(next)); setDraftStatus("✅ Drafted " + filled + " of 7 Musts. Review every summary and only keep the ticks you have truly confirmed."); }
+      if (wGot === keys.length) {
+        var wsum = 0; keys.forEach(function (k) { wsum += newWeights[k]; });
+        if (wsum > 0) { keys.forEach(function (k) { newWeights[k] = Math.round(newWeights[k] / wsum * 100); }); update("mustWeights", normWeights(newWeights)); }
+      }
+      if (filled) { update("sevenMusts", normMusts(next)); setDraftStatus("✅ Drafted " + filled + " of 7 Musts and set the section weights. Review every summary and keep only the ticks you have truly confirmed."); }
       else { setDraftStatus("⚠️ Could not read a valid draft back. Try again."); }
       setTimeout(function () { setDraftStatus(""); }, 10000);
     } catch (err) { setDraftStatus("❌ " + err.message); }
@@ -7084,6 +7102,21 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
       ),
       React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 8, lineHeight: 1.5 } }, "The seven questions every qualified deal must answer. Tick each proof point as you confirm it and capture the detail in the quick summary. Work top to bottom before every deal review.")
     ),
+    React.createElement(
+      Card,
+      { style: { marginTop: 12, borderLeft: "4px solid " + likCol } },
+      React.createElement("div", { style: { display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8 } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text } }, "Likelihood this deal happens"),
+        React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 6 } },
+          React.createElement("div", { style: { fontSize: 30, fontWeight: 800, color: likCol, lineHeight: 1 } }, likelihood + "%"),
+          React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: C.muted } }, "probability")
+        )
+      ),
+      React.createElement("div", { style: { height: 10, borderRadius: 6, background: "#F1F5F9", overflow: "hidden", marginTop: 10 } },
+        React.createElement("div", { style: { width: likelihood + "%", height: "100%", borderRadius: 6, background: likCol, transition: "width .2s" } })
+      ),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 8, lineHeight: 1.5 } }, "A weighted probability, not just coverage. Each Must carries a weight for how much it drives the odds of closing, and the score is how complete that Must is multiplied by its weight. Adjust the weight inside any Must to match how this deal really turns on it.")
+    ),
     MUSTS.map(function (m) {
       var e = musts[m.key];
       var done = e.checks.filter(Boolean).length;
@@ -7099,11 +7132,18 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
         },
           React.createElement("div", { style: { flex: "0 0 28px", height: 28, borderRadius: "50%", background: complete ? "#059669" : "#1E293B", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 } }, String(m.n)),
           React.createElement("div", { style: { flex: 1, fontSize: 14, fontWeight: 700, color: C.text } }, m.title),
+          React.createElement("div", { title: "Weight toward deal probability", style: { fontSize: 11, fontWeight: 700, color: "#0369A1", padding: "3px 9px", borderRadius: 12, background: "#E0F2FE" } }, "W " + weights[m.key] + "%"),
           React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: complete ? "#059669" : C.muted, padding: "3px 10px", borderRadius: 12, background: complete ? "#ECFDF5" : "#F1F5F9" } }, done + " / 5"),
           React.createElement("div", { style: { fontSize: 12, color: C.muted, transform: isOpen ? "rotate(90deg)" : "none", transition: "transform .15s" } }, "▶")
         ),
         isOpen && React.createElement("div", { style: { padding: "0 16px 16px" } },
           React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10, lineHeight: 1.5 } }, m.hint),
+          React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: "10px 12px", marginBottom: 12, borderRadius: 8, background: "#F0F9FF", border: "1px solid #BAE6FD" } },
+            React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "#0369A1" } }, "Weight toward deal probability"),
+            React.createElement("input", { type: "number", min: 0, max: 100, value: weights[m.key], onChange: function (ev) { setWeight(m.key, ev.target.value); }, onClick: function (ev) { ev.stopPropagation(); }, style: { width: 64, padding: "6px 8px", borderRadius: 6, border: "1.5px solid #7DD3FC", fontFamily: "inherit", fontSize: 13, fontWeight: 700, color: C.text } }),
+            React.createElement("div", { style: { fontSize: 12, color: C.muted } }, "%"),
+            React.createElement("div", { style: { fontSize: 11, color: C.muted, flex: 1, minWidth: 160, lineHeight: 1.4 } }, "How much this Must drives the odds of closing. This Must currently contributes " + (wTotal > 0 ? Math.round(weights[m.key] * (done / 5) / wTotal * 100) : 0) + "% of the " + likelihood + "% likelihood.")
+          ),
           React.createElement(FieldLabel, null, "Quick summary"),
           React.createElement(TextArea, { value: e.summary, onChange: function (v) { setMust(m.key, "summary", v); }, placeholder: m.ph, rows: 3 }),
           React.createElement("div", { style: { height: 6 } }),
@@ -9988,10 +10028,12 @@ const SUPER_SECTIONS = [
     { id: "executives", label: "People" },
     { id: "geopolitics", label: "Geo-Politics" },
   ]},
-  { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
+  { id: "dealqual", label: "Deal Qualification", icon: "\uD83E\uDD1D", children: [
     { id: "oppscore", label: "Opportunity Rating" },
     { id: "sevenmusts", label: "7 Musts" },
     { id: "dealobjectives", label: "Deal Objectives" },
+  ]},
+  { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
     { id: "bugrowth", label: "BU Growth & JAGGAER" },
     { id: "buleaders", label: "BU Leaders" },
     { id: "problems", label: "Problems" },
