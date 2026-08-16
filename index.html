@@ -83,8 +83,35 @@ function capSignals(arr, n){ if (!Array.isArray(arr) || arr.length <= n) return 
 // Move C-suite / board titles sitting in "Other" (or unassigned) into the Executive Board bucket
 function boardDept(p){ if (!p || typeof p !== "object") return p; var d = p.department || ""; var t = (p.title || "").toLowerCase(); if (/managing board|executive board|member of the (managing |executive )?board|\bvorstand\b|\bmbm\b|labor director|supervisory board/.test(t)) { return Object.assign({}, p, { department: "Executive Board" }); } var procB = ["Procurement / CPO", "Strategic Sourcing", "Category Management", "Supplier Management & Risk", "Supply Chain & Operations", "Finance"]; if (procB.indexOf(d) === -1 && /\b(cio|cto|cdo)\b|chief (information|technology|digital)|head of it\b|head of information|\berp\b|procurement systems|digital.*officer/.test(t)) { return Object.assign({}, p, { department: "IT / ERP Systems" }); } if ((!d || d === "Other") && /\b(ceo|cfo|coo|chro)\b|chief (executive|financial|operating|human|people)/.test(t)) { return Object.assign({}, p, { department: "Executive Board" }); } return p; }
 // Clean every list field on an account so no view can show duplicates (runs as data loads)
+var DEAL_STAGES = [
+  { key: "discovery", label: "Discovery (Pre-Pipeline)",
+    seller: ["Initial call and discovery", "Understand what the customer is solving for (confirm potential pain)", "Build rapport"],
+    buyer: ["Shares current situation", "Confirms interest and agrees to next step"] },
+  { key: "validate", label: "Validate / Qualify",
+    seller: ["Deep understanding of the prospect's needs, pain points and organisation", "Establish credibility of company and solution", "Create enthusiasm for ongoing prospect engagement", "Establish business imperatives for the partnership"],
+    buyer: ["Shares names and roles of key influencers"] },
+  { key: "prove", label: "Prove Value",
+    seller: ["Proposal presented"],
+    buyer: ["Provides business data to co-develop the ROI and value proposition", "Shares alternatives being considered", "Verbal commitment to close, including the detail on their contractual and InfoSec processes"] },
+  { key: "negotiate", label: "Negotiate / Contracting",
+    seller: ["Terms and fees negotiated"],
+    buyer: ["Access to all legal and procurement staff", "Assistance in completing closing docs"] },
+  { key: "close", label: "Closed / Onboarding",
+    seller: ["Contract signed and booked", "Kickoff and onboarding scheduled"],
+    buyer: ["Countersigns the agreement", "Confirms go live date and project team"] }
+];
+function normDeal(d){
+  d = (d && typeof d === "object") ? d : {};
+  function fix(arr, n){ arr = Array.isArray(arr) ? arr.slice(0, n) : []; while (arr.length < n) arr.push(false); return arr.map(Boolean); }
+  var out = {};
+  DEAL_STAGES.forEach(function (s) {
+    var e = (d[s.key] && typeof d[s.key] === "object") ? d[s.key] : {};
+    out[s.key] = { seller: fix(e.seller, s.seller.length), buyer: fix(e.buyer, s.buyer.length) };
+  });
+  return out;
+}
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), dealObjectives: normDeal(a.dealObjectives) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2946,6 +2973,7 @@ const emptyAccount = (id, name = "") => ({
   oppRationale: "",
   oppNextSteps: "",
   sevenMusts: normMusts(null),
+  dealObjectives: normDeal(null),
   hypothesis: "",
   keySignals: [],
   primarySponsor: "",
@@ -7044,6 +7072,150 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
   );
 }
 
+function DealRow({ label, checked, onToggle }) {
+  return React.createElement("button", {
+    onClick: onToggle,
+    style: { display: "flex", alignItems: "flex-start", gap: 10, width: "100%", textAlign: "left", padding: "7px 4px", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }
+  },
+    React.createElement("div", { style: { flex: "0 0 20px", height: 20, borderRadius: "50%", marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: checked ? "#059669" : "transparent", border: checked ? "none" : "1.5px solid " + C.border, color: "#fff" } }, checked ? "✓" : ""),
+    React.createElement("div", { style: { fontSize: 13, lineHeight: 1.4, color: checked ? "#059669" : C.muted, fontWeight: checked ? 600 : 500 } }, label)
+  );
+}
+
+function DealObjectivesSection({ account, update, claudeApiKey }) {
+  var deal = normDeal(account.dealObjectives);
+  var dg = useState(false);
+  var drafting = dg[0];
+  var setDrafting = dg[1];
+  var dst = useState("");
+  var draftStatus = dst[0];
+  var setDraftStatus = dst[1];
+
+  function setItem(sk, grp, idx) {
+    var next = Object.assign({}, deal);
+    next[sk] = { seller: deal[sk].seller.slice(), buyer: deal[sk].buyer.slice() };
+    next[sk][grp][idx] = !next[sk][grp][idx];
+    update("dealObjectives", next);
+  }
+
+  var totalDone = 0, totalAll = 0;
+  DEAL_STAGES.forEach(function (s) {
+    var e = deal[s.key];
+    e.seller.forEach(function (x) { totalAll++; if (x) totalDone++; });
+    e.buyer.forEach(function (x) { totalAll++; if (x) totalDone++; });
+  });
+  var pct = totalAll ? Math.round(totalDone / totalAll * 100) : 0;
+
+  var draftDeal = async function () {
+    if (!claudeApiKey) { alert("Set your API key first (🔑 button in header)"); return; }
+    setDrafting(true); setDraftStatus("Reading the account history and marking off the deal stages…");
+    try {
+      var challengeNames = (account.challenges || []).map(function (c) { return (c && (c.name || c.title)) || (typeof c === "string" ? c : ""); }).filter(Boolean).slice(0, 6);
+      var context = {
+        companyName: account.companyName || "", industry: account.industry || "",
+        hypothesis: safeStr(account.hypothesis).substring(0, 300),
+        keySignals: (account.keySignals || []).slice(0, 8),
+        compellingEvent: safeStr(account.compellingEvent).substring(0, 300),
+        businessPain: safeStr(account.businessPain).substring(0, 300),
+        transcriptNotes: safeStr(account.transcriptNotes).substring(0, 400),
+        salesforceHistory: safeStr(account.sfHistory || account.salesforceHistory).substring(0, 400),
+        challenges: challengeNames,
+        oppFit: account.oppFit || "", oppTiming: account.oppTiming || "",
+        oppNextSteps: safeStr(account.oppNextSteps).substring(0, 300)
+      };
+      var stageList = DEAL_STAGES.map(function (s) {
+        return s.label + "\n  Seller Actions: " + s.seller.map(function (x, i) { return "[" + i + "] " + x; }).join(" ; ") + "\n  Buyer Reciprocations: " + s.buyer.map(function (x, i) { return "[" + i + "] " + x; }).join(" ; ");
+      }).join("\n");
+      var schema = {};
+      DEAL_STAGES.forEach(function (s) { schema[s.key] = { seller: s.seller.map(function () { return false; }), buyer: s.buyer.map(function () { return false; }) }; });
+      var prompt = "You are a senior JAGGAER source-to-pay sales strategist marking off the deal progression for a procurement software opportunity. Based ONLY on the intelligence below, decide which Seller Actions and Buyer Reciprocations have genuinely happened, and set those to true.\n\nCRITICAL: only set an item true when the intel clearly evidences it has actually occurred. These track real, completed milestones. When in doubt, leave it false. Early-stage deals should have very few items ticked. Do not tick a later stage before the earlier ones are essentially complete.\n\nThe stages and their items, with array positions:\n" + stageList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (each array holds one boolean per item, in the position order shown above):\n" + JSON.stringify(schema) + "\n\nRULES: booleans only, correct array lengths per stage. No prose.";
+      var resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 2000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!resp.ok) throw new Error("API " + resp.status);
+      var data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      var raw = apiText(data).trim();
+      if (raw.startsWith("\`\`\`")) raw = raw.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
+      var result = extractJSON(raw);
+      var next = Object.assign({}, deal);
+      var touched = 0;
+      DEAL_STAGES.forEach(function (s) {
+        var r = result[s.key];
+        if (!r || typeof r !== "object") return;
+        var seller = Array.isArray(r.seller) ? r.seller.slice(0, s.seller.length).map(Boolean) : deal[s.key].seller;
+        while (seller.length < s.seller.length) seller.push(false);
+        var buyer = Array.isArray(r.buyer) ? r.buyer.slice(0, s.buyer.length).map(Boolean) : deal[s.key].buyer;
+        while (buyer.length < s.buyer.length) buyer.push(false);
+        next[s.key] = { seller: seller, buyer: buyer };
+        touched++;
+      });
+      if (touched) { update("dealObjectives", normDeal(next)); setDraftStatus("✅ Deal stages updated from the account history. Review each tick and adjust anything that has not truly happened yet."); }
+      else { setDraftStatus("⚠️ Could not read a valid update back. Try again."); }
+      setTimeout(function () { setDraftStatus(""); }, 10000);
+    } catch (err) { setDraftStatus("❌ " + err.message); }
+    setDrafting(false);
+  };
+
+  return React.createElement(
+    "div",
+    null,
+    React.createElement(SectionHeader, { title: "Deal Objectives", badge: pct + "% complete", badgeColor: pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : "#1E293B" }),
+    React.createElement(
+      Card,
+      { style: { marginBottom: 12, borderLeft: "4px solid #00BFA5", background: "#F0FDFA" } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
+        React.createElement("div", { style: { flex: 1, minWidth: 200 } },
+          React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 2 } }, "✨ Autopopulate from account history"),
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.5 } }, "Reads the transcripts, Salesforce history, signals and next steps, then ticks the deal stages that have genuinely happened. It stays conservative, so review each tick before your deal review.")
+        ),
+        React.createElement("button", {
+          onClick: draftDeal, disabled: drafting,
+          style: { padding: "10px 18px", borderRadius: 8, border: "none", cursor: drafting ? "default" : "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: drafting ? "#94A3B8" : "#00BFA5", color: "#fff", whiteSpace: "nowrap" }
+        }, drafting ? "Reading…" : "Autopopulate")
+      ),
+      draftStatus && React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 10, lineHeight: 1.5 } }, draftStatus)
+    ),
+    React.createElement(
+      Card,
+      { style: { borderLeft: "4px solid #059669" } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text } }, "Deal progression"),
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : C.muted } }, totalDone + " / " + totalAll + "  (" + pct + "%)")
+      ),
+      React.createElement("div", { style: { height: 10, borderRadius: 6, background: "#F1F5F9", overflow: "hidden" } },
+        React.createElement("div", { style: { width: pct + "%", height: "100%", borderRadius: 6, background: pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : "#94A3B8", transition: "width .2s" } })
+      ),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 8, lineHeight: 1.5 } }, "The seller actions and buyer reciprocations that move the deal from first call to signature. Tick each one as it genuinely happens. A stage is only truly done when its buyer reciprocations are met, not just your own actions.")
+    ),
+    DEAL_STAGES.map(function (s) {
+      var e = deal[s.key];
+      var done = e.seller.filter(Boolean).length + e.buyer.filter(Boolean).length;
+      var total = s.seller.length + s.buyer.length;
+      var complete = done === total;
+      var accent = complete ? "#059669" : done > 0 ? "#D97706" : C.border;
+      return React.createElement(
+        Card,
+        { key: s.key, style: { marginTop: 12, borderLeft: "4px solid " + accent } },
+        React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, paddingBottom: 8, borderBottom: "1px solid " + C.border } },
+          React.createElement("div", { style: { fontSize: 12, fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase", color: C.text } }, s.label),
+          React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: complete ? "#059669" : C.muted, padding: "2px 9px", borderRadius: 12, background: complete ? "#ECFDF5" : "#F1F5F9" } }, done + " / " + total)
+        ),
+        React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, marginBottom: 2 } }, "Seller Actions"),
+        s.seller.map(function (lbl, i) {
+          return React.createElement(DealRow, { key: "s" + i, label: lbl, checked: !!e.seller[i], onToggle: function () { setItem(s.key, "seller", i); } });
+        }),
+        React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, margin: "10px 0 2px" } }, "Buyer Reciprocations"),
+        s.buyer.map(function (lbl, i) {
+          return React.createElement(DealRow, { key: "b" + i, label: lbl, checked: !!e.buyer[i], onToggle: function () { setItem(s.key, "buyer", i); } });
+        })
+      );
+    })
+  );
+}
+
 function OutcomeFramingSection({ account, update }) {
   return /*#__PURE__*/ React.createElement(
     "div",
@@ -9775,6 +9947,7 @@ const SUPER_SECTIONS = [
   { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
     { id: "oppscore", label: "Opportunity Rating" },
     { id: "sevenmusts", label: "7 Musts" },
+    { id: "dealobjectives", label: "Deal Objectives" },
     { id: "bugrowth", label: "BU Growth & JAGGAER" },
     { id: "buleaders", label: "BU Leaders" },
     { id: "problems", label: "Problems" },
@@ -11122,6 +11295,8 @@ Return this exact JSON structure:
             /*#__PURE__*/ React.createElement(OpportunityScoreSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "sevenmusts" &&
             /*#__PURE__*/ React.createElement(SevenMustsSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
+          activeSection === "dealobjectives" &&
+            /*#__PURE__*/ React.createElement(DealObjectivesSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "bugrowth" &&
             /*#__PURE__*/ React.createElement(BUGrowthJAGGAERSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "buleaders" &&
