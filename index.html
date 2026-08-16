@@ -4971,7 +4971,7 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       const data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       let raw = apiText(data).trim();
@@ -5572,7 +5572,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       const data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       let raw = apiText(data).trim();
@@ -6299,7 +6299,7 @@ function ProblemIdentificationSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       const data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       let raw = apiText(data).trim();
@@ -6399,7 +6399,7 @@ function UseCaseMappingSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       const data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       let raw = apiText(data).trim();
@@ -6489,7 +6489,7 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       const data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       let raw = apiText(data).trim();
@@ -6724,7 +6724,7 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }], max_tokens: 3000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       var data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       var raw = apiText(data).trim();
@@ -6943,6 +6943,16 @@ var MUSTS = [
     ] }
 ];
 
+var MUST_WHY = {
+  buyer: "The economic buyer owns the budget and signs the contract. Deals without a confirmed buyer who holds budget and can be reached stall or die in procurement, because no one has the authority to say yes. Access to power is the single biggest predictor of whether a deal closes, which is why this imperative carries the most weight. If you cannot reach the buyer, or they will not champion your value internally, everything downstream is at risk.",
+  influencers: "Enterprise procurement decisions are made by a committee, not one person. Category managers, IT and ERP owners, Finance and the business units all shape the outcome and any one of them can block it. Mapping every influencer, reaching them and turning at least one into an internal advocate is what carries a deal through a complex buying group. Deals lost late often trace back to an unmapped influencer who quietly said no.",
+  competition: "You are almost never the only option, even when the alternative is the status quo or the incumbent system. Knowing who you are up against, why they are at the table and how the buyer perceives them lets you shape the evaluation to your strengths. Sellers who cannot name the competition or the real decision criteria are usually column fodder for a decision already leaning elsewhere.",
+  win: "A clear, prospect validated reason to win is what turns interest into a decision in your favour. It means you understand their real needs, they have shared their pains and decision process, and they are actively helping you build the case. A deal with no articulated win theme tends to slip, because nothing is pulling it forward against inertia and competing priorities.",
+  lose: "Deals are lost more often than they are won on merit. A budget freeze, an InfoSec blocker, an incumbent lock in or a champion who leaves can sink an otherwise strong opportunity, and one unmanaged risk outweighs any number of strengths. Being honest about why you might lose, and having a plan to counter each risk, is what makes a forecast real. This is why risk realism is weighted at least as heavily as the win case.",
+  decision: "Most enterprise deals are lost to no decision, not to a competitor. A confirmed decision date, legal and procurement engaged, and an agreed close and kickoff plan are what convert a maybe into a booking in a known quarter. Without a dated decision process the deal has no forward momentum and drifts across quarters, wrecking forecast accuracy.",
+  taught: "The best sellers change how the buyer sees their own problem, bringing insight, benchmarks and best practice they could not get elsewhere. When a prospect seeks your counsel and values the process itself, you have built the credibility and trust that win the close and the renewal. It is more of an enabler than a determinant, which is why it carries the lowest weight, but it is what separates a trusted advisor from a vendor."
+};
+
 function MustCheckRow({ label, checked, onToggle }) {
   return React.createElement("button", {
     onClick: onToggle,
@@ -6986,8 +6996,6 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
     var v = parseFloat(val); if (isNaN(v) || v < 0) v = 0; if (v > 100) v = 100;
     var nw = Object.assign({}, weights); nw[key] = v; update("mustWeights", nw);
   }
-  var notes = normMustNotes(account.weightNotes);
-  function setNote(key, val) { var nn = Object.assign({}, notes); nn[key] = val; update("weightNotes", nn); }
   var no = useState("");
   var openNote = no[0];
   var setOpenNote = no[1];
@@ -7032,7 +7040,7 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 4 }], max_tokens: 5000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       var data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       var raw = apiText(data).trim();
@@ -7148,11 +7156,9 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
               onClick: function () { setOpenNote(openNote === m.key ? "" : m.key); },
               style: { display: "flex", alignItems: "center", gap: 6, width: "100%", textAlign: "left", padding: "8px 12px", border: "none", borderTop: "1px solid #BAE6FD", background: "#E0F2FE", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 700, color: "#0369A1" } },
               React.createElement("span", { style: { display: "inline-block", transform: openNote === m.key ? "rotate(90deg)" : "none", transition: "transform .15s", fontSize: 10 } }, "▶"),
-              (notes[m.key] && notes[m.key].length ? "Why this weight matters ✓" : "Why this weight matters")
+              "Why this matters and how it affects a deal"
             ),
-            (openNote === m.key) && React.createElement("div", { style: { padding: "10px 12px", background: "#fff" } },
-              React.createElement(TextArea, { value: notes[m.key], onChange: function (v) { setNote(m.key, v); }, placeholder: "Explain why you weight this Must the way you do for this deal, e.g. access to the economic buyer is the whole game here, procurement will rubber stamp once Soraya is bought in…", rows: 3 })
-            )
+            (openNote === m.key) && React.createElement("div", { style: { padding: "10px 14px", background: "#fff", fontSize: 12.5, color: C.text, lineHeight: 1.6 } }, MUST_WHY[m.key])
           ),
           React.createElement(FieldLabel, null, "Quick summary"),
           React.createElement(TextArea, { value: e.summary, onChange: function (v) { setMust(m.key, "summary", v); }, placeholder: m.ph, rows: 3 }),
@@ -7228,7 +7234,7 @@ function DealObjectivesSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 2000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       var data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       var raw = apiText(data).trim();
@@ -7394,7 +7400,7 @@ function HyperCellSection({ account, update, claudeApiKey }) {
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, messages: [{ role: "user", content: prompt }] }),
       });
-      if (!resp.ok) throw new Error("API " + resp.status);
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
       const data = await resp.json();
       if (data.error) throw new Error(data.error.message);
       let raw = apiText(data).trim();
