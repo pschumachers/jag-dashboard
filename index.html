@@ -111,7 +111,7 @@ function normDeal(d){
   return out;
 }
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), dealObjectives: normDeal(a.dealObjectives) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), dealObjectives: normDeal(a.dealObjectives) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2972,6 +2972,8 @@ const emptyAccount = (id, name = "") => ({
   oppValue: "",
   oppRationale: "",
   oppNextSteps: "",
+  oppScore: "",
+  oppSources: [],
   sevenMusts: normMusts(null),
   dealObjectives: normDeal(null),
   hypothesis: "",
@@ -6732,6 +6734,7 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
         sevenMustsBreakdown: mustBreak
       };
       var prompt = "You are a senior JAGGAER source-to-pay sales strategist qualifying a procurement software opportunity. Based ONLY on the intelligence below, score the opportunity. Weigh: fit of JAGGAER's procurement / source-to-pay suite to their pains, urgency of the compelling event, budget and access to power, competitive position, and the 7 Musts qualification score (higher completion = better qualified, more likely to close sooner). A low 7 Musts score or a missing compelling event should push timing later and fit lower.\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON, no prose:\n" + JSON.stringify({
+        oppScore: "integer from 0 to 100, the overall opportunity score. Higher means a stronger fit, nearer-term close and higher value. Must be consistent with oppFit and oppTiming (e.g. a Strong fit closing this quarter scores high; a Weak fit that is Unlikely scores low)",
         oppFit: "one of exactly: Strong fit | Possible fit | Weak fit | Not a fit",
         oppTiming: "one of exactly: This quarter | Next quarter | This year | Next year | Unlikely",
         oppValue: "estimated deal value as a short string, e.g. '€400K ACV, about €1.2M TCV over 3 years' — base it on revenue, employee scale and typical JAGGAER deal sizes for this industry",
@@ -6749,7 +6752,23 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
       var raw = apiText(data).trim();
       if (raw.startsWith("\`\`\`")) raw = raw.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
       var result = extractJSON(raw);
+      var sources = [];
+      try {
+        (data.content || []).forEach(function (b) {
+          if (b && b.type === "web_search_tool_result" && Array.isArray(b.content)) {
+            b.content.forEach(function (r) { if (r && r.url) sources.push({ title: r.title || r.url, url: r.url }); });
+          }
+          if (b && b.type === "text" && Array.isArray(b.citations)) {
+            b.citations.forEach(function (c) { if (c && c.url) sources.push({ title: c.title || c.url, url: c.url }); });
+          }
+        });
+      } catch (e) {}
+      var seenU = {}, uniqSrc = [];
+      sources.forEach(function (s) { if (!seenU[s.url]) { seenU[s.url] = 1; uniqSrc.push(s); } });
       var applied = [];
+      var sc = parseInt(result.oppScore, 10);
+      if (!isNaN(sc)) { sc = Math.max(0, Math.min(100, sc)); update("oppScore", sc); applied.push("score"); }
+      update("oppSources", uniqSrc);
       if (result.oppFit && FIT_OPTS.indexOf(result.oppFit) !== -1) { update("oppFit", result.oppFit); applied.push("fit"); }
       if (result.oppTiming && TIME_OPTS.indexOf(result.oppTiming) !== -1) { update("oppTiming", result.oppTiming); applied.push("timing"); }
       if (result.oppValue && typeof result.oppValue === "string" && result.oppValue.length > 3) { update("oppValue", result.oppValue); applied.push("value"); }
@@ -6784,6 +6803,22 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
     React.createElement(
       Card,
       null,
+      (function () {
+        var s = account.oppScore;
+        var has = (s !== "" && s !== null && s !== undefined && !isNaN(parseInt(s, 10)));
+        var n = has ? parseInt(s, 10) : 0;
+        var col = n >= 70 ? "#059669" : n >= 40 ? "#D97706" : "#DC2626";
+        return React.createElement("div", { style: { marginBottom: 18 } },
+          React.createElement(FieldLabel, null, "Opportunity score"),
+          React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 8 } },
+            React.createElement("div", { style: { fontSize: 34, fontWeight: 800, color: has ? col : C.muted, lineHeight: 1 } }, has ? String(n) : "—"),
+            React.createElement("div", { style: { fontSize: 14, fontWeight: 700, color: C.muted } }, "/ 100")
+          ),
+          React.createElement("div", { style: { height: 8, borderRadius: 5, background: "#F1F5F9", overflow: "hidden", marginTop: 8 } },
+            React.createElement("div", { style: { width: (has ? n : 0) + "%", height: "100%", background: col, borderRadius: 5, transition: "width .2s" } })
+          )
+        );
+      })(),
       React.createElement(FieldLabel, null, "Is this a real opportunity?"),
       React.createElement(PillRow, { options: ["Strong fit", "Possible fit", "Weak fit", "Not a fit"], value: account.oppFit, onSelect: function (v) { update("oppFit", v); }, colorMap: fitColors }),
       React.createElement("div", { style: { height: 16 } }),
@@ -6797,7 +6832,16 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
       React.createElement(TextArea, { value: account.oppRationale, onChange: function (v) { update("oppRationale", v); }, placeholder: "Fit, urgency (compelling event), budget, access to power, competition — the reasoning behind the score…", rows: 3 }),
       React.createElement("div", { style: { height: 16 } }),
       React.createElement(FieldLabel, null, "What has to be done to close"),
-      React.createElement(TextArea, { value: account.oppNextSteps, onChange: function (v) { update("oppNextSteps", v); }, placeholder: "The close plan, the specific next actions to win the deal: confirm the economic buyer and budget, pin a decision date and mutual action plan, close the biggest gaps in the 7 Musts…", rows: 4 })
+      React.createElement(TextArea, { value: account.oppNextSteps, onChange: function (v) { update("oppNextSteps", v); }, placeholder: "The close plan, the specific next actions to win the deal: confirm the economic buyer and budget, pin a decision date and mutual action plan, close the biggest gaps in the 7 Musts…", rows: 4 }),
+      (account.oppSources && account.oppSources.length) ? React.createElement("div", { style: { marginTop: 18 } },
+        React.createElement(FieldLabel, null, "Sources"),
+        React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 6, lineHeight: 1.5 } }, "The public pages the AI read while scoring this opportunity."),
+        account.oppSources.map(function (s, i) {
+          return React.createElement("div", { key: i, style: { fontSize: 12, marginBottom: 5, lineHeight: 1.4, wordBreak: "break-word" } },
+            React.createElement("a", { href: s.url, target: "_blank", rel: "noopener noreferrer", style: { color: C.blue, textDecoration: "none" } }, "🔗 " + (s.title || s.url))
+          );
+        })
+      ) : null
     )
   );
 }
