@@ -114,7 +114,7 @@ var DEFAULT_MUST_WEIGHTS = { buyer: 22, influencers: 15, competition: 9, win: 13
 function normWeights(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { var v = parseFloat(w[k]); out[k] = (isNaN(v) || v < 0) ? DEFAULT_MUST_WEIGHTS[k] : v; }); return out; }
 function normMustNotes(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { out[k] = typeof w[k] === "string" ? w[k] : ""; }); return out; }
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), weightNotes: normMustNotes(a.weightNotes), dealObjectives: normDeal(a.dealObjectives) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [], salesCycle: "", dealStartDate: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), weightNotes: normMustNotes(a.weightNotes), dealObjectives: normDeal(a.dealObjectives) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2977,6 +2977,8 @@ const emptyAccount = (id, name = "") => ({
   oppNextSteps: "",
   oppScore: "",
   oppSources: [],
+  salesCycle: "",
+  dealStartDate: "",
   sevenMusts: normMusts(null),
   mustWeights: normWeights(null),
   weightNotes: normMustNotes(null),
@@ -6670,6 +6672,11 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
   var timeColors = { "This quarter": "#059669", "Next quarter": "#0D9488", "This year": "#D97706", "Next year": "#6366F1", "Unlikely": "#DC2626" };
   var FIT_OPTS = ["Strong fit", "Possible fit", "Weak fit", "Not a fit"];
   var TIME_OPTS = ["This quarter", "Next quarter", "This year", "Next year", "Unlikely"];
+  var cycleN = parseInt(account.salesCycle, 10);
+  var hasCycle = !isNaN(cycleN) && cycleN >= 0;
+  var baseDate = account.dealStartDate ? new Date(account.dealStartDate) : new Date();
+  var projClose = "";
+  if (hasCycle && !isNaN(baseDate.getTime())) { var pd = new Date(baseDate.getTime()); pd.setMonth(pd.getMonth() + cycleN); projClose = pd.toLocaleDateString("en-GB", { month: "short", year: "numeric" }); }
   var sg = useState(false);
   var suggesting = sg[0];
   var setSuggesting = sg[1];
@@ -6708,6 +6715,7 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
         oppFit: "one of exactly: Strong fit | Possible fit | Weak fit | Not a fit",
         oppTiming: "one of exactly: This quarter | Next quarter | This year | Next year | Unlikely",
         oppValue: "estimated deal value as a short string, e.g. '€400K ACV, about €1.2M TCV over 3 years' — base it on revenue, employee scale and typical JAGGAER deal sizes for this industry",
+        salesCycle: "integer number of months for a realistic sales cycle from now to signature for a deal of this type and size. Enterprise source-to-pay deals typically run 6 to 15 months; a large, multi-stakeholder procurement transformation runs longer. Return just the integer",
         oppRationale: "3 to 5 sentences: fit to JAGGAER, urgency from the compelling event, budget and access to power, competition, and what the 7 Musts score tells us. Name the specific evidence you used. British English, no dashes.",
         oppNextSteps: "A short, concrete close plan: the 3 to 6 specific actions needed to win and close this deal, in priority order. Target the biggest gaps in the 7 Musts (missing buyer, no compelling event confirmed, competition unknown, no decision date). Each action should be a clear next step a seller can act on this week, e.g. 'Confirm the economic buyer and budget with the CPO', 'Pin a decision date and mutual action plan', 'Run a spend-visibility value session'. British English, no dashes."
       }) + "\n\nRULES: oppFit and oppTiming MUST be exactly one of the listed values, nothing else. If evidence is thin, be conservative (Possible fit or lower, This year or later) and say so in the rationale.";
@@ -6742,6 +6750,8 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
       if (result.oppFit && FIT_OPTS.indexOf(result.oppFit) !== -1) { update("oppFit", result.oppFit); applied.push("fit"); }
       if (result.oppTiming && TIME_OPTS.indexOf(result.oppTiming) !== -1) { update("oppTiming", result.oppTiming); applied.push("timing"); }
       if (result.oppValue && typeof result.oppValue === "string" && result.oppValue.length > 3) { update("oppValue", result.oppValue); applied.push("value"); }
+      var scy = parseInt(result.salesCycle, 10);
+      if (!isNaN(scy) && scy >= 0 && scy <= 60) { update("salesCycle", String(scy)); applied.push("sales cycle"); }
       if (result.oppRationale && typeof result.oppRationale === "string" && result.oppRationale.length > 10) { update("oppRationale", result.oppRationale); applied.push("rationale"); }
       if (result.oppNextSteps && typeof result.oppNextSteps === "string" && result.oppNextSteps.length > 10) { update("oppNextSteps", result.oppNextSteps); applied.push("close plan"); }
       if (applied.length) { setStatus("✅ Rating suggested. Set " + applied.join(", ") + ". Review and adjust the pills if needed."); }
@@ -6794,6 +6804,23 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
       React.createElement("div", { style: { height: 16 } }),
       React.createElement(FieldLabel, null, "Likely to close"),
       React.createElement(PillRow, { options: ["This quarter", "Next quarter", "This year", "Next year", "Unlikely"], value: account.oppTiming, onSelect: function (v) { update("oppTiming", v); }, colorMap: timeColors }),
+      React.createElement("div", { style: { height: 16 } }),
+      React.createElement(FieldLabel, null, "Sales cycle & projected close"),
+      React.createElement("div", { style: { display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" } },
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 5 } }, "Sales cycle (months)"),
+          React.createElement("input", { type: "number", min: 0, max: 60, value: account.salesCycle, onChange: function (e) { update("salesCycle", e.target.value); }, placeholder: "e.g. 9", style: { width: 110, padding: "9px 10px", borderRadius: 6, border: "1px solid " + C.border, fontFamily: "inherit", fontSize: 14, fontWeight: 600, color: C.text } })
+        ),
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 5 } }, "Deal start / first engagement"),
+          React.createElement("input", { type: "date", value: account.dealStartDate, onChange: function (e) { update("dealStartDate", e.target.value); }, style: { padding: "8px 10px", borderRadius: 6, border: "1px solid " + C.border, fontFamily: "inherit", fontSize: 14, color: C.text } })
+        ),
+        React.createElement("div", { style: { flex: 1, minWidth: 150 } },
+          React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 5 } }, "Projected close"),
+          React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: projClose ? "#059669" : C.muted } }, projClose || "Add months")
+        )
+      ),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 8, lineHeight: 1.5 } }, "Projected close is the start date, or today if left blank, plus the sales cycle in months. It turns the timing bucket above into a real, dated close so the forecast is honest."),
       React.createElement("div", { style: { height: 16 } }),
       React.createElement(FieldLabel, null, "Potential value (ACV / TCV)"),
       React.createElement(TextArea, { value: account.oppValue, onChange: function (v) { update("oppValue", v); }, placeholder: "e.g. €400K ACV, about €1.2M TCV over 3 years", rows: 2 }),
