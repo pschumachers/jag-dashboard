@@ -112,8 +112,9 @@ function normDeal(d){
 }
 var DEFAULT_MUST_WEIGHTS = { buyer: 22, influencers: 15, competition: 9, win: 13, lose: 15, decision: 20, taught: 6 };
 function normWeights(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { var v = parseFloat(w[k]); out[k] = (isNaN(v) || v < 0) ? DEFAULT_MUST_WEIGHTS[k] : v; }); return out; }
+function normMustNotes(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { out[k] = typeof w[k] === "string" ? w[k] : ""; }); return out; }
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), dealObjectives: normDeal(a.dealObjectives) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), weightNotes: normMustNotes(a.weightNotes), dealObjectives: normDeal(a.dealObjectives) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2978,6 +2979,7 @@ const emptyAccount = (id, name = "") => ({
   oppSources: [],
   sevenMusts: normMusts(null),
   mustWeights: normWeights(null),
+  weightNotes: normMustNotes(null),
   dealObjectives: normDeal(null),
   hypothesis: "",
   keySignals: [],
@@ -6992,6 +6994,11 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
     var v = parseFloat(val); if (isNaN(v) || v < 0) v = 0; if (v > 100) v = 100;
     var nw = Object.assign({}, weights); nw[key] = v; update("mustWeights", nw);
   }
+  var notes = normMustNotes(account.weightNotes);
+  function setNote(key, val) { var nn = Object.assign({}, notes); nn[key] = val; update("weightNotes", nn); }
+  var no = useState("");
+  var openNote = no[0];
+  var setOpenNote = no[1];
   var wTotal = 0; MUSTS.forEach(function (m) { wTotal += weights[m.key]; });
   var likAcc = 0; MUSTS.forEach(function (m) { likAcc += weights[m.key] * (musts[m.key].checks.filter(Boolean).length / 5); });
   var likelihood = wTotal > 0 ? Math.round(likAcc / wTotal * 100) : 0;
@@ -7138,11 +7145,22 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
         ),
         isOpen && React.createElement("div", { style: { padding: "0 16px 16px" } },
           React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10, lineHeight: 1.5 } }, m.hint),
-          React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: "10px 12px", marginBottom: 12, borderRadius: 8, background: "#F0F9FF", border: "1px solid #BAE6FD" } },
-            React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "#0369A1" } }, "Weight toward deal probability"),
-            React.createElement("input", { type: "number", min: 0, max: 100, value: weights[m.key], onChange: function (ev) { setWeight(m.key, ev.target.value); }, onClick: function (ev) { ev.stopPropagation(); }, style: { width: 64, padding: "6px 8px", borderRadius: 6, border: "1.5px solid #7DD3FC", fontFamily: "inherit", fontSize: 13, fontWeight: 700, color: C.text } }),
-            React.createElement("div", { style: { fontSize: 12, color: C.muted } }, "%"),
-            React.createElement("div", { style: { fontSize: 11, color: C.muted, flex: 1, minWidth: 160, lineHeight: 1.4 } }, "How much this Must drives the odds of closing. This Must currently contributes " + (wTotal > 0 ? Math.round(weights[m.key] * (done / 5) / wTotal * 100) : 0) + "% of the " + likelihood + "% likelihood.")
+          React.createElement("div", { style: { marginBottom: 12, borderRadius: 8, background: "#F0F9FF", border: "1px solid #BAE6FD", overflow: "hidden" } },
+            React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: "10px 12px" } },
+              React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "#0369A1" } }, "Weight toward deal probability"),
+              React.createElement("input", { type: "number", min: 0, max: 100, value: weights[m.key], onChange: function (ev) { setWeight(m.key, ev.target.value); }, onClick: function (ev) { ev.stopPropagation(); }, style: { width: 64, padding: "6px 8px", borderRadius: 6, border: "1.5px solid #7DD3FC", fontFamily: "inherit", fontSize: 13, fontWeight: 700, color: C.text } }),
+              React.createElement("div", { style: { fontSize: 12, color: C.muted } }, "%"),
+              React.createElement("div", { style: { fontSize: 11, color: C.muted, flex: 1, minWidth: 160, lineHeight: 1.4 } }, "How much this Must drives the odds of closing. This Must currently contributes " + (wTotal > 0 ? Math.round(weights[m.key] * (done / 5) / wTotal * 100) : 0) + "% of the " + likelihood + "% likelihood.")
+            ),
+            React.createElement("button", {
+              onClick: function () { setOpenNote(openNote === m.key ? "" : m.key); },
+              style: { display: "flex", alignItems: "center", gap: 6, width: "100%", textAlign: "left", padding: "8px 12px", border: "none", borderTop: "1px solid #BAE6FD", background: "#E0F2FE", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 700, color: "#0369A1" } },
+              React.createElement("span", { style: { display: "inline-block", transform: openNote === m.key ? "rotate(90deg)" : "none", transition: "transform .15s", fontSize: 10 } }, "▶"),
+              (notes[m.key] && notes[m.key].length ? "Why this weight matters ✓" : "Why this weight matters")
+            ),
+            (openNote === m.key) && React.createElement("div", { style: { padding: "10px 12px", background: "#fff" } },
+              React.createElement(TextArea, { value: notes[m.key], onChange: function (v) { setNote(m.key, v); }, placeholder: "Explain why you weight this Must the way you do for this deal, e.g. access to the economic buyer is the whole game here, procurement will rubber stamp once Soraya is bought in…", rows: 3 })
+            )
           ),
           React.createElement(FieldLabel, null, "Quick summary"),
           React.createElement(TextArea, { value: e.summary, onChange: function (v) { setMust(m.key, "summary", v); }, placeholder: m.ph, rows: 3 }),
