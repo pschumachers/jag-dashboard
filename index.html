@@ -83,7 +83,8 @@ function capSignals(arr, n){ if (!Array.isArray(arr) || arr.length <= n) return 
 // Move C-suite / board titles sitting in "Other" (or unassigned) into the Executive Board bucket
 function boardDept(p){ if (!p || typeof p !== "object") return p; var d = p.department || ""; var t = (p.title || "").toLowerCase(); if (/managing board|executive board|member of the (managing |executive )?board|\bvorstand\b|\bmbm\b|labor director|supervisory board/.test(t)) { return Object.assign({}, p, { department: "Executive Board" }); } var procB = ["Procurement / CPO", "Strategic Sourcing", "Category Management", "Supplier Management & Risk", "Supply Chain & Operations", "Finance"]; if (procB.indexOf(d) === -1 && /\b(cio|cto|cdo)\b|chief (information|technology|digital)|head of it\b|head of information|\berp\b|procurement systems|digital.*officer/.test(t)) { return Object.assign({}, p, { department: "IT / ERP Systems" }); } if ((!d || d === "Other") && /\b(ceo|cfo|coo|chro)\b|chief (executive|financial|operating|human|people)/.test(t)) { return Object.assign({}, p, { department: "Executive Board" }); } return p; }
 // Clean every list field on an account so no view can show duplicates (runs as data loads)
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []) }); }
+function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2943,6 +2944,7 @@ const emptyAccount = (id, name = "") => ({
   oppTiming: "",
   oppValue: "",
   oppRationale: "",
+  sevenMusts: normMusts(null),
   hypothesis: "",
   keySignals: [],
   primarySponsor: "",
@@ -6714,6 +6716,168 @@ function CompellingEventSection({ account, update }) {
   );
 }
 
+var MUSTS = [
+  { key: "buyer", n: 1, title: "Who is the Buyer?",
+    hint: "The economic buyer who owns the budget and signs off on the source to pay decision.",
+    ph: "Who holds the budget and the pen? Name, role (CPO, CFO, COO), what they own, and how sold they are on JAGGAER…",
+    checks: [
+      "Buyer confirmed?",
+      "Organisational needs and objectives confirmed?",
+      "Budget confirmed?",
+      "Buyer can enthusiastically sell our value proposition internally?",
+      "Do you have direct access to the Buyer?"
+    ] },
+  { key: "influencers", n: 2, title: "Who are the Influencers?",
+    hint: "Procurement, IT and ERP, Finance and business unit stakeholders who shape the platform decision.",
+    ph: "Category managers, IT and ERP owners, Finance, risk and the business units. Who influences the call and where do they stand…",
+    checks: [
+      "All Influencers confirmed?",
+      "Do we have access to all Influencers?",
+      "Influencers aligned on business goals and objectives?",
+      "All Influencers can enthusiastically support our value proposition?",
+      "Has one or more Influencer become an internal advisor?"
+    ] },
+  { key: "competition", n: 3, title: "Who are we competing against, and why?",
+    hint: "SAP Ariba, Coupa, Ivalua, GEP, Zip, Oro or the incumbent and status quo.",
+    ph: "Named competitors, incumbent systems and any status quo bias. Why is each one at the table…",
+    checks: [
+      "I know who our competition is?",
+      "Buyer has shared their perception of the competition?",
+      "I am aware of relationships the prospect has with competitors?",
+      "I understand why each competitor is at the table?",
+      "Buyer and Influencers aligned on the most important partner attributes?"
+    ] },
+  { key: "win", n: 4, title: "Why will we win?",
+    hint: "Our differentiated value against the prospect's needs and the competitive set.",
+    ph: "Our win themes: spend visibility, supplier risk, e invoicing, contract lifecycle. Tied to their stated pains and process…",
+    checks: [
+      "I clearly understand the prospect's needs and objectives?",
+      "Prospect has shared their organisational pain points?",
+      "Prospect is advising me on a win strategy?",
+      "I understand our position against the competitors?",
+      "Prospect has shared their decision making and procurement process?"
+    ] },
+  { key: "lose", n: 5, title: "Why will we lose?",
+    hint: "The risks, objections and deal breakers that could sink the opportunity.",
+    ph: "Risks and objections: budget freeze, ERP roadmap dependency, incumbent loyalty, procurement red tape. And the plan to counter each…",
+    checks: [
+      "I can outline all the risks?",
+      "I have a clear follow up plan to overcome all risks?",
+      "Buyer is sharing internal objections?",
+      "We have reviewed T&Cs and believe there are no deal breakers?",
+      "Buyer is being transparent about our position?"
+    ] },
+  { key: "decision", n: 6, title: "When will the decision be made?",
+    hint: "The dated close plan through legal, procurement and kickoff.",
+    ph: "Decision date, legal and procurement steps, kickoff date and team. The mutual action plan to signature…",
+    checks: [
+      "Decision date confirmed?",
+      "Legal and procurement engaged?",
+      "Project kickoff date agreed?",
+      "Prospect has identified the kickoff team?",
+      "Prospect is assisting in the closing process?"
+    ] },
+  { key: "taught", n: 7, title: "What have we taught them?",
+    hint: "The insight and credibility we have delivered through the process.",
+    ph: "The insight we brought that reframed their thinking: benchmarks, spend leakage, best practice. What did they learn from us…",
+    checks: [
+      "I have developed rapport and credibility?",
+      "I have a deep understanding of the prospect's challenges?",
+      "Prospect believes we can meet their base expectations?",
+      "Prospect has called to seek my guidance and counsel?",
+      "Would the prospect say the process was so effective they would have paid for our counsel?"
+    ] }
+];
+
+function MustCheckRow({ label, checked, onToggle }) {
+  return React.createElement("button", {
+    onClick: onToggle,
+    style: { display: "flex", alignItems: "flex-start", gap: 10, width: "100%", textAlign: "left",
+      padding: "10px 12px", marginTop: 8, borderRadius: 8, cursor: "pointer", fontFamily: "inherit",
+      border: "1.5px solid " + (checked ? "#059669" : C.border), background: checked ? "#ECFDF5" : "transparent" }
+  },
+    React.createElement("div", { style: { flex: "0 0 20px", height: 20, borderRadius: 5, marginTop: 1,
+      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700,
+      background: checked ? "#059669" : "transparent", border: checked ? "none" : "1.5px solid " + C.border,
+      color: "#fff" } }, checked ? "✓" : ""),
+    React.createElement("div", { style: { fontSize: 13, color: checked ? C.text : C.muted, lineHeight: 1.4, fontWeight: checked ? 600 : 500 } }, label)
+  );
+}
+
+function SevenMustsSection({ account, update }) {
+  var musts = normMusts(account.sevenMusts);
+  var st = useState("buyer");
+  var openKey = st[0];
+  var setOpen = st[1];
+
+  function setMust(key, field, val) {
+    var next = Object.assign({}, musts);
+    next[key] = Object.assign({}, next[key]);
+    next[key][field] = val;
+    update("sevenMusts", next);
+  }
+  function toggleCheck(key, idx) {
+    var checks = musts[key].checks.slice();
+    checks[idx] = !checks[idx];
+    setMust(key, "checks", checks);
+  }
+
+  var totalDone = 0, totalAll = 0, mustsDone = 0;
+  MUSTS.forEach(function (m) {
+    var c = musts[m.key].checks; totalAll += 5;
+    var d = 0; c.forEach(function (x) { if (x) { totalDone++; d++; } });
+    if (d === 5) mustsDone++;
+  });
+  var pct = totalAll ? Math.round(totalDone / totalAll * 100) : 0;
+
+  return React.createElement(
+    "div",
+    null,
+    React.createElement(SectionHeader, { title: "7 Musts — Deal Imperatives", badge: mustsDone + " / 7 complete", badgeColor: mustsDone === 7 ? "#059669" : "#1E293B" }),
+    React.createElement(
+      Card,
+      { style: { borderLeft: "4px solid #059669" } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text } }, "Qualification score"),
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : C.muted } }, totalDone + " / " + totalAll + "  (" + pct + "%)")
+      ),
+      React.createElement("div", { style: { height: 10, borderRadius: 6, background: "#F1F5F9", overflow: "hidden" } },
+        React.createElement("div", { style: { width: pct + "%", height: "100%", borderRadius: 6, background: pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : "#94A3B8", transition: "width .2s" } })
+      ),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 8, lineHeight: 1.5 } }, "The seven questions every qualified deal must answer. Tick each proof point as you confirm it and capture the detail in the quick summary. Work top to bottom before every deal review.")
+    ),
+    MUSTS.map(function (m) {
+      var e = musts[m.key];
+      var done = e.checks.filter(Boolean).length;
+      var isOpen = openKey === m.key;
+      var complete = done === 5;
+      var accent = complete ? "#059669" : done > 0 ? "#D97706" : C.border;
+      return React.createElement(
+        Card,
+        { key: m.key, style: { marginTop: 12, padding: 0, overflow: "hidden", borderLeft: "4px solid " + accent } },
+        React.createElement("div", {
+          onClick: function () { setOpen(isOpen ? null : m.key); },
+          style: { display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", cursor: "pointer" }
+        },
+          React.createElement("div", { style: { flex: "0 0 28px", height: 28, borderRadius: "50%", background: complete ? "#059669" : "#1E293B", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 } }, String(m.n)),
+          React.createElement("div", { style: { flex: 1, fontSize: 14, fontWeight: 700, color: C.text } }, m.title),
+          React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: complete ? "#059669" : C.muted, padding: "3px 10px", borderRadius: 12, background: complete ? "#ECFDF5" : "#F1F5F9" } }, done + " / 5"),
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, transform: isOpen ? "rotate(90deg)" : "none", transition: "transform .15s" } }, "▶")
+        ),
+        isOpen && React.createElement("div", { style: { padding: "0 16px 16px" } },
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10, lineHeight: 1.5 } }, m.hint),
+          React.createElement(FieldLabel, null, "Quick summary"),
+          React.createElement(TextArea, { value: e.summary, onChange: function (v) { setMust(m.key, "summary", v); }, placeholder: m.ph, rows: 3 }),
+          React.createElement("div", { style: { height: 6 } }),
+          m.checks.map(function (lbl, idx) {
+            return React.createElement(MustCheckRow, { key: idx, label: lbl, checked: !!e.checks[idx], onToggle: function () { toggleCheck(m.key, idx); } });
+          })
+        )
+      );
+    })
+  );
+}
+
 function OutcomeFramingSection({ account, update }) {
   return /*#__PURE__*/ React.createElement(
     "div",
@@ -9444,6 +9608,7 @@ const SUPER_SECTIONS = [
   ]},
   { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
     { id: "oppscore", label: "Opportunity Rating" },
+    { id: "sevenmusts", label: "7 Musts" },
     { id: "bugrowth", label: "BU Growth & JAGGAER" },
     { id: "buleaders", label: "BU Leaders" },
     { id: "problems", label: "Problems" },
@@ -10789,6 +10954,8 @@ Return this exact JSON structure:
             /*#__PURE__*/ React.createElement(ExecutiveMappingSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "oppscore" &&
             /*#__PURE__*/ React.createElement(OpportunityScoreSection, { account: account, update: update }),
+          activeSection === "sevenmusts" &&
+            /*#__PURE__*/ React.createElement(SevenMustsSection, { account: account, update: update }),
           activeSection === "bugrowth" &&
             /*#__PURE__*/ React.createElement(BUGrowthJAGGAERSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "buleaders" &&
