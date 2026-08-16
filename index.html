@@ -110,7 +110,7 @@ function normDeal(d){
   });
   return out;
 }
-var DEFAULT_MUST_WEIGHTS = { buyer: 22, influencers: 15, competition: 10, win: 15, lose: 12, decision: 20, taught: 6 };
+var DEFAULT_MUST_WEIGHTS = { buyer: 22, influencers: 15, competition: 9, win: 13, lose: 15, decision: 20, taught: 6 };
 function normWeights(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { var v = parseFloat(w[k]); out[k] = (isNaN(v) || v < 0) ? DEFAULT_MUST_WEIGHTS[k] : v; }); return out; }
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
 function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [] }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), dealObjectives: normDeal(a.dealObjectives) }); }
@@ -7020,9 +7020,9 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
       var schema = {
         buyer: { summary: "text", checks: [false, false, false, false, false], weight: 22 },
         influencers: { summary: "text", checks: [false, false, false, false, false], weight: 15 },
-        competition: { summary: "text", checks: [false, false, false, false, false], weight: 10 },
-        win: { summary: "text", checks: [false, false, false, false, false], weight: 15 },
-        lose: { summary: "text", checks: [false, false, false, false, false], weight: 12 },
+        competition: { summary: "text", checks: [false, false, false, false, false], weight: 9 },
+        win: { summary: "text", checks: [false, false, false, false, false], weight: 13 },
+        lose: { summary: "text", checks: [false, false, false, false, false], weight: 15 },
         decision: { summary: "text", checks: [false, false, false, false, false], weight: 20 },
         taught: { summary: "text", checks: [false, false, false, false, false], weight: 6 }
       };
