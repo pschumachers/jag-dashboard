@@ -84,7 +84,7 @@ function capSignals(arr, n){ if (!Array.isArray(arr) || arr.length <= n) return 
 function boardDept(p){ if (!p || typeof p !== "object") return p; var d = p.department || ""; var t = (p.title || "").toLowerCase(); if (/managing board|executive board|member of the (managing |executive )?board|\bvorstand\b|\bmbm\b|labor director|supervisory board/.test(t)) { return Object.assign({}, p, { department: "Executive Board" }); } var procB = ["Procurement / CPO", "Strategic Sourcing", "Category Management", "Supplier Management & Risk", "Supply Chain & Operations", "Finance"]; if (procB.indexOf(d) === -1 && /\b(cio|cto|cdo)\b|chief (information|technology|digital)|head of it\b|head of information|\berp\b|procurement systems|digital.*officer/.test(t)) { return Object.assign({}, p, { department: "IT / ERP Systems" }); } if ((!d || d === "Other") && /\b(ceo|cfo|coo|chro)\b|chief (executive|financial|operating|human|people)/.test(t)) { return Object.assign({}, p, { department: "Executive Board" }); } return p; }
 // Clean every list field on an account so no view can show duplicates (runs as data loads)
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts) }); }
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2944,6 +2944,7 @@ const emptyAccount = (id, name = "") => ({
   oppTiming: "",
   oppValue: "",
   oppRationale: "",
+  oppNextSteps: "",
   sevenMusts: normMusts(null),
   hypothesis: "",
   keySignals: [],
@@ -6664,13 +6665,94 @@ function PillRow({ options, value, onSelect, colorMap }) {
   );
 }
 
-function OpportunityScoreSection({ account, update }) {
+function OpportunityScoreSection({ account, update, claudeApiKey }) {
   var fitColors = { "Strong fit": "#059669", "Possible fit": "#D97706", "Weak fit": "#EA580C", "Not a fit": "#6B7280" };
   var timeColors = { "This quarter": "#059669", "Next quarter": "#0D9488", "This year": "#D97706", "Next year": "#6366F1", "Unlikely": "#DC2626" };
+  var FIT_OPTS = ["Strong fit", "Possible fit", "Weak fit", "Not a fit"];
+  var TIME_OPTS = ["This quarter", "Next quarter", "This year", "Next year", "Unlikely"];
+  var sg = useState(false);
+  var suggesting = sg[0];
+  var setSuggesting = sg[1];
+  var stt = useState("");
+  var status = stt[0];
+  var setStatus = stt[1];
+
+  var suggestRating = async function () {
+    if (!claudeApiKey) { alert("Set your API key first (🔑 button in header)"); return; }
+    setSuggesting(true); setStatus("Reading the account intel and scoring the opportunity…");
+    try {
+      var musts = normMusts(account.sevenMusts);
+      var mustKeys = ["buyer", "influencers", "competition", "win", "lose", "decision", "taught"];
+      var mustDone = 0; mustKeys.forEach(function (k) { musts[k].checks.forEach(function (x) { if (x) mustDone++; }); });
+      var mustBreak = {};
+      mustKeys.forEach(function (k) { mustBreak[k] = musts[k].checks.filter(Boolean).length + "/5"; });
+      var challengeNames = (account.challenges || []).map(function (c) { return (c && (c.name || c.title)) || (typeof c === "string" ? c : ""); }).filter(Boolean).slice(0, 6);
+      var context = {
+        companyName: account.companyName || "", industry: account.industry || "",
+        revenue: account.revenue || account.annualRevenue || "", employees: account.employees || "",
+        hypothesis: safeStr(account.hypothesis).substring(0, 400),
+        keySignals: (account.keySignals || []).slice(0, 8),
+        compellingEvent: safeStr(account.compellingEvent).substring(0, 400),
+        compellingDeadline: safeStr(account.compellingDeadline).substring(0, 200),
+        compellingCost: safeStr(account.compellingCost).substring(0, 200),
+        hyperCellTitle: account.hyperCellTitle || "",
+        businessPain: safeStr(account.businessPain).substring(0, 300),
+        challenges: challengeNames,
+        erpSystem: account.erpSystem || "",
+        currentValueNote: safeStr(account.oppValue).substring(0, 200),
+        sevenMustsScore: mustDone + "/35",
+        sevenMustsBreakdown: mustBreak
+      };
+      var prompt = "You are a senior JAGGAER source-to-pay sales strategist qualifying a procurement software opportunity. Based ONLY on the intelligence below, score the opportunity. Weigh: fit of JAGGAER's procurement / source-to-pay suite to their pains, urgency of the compelling event, budget and access to power, competitive position, and the 7 Musts qualification score (higher completion = better qualified, more likely to close sooner). A low 7 Musts score or a missing compelling event should push timing later and fit lower.\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON, no prose:\n" + JSON.stringify({
+        oppFit: "one of exactly: Strong fit | Possible fit | Weak fit | Not a fit",
+        oppTiming: "one of exactly: This quarter | Next quarter | This year | Next year | Unlikely",
+        oppValue: "estimated deal value as a short string, e.g. '€400K ACV, about €1.2M TCV over 3 years' — base it on revenue, employee scale and typical JAGGAER deal sizes for this industry",
+        oppRationale: "3 to 5 sentences: fit to JAGGAER, urgency from the compelling event, budget and access to power, competition, and what the 7 Musts score tells us. Name the specific evidence you used. British English, no dashes.",
+        oppNextSteps: "A short, concrete close plan: the 3 to 6 specific actions needed to win and close this deal, in priority order. Target the biggest gaps in the 7 Musts (missing buyer, no compelling event confirmed, competition unknown, no decision date). Each action should be a clear next step a seller can act on this week, e.g. 'Confirm the economic buyer and budget with the CPO', 'Pin a decision date and mutual action plan', 'Run a spend-visibility value session'. British English, no dashes."
+      }) + "\n\nRULES: oppFit and oppTiming MUST be exactly one of the listed values, nothing else. If evidence is thin, be conservative (Possible fit or lower, This year or later) and say so in the rationale.";
+      var resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }], max_tokens: 3000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!resp.ok) throw new Error("API " + resp.status);
+      var data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      var raw = apiText(data).trim();
+      if (raw.startsWith("\`\`\`")) raw = raw.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
+      var result = extractJSON(raw);
+      var applied = [];
+      if (result.oppFit && FIT_OPTS.indexOf(result.oppFit) !== -1) { update("oppFit", result.oppFit); applied.push("fit"); }
+      if (result.oppTiming && TIME_OPTS.indexOf(result.oppTiming) !== -1) { update("oppTiming", result.oppTiming); applied.push("timing"); }
+      if (result.oppValue && typeof result.oppValue === "string" && result.oppValue.length > 3) { update("oppValue", result.oppValue); applied.push("value"); }
+      if (result.oppRationale && typeof result.oppRationale === "string" && result.oppRationale.length > 10) { update("oppRationale", result.oppRationale); applied.push("rationale"); }
+      if (result.oppNextSteps && typeof result.oppNextSteps === "string" && result.oppNextSteps.length > 10) { update("oppNextSteps", result.oppNextSteps); applied.push("close plan"); }
+      if (applied.length) { setStatus("✅ Rating suggested. Set " + applied.join(", ") + ". Review and adjust the pills if needed."); }
+      else { setStatus("⚠️ Could not read a valid rating back. Try again or set it manually."); }
+      setTimeout(function () { setStatus(""); }, 9000);
+    } catch (err) { setStatus("❌ " + err.message); }
+    setSuggesting(false);
+  };
+
   return React.createElement(
     "div",
     null,
     React.createElement(SectionHeader, { title: "Opportunity Rating", badge: "Qualify", badgeColor: "#059669" }),
+    React.createElement(
+      Card,
+      { style: { marginBottom: 12, borderLeft: "4px solid #00BFA5", background: "#F0FDFA" } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
+        React.createElement("div", { style: { flex: 1, minWidth: 200 } },
+          React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 2 } }, "✨ Suggest rating with AI"),
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.5 } }, "Reads the account intel, the challenges, compelling event, signals, hyper-cell and the 7 Musts score, then proposes the fit, close timing, value and rationale. You always keep the final say on the pills.")
+        ),
+        React.createElement("button", {
+          onClick: suggestRating, disabled: suggesting,
+          style: { padding: "10px 18px", borderRadius: 8, border: "none", cursor: suggesting ? "default" : "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: suggesting ? "#94A3B8" : "#00BFA5", color: "#fff", whiteSpace: "nowrap" }
+        }, suggesting ? "Scoring…" : "Suggest rating")
+      ),
+      status && React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 10, lineHeight: 1.5 } }, status)
+    ),
     React.createElement(
       Card,
       null,
@@ -6684,7 +6766,10 @@ function OpportunityScoreSection({ account, update }) {
       React.createElement(TextArea, { value: account.oppValue, onChange: function (v) { update("oppValue", v); }, placeholder: "e.g. €400K ACV, about €1.2M TCV over 3 years", rows: 2 }),
       React.createElement("div", { style: { height: 16 } }),
       React.createElement(FieldLabel, null, "Why this rating"),
-      React.createElement(TextArea, { value: account.oppRationale, onChange: function (v) { update("oppRationale", v); }, placeholder: "Fit, urgency (compelling event), budget, access to power, competition — the reasoning behind the score…", rows: 3 })
+      React.createElement(TextArea, { value: account.oppRationale, onChange: function (v) { update("oppRationale", v); }, placeholder: "Fit, urgency (compelling event), budget, access to power, competition — the reasoning behind the score…", rows: 3 }),
+      React.createElement("div", { style: { height: 16 } }),
+      React.createElement(FieldLabel, null, "What has to be done to close"),
+      React.createElement(TextArea, { value: account.oppNextSteps, onChange: function (v) { update("oppNextSteps", v); }, placeholder: "The close plan, the specific next actions to win the deal: confirm the economic buyer and budget, pin a decision date and mutual action plan, close the biggest gaps in the 7 Musts…", rows: 4 })
     )
   );
 }
@@ -6804,11 +6889,17 @@ function MustCheckRow({ label, checked, onToggle }) {
   );
 }
 
-function SevenMustsSection({ account, update }) {
+function SevenMustsSection({ account, update, claudeApiKey }) {
   var musts = normMusts(account.sevenMusts);
   var st = useState("buyer");
   var openKey = st[0];
   var setOpen = st[1];
+  var dg = useState(false);
+  var drafting = dg[0];
+  var setDrafting = dg[1];
+  var dst = useState("");
+  var draftStatus = dst[0];
+  var setDraftStatus = dst[1];
 
   function setMust(key, field, val) {
     var next = Object.assign({}, musts);
@@ -6822,6 +6913,66 @@ function SevenMustsSection({ account, update }) {
     setMust(key, "checks", checks);
   }
 
+  var draftMusts = async function () {
+    if (!claudeApiKey) { alert("Set your API key first (🔑 button in header)"); return; }
+    setDrafting(true); setDraftStatus("Reading the account intel and drafting the 7 Musts…");
+    try {
+      var challengeNames = (account.challenges || []).map(function (c) { return (c && (c.name || c.title)) || (typeof c === "string" ? c : ""); }).filter(Boolean).slice(0, 6);
+      var execNames = (account.executives || []).map(function (p) { return (p && (p.name || p.title)) ? ((p.name || "") + " (" + (p.title || "") + ")") : ""; }).filter(Boolean).slice(0, 10);
+      var context = {
+        companyName: account.companyName || "", industry: account.industry || "",
+        revenue: account.revenue || account.annualRevenue || "", employees: account.employees || "",
+        hypothesis: safeStr(account.hypothesis).substring(0, 400),
+        keySignals: (account.keySignals || []).slice(0, 8),
+        compellingEvent: safeStr(account.compellingEvent).substring(0, 400),
+        compellingDeadline: safeStr(account.compellingDeadline).substring(0, 200),
+        hyperCellTitle: account.hyperCellTitle || "",
+        businessPain: safeStr(account.businessPain).substring(0, 300),
+        challenges: challengeNames,
+        erpSystem: account.erpSystem || "",
+        people: execNames,
+        oppFit: account.oppFit || "", oppTiming: account.oppTiming || ""
+      };
+      var schema = {
+        buyer: { summary: "text", checks: [false, false, false, false, false] },
+        influencers: { summary: "text", checks: [false, false, false, false, false] },
+        competition: { summary: "text", checks: [false, false, false, false, false] },
+        win: { summary: "text", checks: [false, false, false, false, false] },
+        lose: { summary: "text", checks: [false, false, false, false, false] },
+        decision: { summary: "text", checks: [false, false, false, false, false] },
+        taught: { summary: "text", checks: [false, false, false, false, false] }
+      };
+      var checkList = MUSTS.map(function (m) { return m.n + ". " + m.title + " checks: " + m.checks.join(" | "); }).join("\n");
+      var prompt = "You are a senior JAGGAER source-to-pay sales strategist filling in a 7 Musts deal qualification for a procurement software opportunity. Use ONLY the intelligence below (plus public knowledge of this company and the JAGGAER competitive set: SAP Ariba, Coupa, Ivalua, GEP, Zip, Oro). For each of the 7 Musts write a 2 to 4 sentence quick summary grounded in the intel, and set the 5 checks.\n\nCRITICAL on the checks: only set a check to true when the intel genuinely evidences it. These represent things the seller has actually confirmed through real conversations. Most checks should be false at an early stage. Setting a check true with no basis is worse than leaving it false. When you are not sure, leave it false and explain what still needs confirming in the summary.\n\nThe 5 checks per Must, in order:\n" + checkList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (checks are arrays of 5 booleans in the order listed above):\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Keep summaries specific to this account, not generic. Reference the compelling event, named people and competitors where known.";
+      var resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 4 }], max_tokens: 5000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!resp.ok) throw new Error("API " + resp.status);
+      var data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      var raw = apiText(data).trim();
+      if (raw.startsWith("\`\`\`")) raw = raw.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
+      var result = extractJSON(raw);
+      var keys = ["buyer", "influencers", "competition", "win", "lose", "decision", "taught"];
+      var next = Object.assign({}, musts);
+      var filled = 0;
+      keys.forEach(function (k) {
+        var r = result[k];
+        if (!r || typeof r !== "object") return;
+        var cur = Object.assign({}, next[k]);
+        if (typeof r.summary === "string" && r.summary.length > 5) { cur.summary = r.summary; filled++; }
+        if (Array.isArray(r.checks)) { var cs = r.checks.slice(0, 5).map(Boolean); while (cs.length < 5) cs.push(false); cur.checks = cs; }
+        next[k] = cur;
+      });
+      if (filled) { update("sevenMusts", normMusts(next)); setDraftStatus("✅ Drafted " + filled + " of 7 Musts. Review every summary and only keep the ticks you have truly confirmed."); }
+      else { setDraftStatus("⚠️ Could not read a valid draft back. Try again."); }
+      setTimeout(function () { setDraftStatus(""); }, 10000);
+    } catch (err) { setDraftStatus("❌ " + err.message); }
+    setDrafting(false);
+  };
+
   var totalDone = 0, totalAll = 0, mustsDone = 0;
   MUSTS.forEach(function (m) {
     var c = musts[m.key].checks; totalAll += 5;
@@ -6833,7 +6984,22 @@ function SevenMustsSection({ account, update }) {
   return React.createElement(
     "div",
     null,
-    React.createElement(SectionHeader, { title: "7 Musts — Deal Imperatives", badge: mustsDone + " / 7 complete", badgeColor: mustsDone === 7 ? "#059669" : "#1E293B" }),
+    React.createElement(SectionHeader, { title: "7 Musts, Deal Imperatives", badge: mustsDone + " / 7 complete", badgeColor: mustsDone === 7 ? "#059669" : "#1E293B" }),
+    React.createElement(
+      Card,
+      { style: { marginBottom: 12, borderLeft: "4px solid #00BFA5", background: "#F0FDFA" } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
+        React.createElement("div", { style: { flex: 1, minWidth: 200 } },
+          React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 2 } }, "✨ Draft the 7 Musts with AI"),
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.5 } }, "Reads the account intel and drafts a summary for each Must, ticking only the proof points the evidence supports. It stays conservative on purpose, so review every summary and keep only the ticks you have truly confirmed.")
+        ),
+        React.createElement("button", {
+          onClick: draftMusts, disabled: drafting,
+          style: { padding: "10px 18px", borderRadius: 8, border: "none", cursor: drafting ? "default" : "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: drafting ? "#94A3B8" : "#00BFA5", color: "#fff", whiteSpace: "nowrap" }
+        }, drafting ? "Drafting…" : "Draft 7 Musts")
+      ),
+      draftStatus && React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 10, lineHeight: 1.5 } }, draftStatus)
+    ),
     React.createElement(
       Card,
       { style: { borderLeft: "4px solid #059669" } },
@@ -10953,9 +11119,9 @@ Return this exact JSON structure:
           activeSection === "executives" &&
             /*#__PURE__*/ React.createElement(ExecutiveMappingSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "oppscore" &&
-            /*#__PURE__*/ React.createElement(OpportunityScoreSection, { account: account, update: update }),
+            /*#__PURE__*/ React.createElement(OpportunityScoreSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "sevenmusts" &&
-            /*#__PURE__*/ React.createElement(SevenMustsSection, { account: account, update: update }),
+            /*#__PURE__*/ React.createElement(SevenMustsSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "bugrowth" &&
             /*#__PURE__*/ React.createElement(BUGrowthJAGGAERSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "buleaders" &&
