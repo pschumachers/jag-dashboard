@@ -9646,6 +9646,120 @@ function SalesforceHistorySection({ account, update }) {
   );
 }
 
+function parseMoney(s) {
+  if (!s || typeof s !== "string") return null;
+  var m = s.replace(/,/g, "").match(/(?:€|\$|£)?\s*([0-9]+(?:\.[0-9]+)?)\s*(k|m|bn|b|billion|million|thousand)?/i);
+  if (!m) return null;
+  var n = parseFloat(m[1]); if (isNaN(n)) return null;
+  var u = (m[2] || "").toLowerCase();
+  if (u === "k" || u === "thousand") n *= 1e3;
+  else if (u === "m" || u === "million") n *= 1e6;
+  else if (u === "bn" || u === "b" || u === "billion") n *= 1e9;
+  return n;
+}
+function fmtMoney(n) { if (n == null || isNaN(n)) return "—"; if (n >= 1e9) return "€" + (n / 1e9).toFixed(2) + "bn"; if (n >= 1e6) return "€" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "€" + Math.round(n / 1e3) + "K"; return "€" + Math.round(n); }
+function dealLikelihood(a) {
+  var musts = normMusts(a.sevenMusts), weights = normWeights(a.mustWeights);
+  var keys = ["buyer", "influencers", "competition", "win", "lose", "decision", "taught"];
+  var wt = 0, acc = 0; keys.forEach(function (k) { wt += weights[k]; acc += weights[k] * (musts[k].checks.filter(Boolean).length / 5); });
+  return wt > 0 ? Math.round(acc / wt * 100) : 0;
+}
+function projectedCloseDate(a) {
+  var c = parseInt(a.salesCycle, 10);
+  if (isNaN(c) || c < 0) return null;
+  var base = a.dealStartDate ? new Date(a.dealStartDate) : new Date();
+  if (isNaN(base.getTime())) return null;
+  var pd = new Date(base.getTime()); pd.setMonth(pd.getMonth() + c); return pd;
+}
+function fmtMonthYear(d) { return d ? d.toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : ""; }
+function quarterLabel(d) { return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear(); }
+
+function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
+  var score = parseInt(account.oppScore, 10); if (isNaN(score)) score = null;
+  var lik = dealLikelihood(account);
+  var pd = projectedCloseDate(account);
+  var projStr = pd ? fmtMonthYear(pd) : "";
+  var parsed = parseMoney(account.oppValue);
+  var valStr = parsed != null ? fmtMoney(parsed) : (account.oppValue && account.oppValue.trim() ? account.oppValue.trim() : "—");
+  var likCol = lik >= 70 ? "#059669" : lik >= 40 ? "#D97706" : "#DC2626";
+  var scoreCol = score == null ? C.muted : score >= 70 ? "#059669" : score >= 40 ? "#D97706" : "#DC2626";
+
+  function jump(sec) { var sup = (sec === "compelling") ? "opportunity" : "dealqual"; setActiveSuperSection && setActiveSuperSection(sup); setActiveSection && setActiveSection(sec); }
+
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function printPage() {
+    function sec(t, b) { b = (b || "").trim(); if (!b) return ""; return "<div class='sec'><h3>" + esc(t) + "</h3><p>" + esc(b) + "</p></div>"; }
+    var html = "<!doctype html><html><head><meta charset='utf-8'><title>" + esc(account.companyName || "Account") + " — Deal One-Pager</title>" +
+      "<style>body{font-family:-apple-system,Segoe UI,sans-serif;color:#111827;margin:34px;line-height:1.5}h1{font-size:24px;margin:0}" +
+      ".sub{color:#6B7280;font-size:13px;margin:3px 0 18px}.band{display:flex;gap:12px;margin:16px 0}" +
+      ".kpi{flex:1;border:1px solid #E5E7EB;border-radius:10px;padding:12px}.kpi .l{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;font-weight:700}" +
+      ".kpi .v{font-size:20px;font-weight:800;color:#0F766E;margin-top:5px}.sec{margin:14px 0}.sec h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;margin:0 0 4px}" +
+      ".sec p{margin:0;font-size:13px;white-space:pre-wrap}.pill{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;background:#F1F5F9;margin-right:8px}" +
+      ".foot{margin-top:26px;border-top:1px solid #E5E7EB;padding-top:10px;color:#6B7280;font-size:10px;text-align:center}</style></head><body>" +
+      "<h1>" + esc(account.companyName || "Account") + "</h1>" +
+      "<div class='sub'>" + esc(account.industry || "") + (account.priority ? " · " + esc(account.priority) + " priority" : "") + " · JAGGAER Source-to-Pay</div>" +
+      "<div>" + (account.oppFit ? "<span class='pill'>" + esc(account.oppFit) + "</span>" : "") + (account.oppTiming ? "<span class='pill'>" + esc(account.oppTiming) + "</span>" : "") + (account.salesCycle ? "<span class='pill'>" + esc(account.salesCycle) + " month cycle</span>" : "") + "</div>" +
+      "<div class='band'>" +
+      "<div class='kpi'><div class='l'>Opportunity score</div><div class='v'>" + (score != null ? score + " / 100" : "—") + "</div></div>" +
+      "<div class='kpi'><div class='l'>Deal likelihood</div><div class='v'>" + lik + "%</div></div>" +
+      "<div class='kpi'><div class='l'>Projected close</div><div class='v'>" + (projStr || "—") + "</div></div>" +
+      "<div class='kpi'><div class='l'>Est. value</div><div class='v'>" + esc(valStr) + "</div></div>" +
+      "</div>" +
+      sec("Why now — compelling event", account.compellingEvent) +
+      sec("Why we win — hypothesis", account.hypothesis || account.leadNarrative) +
+      sec("What has to be done to close", account.oppNextSteps) +
+      sec("Why this rating", account.oppRationale) +
+      "<div class='foot'>© 2026 Pascal Schumachers. All rights reserved. Confidential. AI-assisted intel, verify figures before use.</div></body></html>";
+    var w = window.open("", "_blank"); if (!w) { alert("Please allow pop-ups to print the one-pager."); return; }
+    w.document.write(html); w.document.close(); w.focus(); setTimeout(function () { try { w.print(); } catch (e) {} }, 400);
+  }
+
+  function tile(label, value, color) {
+    return React.createElement("div", { style: { flex: "1 1 150px", minWidth: 150, background: C.card, border: "1px solid " + C.border, borderRadius: 10, padding: "12px 14px" } },
+      React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
+      React.createElement("div", { style: { fontSize: 22, fontWeight: 800, color: color || C.text, lineHeight: 1.1 } }, value)
+    );
+  }
+  function pill(text, col) {
+    if (!text) return null;
+    return React.createElement("span", { style: { display: "inline-block", fontSize: 12, fontWeight: 700, padding: "5px 12px", borderRadius: 20, background: (col || C.muted) + "22", color: col || C.muted, marginRight: 8, marginBottom: 6 } }, text);
+  }
+  function card(title, body, openSec) {
+    var txt = (body || "").trim();
+    return React.createElement("div", { style: { background: C.card, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", marginBottom: 10 } },
+      React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 } },
+        React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5 } }, title),
+        openSec ? React.createElement("button", { onClick: function () { jump(openSec); }, style: { background: "none", border: "none", color: C.teal, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" } }, "Open ›") : null
+      ),
+      React.createElement("div", { style: { fontSize: 13, color: txt ? C.text : C.muted, lineHeight: 1.55, whiteSpace: "pre-wrap" } }, txt || "Not captured yet")
+    );
+  }
+
+  return React.createElement("div", { style: { maxWidth: 900, margin: "0 auto" } },
+    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 14 } },
+      React.createElement("div", null,
+        React.createElement("div", { style: { fontSize: 24, fontWeight: 800, color: C.text, lineHeight: 1.1 } }, account.companyName || "Account"),
+        React.createElement("div", { style: { fontSize: 13, color: C.muted, marginTop: 3 } }, (account.industry || "No industry") + (account.priority ? " · " + account.priority + " priority" : "") + " · JAGGAER Source-to-Pay")
+      ),
+      React.createElement("button", { onClick: printPage, style: { padding: "9px 16px", borderRadius: 8, border: "1px solid " + C.border, background: C.card, color: C.text, fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" } }, "🖨 Print / Save as PDF")
+    ),
+    React.createElement("div", { style: { marginBottom: 10 } },
+      pill(account.oppFit, "#059669"), pill(account.oppTiming, "#0D9488"), pill(account.salesCycle ? account.salesCycle + " month cycle" : "", "#6366F1")
+    ),
+    React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 } },
+      tile("Opportunity score", score != null ? score + " / 100" : "—", scoreCol),
+      tile("Deal likelihood", lik + "%", likCol),
+      tile("Projected close", projStr || "—", projStr ? "#059669" : C.muted),
+      tile("Est. value", valStr, "#0F766E")
+    ),
+    card("Why now — compelling event", account.compellingEvent, "compelling"),
+    card("Why we win — hypothesis", account.hypothesis || account.leadNarrative, "oppscore"),
+    card("What has to be done to close", account.oppNextSteps, "oppscore"),
+    card("Why this rating", account.oppRationale, "oppscore"),
+    React.createElement("div", { style: { fontSize: 11, color: C.muted, marginTop: 8, lineHeight: 1.5, fontStyle: "italic" } }, "This one-pager rolls up the account's live intelligence. Figures are AI-assisted, verify before quoting. Open any card to edit the source data.")
+  );
+}
+
 function DashboardHome({ accounts, completionScore, selectAccount, setActiveSection, setActiveSuperSection, setDrawerOpen, updateAccount }) {
   var _useState = useState(null), expandedCard = _useState[0], setExpandedCard = _useState[1];
   var _useState2 = useState(null), expandedStage = _useState2[0], setExpandedStage = _useState2[1];
@@ -9668,8 +9782,8 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
 
   var goToAccount = function(accId, section, superSection) {
     selectAccount(accId);
-    setActiveSuperSection(superSection || "company");
-    setActiveSection(section || "brief");
+    setActiveSuperSection(superSection || "onepager");
+    setActiveSection(section || "onepager");
     setDrawerOpen(false);
   };
 
@@ -9756,7 +9870,74 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
     );
   };
 
+  // ── Pipeline roll-up (deal economics across the book) ──
+  var pipe = accounts.map(function(a) {
+    var sc = parseInt(a.oppScore, 10); if (isNaN(sc)) sc = null;
+    return { a: a, score: sc, lik: dealLikelihood(a), val: parseMoney(a.oppValue), proj: projectedCloseDate(a), fit: a.oppFit || "", timing: a.oppTiming || "" };
+  });
+  var inPlay = pipe.filter(function(d) { return d.score != null || d.lik > 0 || d.val != null || d.fit; });
+  var pipeTotalVal = 0, pipeValCount = 0, pipeExpVal = 0;
+  inPlay.forEach(function(d) { if (d.val != null) { pipeTotalVal += d.val; pipeValCount++; pipeExpVal += d.val * (d.lik / 100); } });
+  var pipeQualified = inPlay.filter(function(d) { return d.lik >= 60; }).length;
+  var pipeAvgLik = inPlay.length ? Math.round(inPlay.reduce(function(s, d) { return s + d.lik; }, 0) / inPlay.length) : 0;
+  var qMap = {};
+  inPlay.forEach(function(d) { if (d.proj) { var q = quarterLabel(d.proj); if (!qMap[q]) qMap[q] = { q: q, count: 0, sort: d.proj.getFullYear() * 4 + Math.floor(d.proj.getMonth() / 3), val: 0 }; qMap[q].count++; if (d.val != null) qMap[q].val += d.val; } });
+  var qList = Object.keys(qMap).map(function(k) { return qMap[k]; }).sort(function(a, b) { return a.sort - b.sort; });
+  var pipeSorted = inPlay.slice().sort(function(a, b) { return b.lik - a.lik; });
+  var likColOf = function(l) { return l >= 70 ? "#059669" : l >= 40 ? "#D97706" : "#94A3B8"; };
+  var pipeTile = function(label, value, color) {
+    return React.createElement("div", { style: { flex: "1 1 150px", minWidth: 140, background: C.card, border: "1px solid " + C.border, borderRadius: 10, padding: "12px 14px" } },
+      React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
+      React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: color || C.text, lineHeight: 1.1 } }, value)
+    );
+  };
+
   return React.createElement("div", { style: { maxWidth: 960, margin: "0 auto" } },
+
+    // ── PIPELINE ROLL-UP ──
+    React.createElement("div", { style: { background: C.card, border: "1px solid " + C.border, borderRadius: 12, padding: 16, marginBottom: 16 } },
+      React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 } },
+        React.createElement("div", { style: { fontSize: 15, fontWeight: 800, color: C.text } }, "Pipeline"),
+        React.createElement("div", { style: { fontSize: 12, color: C.muted } }, inPlay.length + " deal" + (inPlay.length === 1 ? "" : "s") + " in play")
+      ),
+      React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 } },
+        pipeTile("Weighted pipeline", fmtMoney(pipeTotalVal), "#0F766E"),
+        pipeTile("Expected value", fmtMoney(pipeExpVal), "#059669"),
+        pipeTile("Qualified (60%+)", String(pipeQualified), "#0D9488"),
+        pipeTile("Avg likelihood", pipeAvgLik + "%", likColOf(pipeAvgLik))
+      ),
+      pipeValCount < inPlay.length ? React.createElement("div", { style: { fontSize: 11, color: C.muted, marginBottom: 12, fontStyle: "italic" } }, "Value shown for " + pipeValCount + " of " + inPlay.length + " deals; add a value in Opportunity Rating to include the rest.") : null,
+      qList.length ? React.createElement("div", { style: { marginBottom: 14 } },
+        React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 } }, "Projected closes by quarter"),
+        React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } },
+          qList.map(function(q) {
+            return React.createElement("div", { key: q.q, style: { border: "1px solid " + C.border, borderRadius: 8, padding: "6px 12px", fontSize: 12 } },
+              React.createElement("span", { style: { fontWeight: 800, color: C.text } }, q.q),
+              React.createElement("span", { style: { color: C.muted, marginLeft: 6 } }, q.count + " deal" + (q.count === 1 ? "" : "s") + (q.val ? " · " + fmtMoney(q.val) : ""))
+            );
+          })
+        )
+      ) : null,
+      inPlay.length ? React.createElement("div", null,
+        React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 } }, "Deals by likelihood"),
+        pipeSorted.map(function(d) {
+          return React.createElement("div", { key: d.a.id, onClick: function() { goToAccount(d.a.id, "oppscore", "dealqual"); },
+            style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 6px", borderBottom: "1px solid #F3F4F6", cursor: "pointer" } },
+            React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+              React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, d.a.companyName),
+              React.createElement("div", { style: { fontSize: 11, color: C.muted } }, (d.fit || "Unrated") + (d.timing ? " · " + d.timing : "") + (d.proj ? " · " + fmtMonthYear(d.proj) : ""))
+            ),
+            React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "#0F766E", minWidth: 64, textAlign: "right" } }, d.val != null ? fmtMoney(d.val) : "—"),
+            React.createElement("div", { style: { width: 90 } },
+              React.createElement("div", { style: { height: 8, borderRadius: 5, background: "#F1F5F9", overflow: "hidden" } },
+                React.createElement("div", { style: { width: d.lik + "%", height: "100%", background: likColOf(d.lik), borderRadius: 5 } })
+              )
+            ),
+            React.createElement("div", { style: { fontSize: 12, fontWeight: 800, color: likColOf(d.lik), minWidth: 38, textAlign: "right" } }, d.lik + "%")
+          );
+        })
+      ) : React.createElement("div", { style: { fontSize: 12, color: C.muted } }, "No deals scored yet. Set a fit, value and 7 Musts on an account to build the pipeline view.")
+    ),
 
     // ══════════════════════════════════════════════════════════
     // ── METRIC CARDS ROW (clickable to expand) ──
@@ -10032,6 +10213,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
 // ─── Main Dashboard ────────────────────────────────────────────────────────────
 const SUPER_SECTIONS = [
   { id: "dashboard", label: "Dashboard", icon: "\uD83D\uDCCA", children: [] },
+  { id: "onepager", label: "One-Pager", icon: "\uD83D\uDCC4", children: [] },
   { id: "company", label: "Company Intel", icon: "\uD83C\uDFE2", children: [
     { id: "brief", label: "Executive Brief" },
     { id: "fundamentals", label: "Fundamentals" },
@@ -10717,6 +10899,7 @@ Return this exact JSON structure:
   const selectAccount = (id) => {
     setSelectedId(id);
     setDrawerOpen(false);
+    if (activeSection === "dashboard") { setActiveSuperSection("onepager"); setActiveSection("onepager"); }
   };
   return /*#__PURE__*/ React.createElement(
     "div",
@@ -11379,6 +11562,8 @@ Return this exact JSON structure:
         /*#__PURE__*/ React.createElement(
           React.Fragment,
           null,
+          activeSection === "onepager" &&
+            /*#__PURE__*/ React.createElement(OnePagerSection, { account: account, setActiveSection: setActiveSection, setActiveSuperSection: setActiveSuperSection }),
           activeSection === "brief" &&
             /*#__PURE__*/ React.createElement(ExecutiveBriefSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "fundamentals" &&
