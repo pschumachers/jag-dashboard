@@ -20,6 +20,13 @@
     input, textarea, select { -webkit-user-select: text; user-select: text; }
     .tabs-strip::-webkit-scrollbar { display: none; }
     .tabs-strip { scrollbar-width: none; -ms-overflow-style: none; }
+    @media (max-width: 700px) {
+      .app-header { overflow-x: auto; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; }
+      .app-header::-webkit-scrollbar { display: none; }
+      .app-header > * { flex-shrink: 0 !important; }
+      .app-header-sub { display: none !important; }
+      .app-header-title { flex: 0 0 auto !important; max-width: 46vw; }
+    }
   </style>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -10182,7 +10189,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
           return React.createElement("div", {
             key: stage,
             onClick: function() { setExpandedStage(isExp ? null : stage); },
-            style: { flex: 1, textAlign: "center", fontSize: 10, fontWeight: isExp ? 800 : 600, color: stageColor[stage] || "#6B7280", cursor: "pointer", textDecoration: isExp ? "underline" : "none" },
+            style: { flex: 1, minWidth: 0, textAlign: "center", fontSize: 9.5, lineHeight: 1.15, wordBreak: "break-word", fontWeight: isExp ? 800 : 600, color: stageColor[stage] || "#6B7280", cursor: "pointer", textDecoration: isExp ? "underline" : "none" },
           }, stage);
         }),
       ),
@@ -11399,6 +11406,7 @@ Return this exact JSON structure:
       /*#__PURE__*/ React.createElement(
         "div",
         {
+          className: "app-header",
           style: {
             background: C.card,
             borderBottom: `1px solid ${C.border}`,
@@ -11435,7 +11443,7 @@ Return this exact JSON structure:
         ),
         /*#__PURE__*/ React.createElement(
           "div",
-          { style: { flex: 1, minWidth: 0 } },
+          { className: "app-header-title", style: { flex: 1, minWidth: 0 } },
           /*#__PURE__*/ React.createElement(
             "div",
             { style: { display: "flex", alignItems: "center", gap: 6, minWidth: 0 } },
@@ -11475,7 +11483,7 @@ Return this exact JSON structure:
           ),
           activeSection !== "dashboard" && activeSection !== "help" && activeSection !== "analysis" && /*#__PURE__*/ React.createElement(
             "div",
-            { style: { display: "flex", gap: 6, alignItems: "center", marginTop: 2 } },
+            { className: "app-header-sub", style: { display: "flex", gap: 6, alignItems: "center", marginTop: 2 } },
             /*#__PURE__*/ React.createElement(
               "span",
               {
