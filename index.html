@@ -9686,6 +9686,105 @@ function projectedCloseDate(a) {
 function fmtMonthYear(d) { return d ? d.toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : ""; }
 function quarterLabel(d) { return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear(); }
 
+var HELP_TOPICS = [
+  { id: "overview", icon: "👋", title: "What this is",
+    intro: "This is a sales intelligence workspace for enterprise source-to-pay deals. It holds one record per prospect account and turns raw research into a qualified, forecastable opportunity: company intelligence, procurement and spend context, the people, a full deal qualification (opportunity rating, the 7 Musts and the deal stages) and a one-page deal summary you can present or print. It runs entirely in your browser, saves to your private cloud, and uses AI to gather and score the intelligence for you.",
+    items: [] },
+  { id: "start", icon: "🚀", title: "Getting started",
+    intro: "Three steps get you productive.",
+    items: [
+      ["Sign in", "Use your email and password. Your data is private to your account and syncs across devices."],
+      ["Set your AI key", "Click the key icon in the header and paste your Anthropic API key. This powers every AI button. Without it, you can still edit everything by hand."],
+      ["Add an account", "Open the menu, add a prospect, then run Intel Refresh to auto-populate the company, spend and people intelligence from public sources."]
+    ] },
+  { id: "tabs", icon: "🧭", title: "The tabs at a glance",
+    intro: "The top tabs move you through the workflow, left to right.",
+    items: [
+      ["Dashboard", "Your portfolio analytics: the pipeline roll-up (weighted value, expected value, qualified deals, projected closes by quarter), readiness and accounts needing attention."],
+      ["One-Pager", "The thirty second deal summary for any account: score, likelihood, projected close, value, why now, why we win, competition and the close plan. Print or save it as a PDF leave-behind."],
+      ["Company Intel", "Executive brief, fundamentals, revenue and strategy."],
+      ["Procurement & Spend", "Spend and supplier intel, the ERP and P2P stack, the people, and geo-politics."],
+      ["Deal Qualification", "Opportunity Rating, the 7 Musts and the Deal Objectives stage tracker. This is where you qualify and forecast."],
+      ["Pain & Opportunity", "Business unit growth, problems, use cases, challenges, outcomes, the compelling event, the hyper-cell and proof points."],
+      ["Action", "Salesforce history, campaigns and call transcripts."],
+      ["Market Analysis", "The territory build plan and market scoring."]
+    ] },
+  { id: "ai", icon: "✨", title: "The AI features",
+    intro: "Every button marked with a sparkle reads the account intel and drafts content for you. You always keep the final say and can edit anything by hand.",
+    items: [
+      ["Intel Refresh", "Pulls current public company, spend, people and signal data into the account."],
+      ["Suggest rating", "Scores the opportunity 0 to 100, sets the fit, timing, value and sales cycle, writes the reasoning and cites the web sources it used."],
+      ["Draft 7 Musts", "Drafts a summary for each imperative and tunes the section weights to the deal, ticking only the proof points the evidence supports."],
+      ["Autopopulate Deal Objectives", "Marks off the seller actions and buyer reciprocations that have genuinely happened, based on your transcripts and history."]
+    ] },
+  { id: "qual", icon: "🤝", title: "How qualification works",
+    intro: "Three linked views turn a hunch into a forecast.",
+    items: [
+      ["Opportunity Rating", "The headline score, the fit and timing, the value, the sales cycle and a real projected close date, plus the reasoning and sources."],
+      ["7 Musts", "Seven deal imperatives, each with proof points you tick and a weight for how much it drives the odds of closing. Together they produce a weighted deal likelihood, so the probability reflects both your progress and your priorities."],
+      ["Deal Objectives", "The deal broken into stages from first call to signature, tracking your actions and the buyer's reciprocations so a stage only counts as done when the buyer has reciprocated."]
+    ] },
+  { id: "data", icon: "🔒", title: "Data & security",
+    intro: "Your intelligence stays yours.",
+    items: [
+      ["Private by account", "Data is stored in the cloud, scoped to your signed-in account, and is not shared with other users."],
+      ["Your AI key", "The Anthropic key is stored locally in your browser and restricted to this site. AI calls go directly from your browser to Anthropic."],
+      ["Verify before quoting", "AI-gathered figures are a fast first draft. Always verify a number against the source before you present it."]
+    ] },
+  { id: "trouble", icon: "🛠", title: "Troubleshooting",
+    intro: "The most common issues and their fixes.",
+    items: [
+      ["AI shows API 400", "Almost always the AI key's credit balance has run out, or a per-key spend limit or site restriction was hit. Check billing on the Anthropic console. The exact reason now shows in the red status line under each AI button."],
+      ["Duplicates appear", "The app dedupes people, signals and lists on load and after each refresh. If you still see a duplicate, edit or remove it and it will not come back."],
+      ["An account looks empty", "Give the cloud a moment to sync, then reload. Data is never deleted by a refresh."]
+    ] },
+  { id: "commercial", icon: "💼", title: "Going commercial",
+    intro: "If you want to turn this into a product for other sellers or teams, here is an honest checklist of what to add before you sell it.",
+    items: [
+      ["Multi-tenant accounts", "Add organisation-level tenancy so each customer's data, users and billing are isolated from every other customer."],
+      ["Billing & plans", "Add subscription billing and usage limits. Decide whether AI usage is bundled, metered, or brings-your-own-key."],
+      ["Managed AI", "Move AI calls behind your own backend so customers do not need their own Anthropic key, and so you can control cost, caching and rate limits."],
+      ["Onboarding & support", "A guided first-run, sample data, and a support channel. This Help centre is the starting point for that."],
+      ["Security & compliance", "SSO, audit logging, data residency options and a security review. Enterprise buyers will ask for all four."],
+      ["White-label & CRM sync", "Themeable branding and a two-way sync with Salesforce or your customer's CRM so this complements their system of record rather than replacing it."]
+    ] }
+];
+
+function HelpSection() {
+  var _o = useState("overview");
+  var openId = _o[0], setOpenId = _o[1];
+  return React.createElement("div", { style: { maxWidth: 860, margin: "0 auto" } },
+    React.createElement("div", { style: { marginBottom: 16 } },
+      React.createElement("div", { style: { fontSize: 24, fontWeight: 800, color: C.text } }, "Help & documentation"),
+      React.createElement("div", { style: { fontSize: 13, color: C.muted, marginTop: 4, lineHeight: 1.5 } }, "How the workspace fits together, what each tab does, and how to get the most from the AI. Tap a topic to open it.")
+    ),
+    HELP_TOPICS.map(function (t) {
+      var open = openId === t.id;
+      return React.createElement("div", { key: t.id, style: { background: C.card, border: "1px solid " + C.border, borderRadius: 10, marginBottom: 10, overflow: "hidden" } },
+        React.createElement("div", { onClick: function () { setOpenId(open ? "" : t.id); },
+          style: { display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", cursor: "pointer" } },
+          React.createElement("span", { style: { fontSize: 18 } }, t.icon),
+          React.createElement("div", { style: { flex: 1, fontSize: 15, fontWeight: 700, color: C.text } }, t.title),
+          React.createElement("span", { style: { fontSize: 12, color: C.muted, transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" } }, "▶")
+        ),
+        open && React.createElement("div", { style: { padding: "0 16px 16px" } },
+          t.intro ? React.createElement("div", { style: { fontSize: 13, color: C.text, lineHeight: 1.6, marginBottom: t.items.length ? 12 : 0 } }, t.intro) : null,
+          t.items.map(function (it, i) {
+            return React.createElement("div", { key: i, style: { display: "flex", gap: 10, padding: "8px 0", borderTop: i === 0 ? "1px solid " + C.border : "1px solid #F3F4F6" } },
+              React.createElement("div", { style: { flex: "0 0 150px", fontSize: 13, fontWeight: 700, color: C.teal } }, it[0]),
+              React.createElement("div", { style: { flex: 1, fontSize: 13, color: C.text, lineHeight: 1.55 } }, it[1])
+            );
+          })
+        )
+      );
+    }),
+    React.createElement("div", { style: { fontSize: 11, color: C.muted, textAlign: "center", marginTop: 18, lineHeight: 1.6 } },
+      React.createElement("div", null, "© 2026 Pascal Schumachers. All rights reserved."),
+      React.createElement("div", null, "Prospect Intelligence for Source-to-Pay. Built by Pascal Schumachers.")
+    )
+  );
+}
+
 function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
   var score = parseInt(account.oppScore, 10); if (isNaN(score)) score = null;
   var lik = dealLikelihood(account);
@@ -10283,6 +10382,7 @@ const SUPER_SECTIONS = [
     { id: "transcripts", label: "Transcripts" },
   ]},
   { id: "analysis", label: "Market Analysis", icon: "\uD83D\uDCC8", children: [] },
+  { id: "help", label: "Help", icon: "\u2753", children: [] },
 ];
 // Flat list for backwards compat
 const SECTIONS = SUPER_SECTIONS.flatMap(s => s.children.length > 0 ? s.children : [{ id: s.id, label: s.label, icon: s.icon }]);
@@ -11592,8 +11692,10 @@ Return this exact JSON structure:
           setAccounts(function(prev) { return prev.map(function(a) { return a.id === accId ? { ...a, [field]: value } : a; }); });
         },
       }),
+      // ── Help screen (no account needed) ──
+      activeSection === "help" && /*#__PURE__*/ React.createElement(HelpSection, null),
       // ── Section content ──
-      account && activeSection !== "dashboard" &&
+      account && activeSection !== "dashboard" && activeSection !== "help" &&
         /*#__PURE__*/ React.createElement(
           React.Fragment,
           null,
