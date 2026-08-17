@@ -9694,7 +9694,7 @@ var HELP_TOPICS = [
     intro: "Three steps get you productive.",
     items: [
       ["Sign in", "Use your email and password. Your data is private to your account and syncs across devices."],
-      ["Set your AI key", "Click the key icon in the header and paste your Anthropic API key. This powers every AI button. Without it, you can still edit everything by hand."],
+      ["Set your API key", "Click the key icon in the header and paste your API key. This powers every AI button. Without it, you can still edit everything by hand."],
       ["Add an account", "Open the menu, add a prospect, then run Intel Refresh to auto-populate the company, spend and people intelligence from public sources."]
     ] },
   { id: "tabs", icon: "🧭", title: "The tabs at a glance",
@@ -9728,13 +9728,13 @@ var HELP_TOPICS = [
     intro: "Your intelligence stays yours.",
     items: [
       ["Private by account", "Data is stored in the cloud, scoped to your signed-in account, and is not shared with other users."],
-      ["Your AI key", "The Anthropic key is stored locally in your browser and restricted to this site. AI calls go directly from your browser to Anthropic."],
+      ["Your API key", "The API key is stored locally in your browser and restricted to this site. AI calls go directly from your browser to the AI service."],
       ["Verify before quoting", "AI-gathered figures are a fast first draft. Always verify a number against the source before you present it."]
     ] },
   { id: "trouble", icon: "🛠", title: "Troubleshooting",
     intro: "The most common issues and their fixes.",
     items: [
-      ["AI shows API 400", "Almost always the AI key's credit balance has run out, or a per-key spend limit or site restriction was hit. Check billing on the Anthropic console. The exact reason now shows in the red status line under each AI button."],
+      ["AI shows API 400", "Almost always the API key's credit balance has run out, or a per-key spend limit or site restriction was hit. Check your billing on the API provider's console. The exact reason now shows in the red status line under each AI button."],
       ["Duplicates appear", "The app dedupes people, signals and lists on load and after each refresh. If you still see a duplicate, edit or remove it and it will not come back."],
       ["An account looks empty", "Give the cloud a moment to sync, then reload. Data is never deleted by a refresh."]
     ] },
@@ -10407,6 +10407,34 @@ function ProspectDashboard() {
     try { return localStorage.getItem("prospect_claude_api_key") || ""; } catch(e) { return ""; }
   });
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profileNewPw, setProfileNewPw] = useState("");
+  const [profileMsg, setProfileMsg] = useState("");
+  const openProfile = () => {
+    setProfileName((auth && auth.currentUser && auth.currentUser.displayName) || "");
+    setProfileNewPw(""); setProfileMsg(""); setShowProfileModal(true);
+  };
+  const saveProfileName = () => {
+    if (!(auth && auth.currentUser)) { setProfileMsg("Sign in to save your profile."); return; }
+    auth.currentUser.updateProfile({ displayName: profileName.trim() })
+      .then(() => { setProfileMsg("✅ Name saved."); if (user) setUser(Object.assign({}, user, { displayName: profileName.trim() })); })
+      .catch((e) => setProfileMsg("❌ " + e.message));
+  };
+  const changePassword = () => {
+    if (!(auth && auth.currentUser)) { setProfileMsg("Sign in first."); return; }
+    if (!profileNewPw || profileNewPw.length < 6) { setProfileMsg("Password must be at least 6 characters."); return; }
+    auth.currentUser.updatePassword(profileNewPw)
+      .then(() => { setProfileMsg("✅ Password updated."); setProfileNewPw(""); })
+      .catch((e) => {
+        if (e && e.code === "auth/requires-recent-login") { setProfileMsg("For security, sign out and back in, then try again, or use the reset email button."); }
+        else { setProfileMsg("❌ " + (e && e.message ? e.message : "Could not update password.")); }
+      });
+  };
+  const sendResetEmail = () => {
+    if (auth && user && user.email) { auth.sendPasswordResetEmail(user.email).then(() => setProfileMsg("✅ Reset email sent to " + user.email + ".")).catch((e) => setProfileMsg("❌ " + e.message)); }
+    else { setProfileMsg("No email on file."); }
+  };
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
   const [showRefreshIntelModal, setShowRefreshIntelModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -10971,6 +10999,11 @@ Return this exact JSON structure:
   const [addAccountApiKey, setAddAccountApiKey] = useState("");
   const [addAccountLoading, setAddAccountLoading] = useState(false);
   const account = accounts.find((a) => a.id === selectedId);
+  useEffect(() => {
+    if (accounts.length > 0 && !accounts.some((a) => a.id === selectedId)) {
+      setSelectedId(accounts[0].id);
+    }
+  }, [accounts, selectedId]);
   const update = useCallback(
     (field, value) => {
       setAccounts((prev) => prev.map((a) => (a.id === selectedId ? { ...a, [field]: value } : a)));
@@ -11373,9 +11406,9 @@ Return this exact JSON structure:
                   textOverflow: "ellipsis",
                 },
               },
-              account.companyName || "Select Account",
+              activeSection === "dashboard" ? "Dashboard" : activeSection === "help" ? "Help" : (account.companyName || "Select Account"),
             ),
-            account.companyName && /*#__PURE__*/ React.createElement(
+            activeSection !== "dashboard" && activeSection !== "help" && account.companyName && /*#__PURE__*/ React.createElement(
               "button",
               {
                 onClick: function () {
@@ -11395,7 +11428,7 @@ Return this exact JSON structure:
               "\u270F\uFE0F",
             ),
           ),
-          /*#__PURE__*/ React.createElement(
+          activeSection !== "dashboard" && activeSection !== "help" && /*#__PURE__*/ React.createElement(
             "div",
             { style: { display: "flex", gap: 6, alignItems: "center", marginTop: 2 } },
             /*#__PURE__*/ React.createElement(
@@ -11464,6 +11497,26 @@ Return this exact JSON structure:
             },
           },
           "\uD83D\uDD04",
+        ),
+        /*#__PURE__*/ React.createElement(
+          "button",
+          {
+            onClick: openProfile,
+            title: "My profile",
+            style: {
+              background: "none",
+              border: "1px solid #E5E7EB",
+              borderRadius: 6,
+              color: C.muted,
+              cursor: "pointer",
+              fontSize: 11,
+              padding: "5px 10px",
+              fontFamily: "inherit",
+              minHeight: 36,
+              whiteSpace: "nowrap",
+            },
+          },
+          "👤 Profile",
         ),
         /*#__PURE__*/ React.createElement(
           "button",
@@ -11559,7 +11612,7 @@ Return this exact JSON structure:
           "Sign Out",
         ),
       ),
-    account && !headerCollapsed &&
+    account && !headerCollapsed && activeSection !== "dashboard" && activeSection !== "help" &&
       /*#__PURE__*/ React.createElement(
         "div",
         {
@@ -11791,6 +11844,53 @@ Return this exact JSON structure:
           ),
         ),
     ),
+    showProfileModal &&
+      /*#__PURE__*/ React.createElement(
+        "div",
+        {
+          onClick: () => setShowProfileModal(false),
+          style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: 20, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
+        },
+        /*#__PURE__*/ React.createElement(
+          "div",
+          {
+            onClick: (e) => e.stopPropagation(),
+            style: { background: C.card, borderRadius: 12, border: `1px solid ${C.border}`, padding: 24, maxWidth: 420, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "85vh", overflowY: "auto" },
+          },
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 } }, "👤 My profile"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 16 } }, user && user.email ? "Signed in as " + user.email : "Not signed in"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 } }, "Name"),
+          /*#__PURE__*/ React.createElement("input", {
+            type: "text", value: profileName, onChange: (e) => setProfileName(e.target.value), placeholder: "Your full name",
+            style: { width: "100%", padding: "10px 12px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 13, fontFamily: "inherit", marginBottom: 8, boxSizing: "border-box", outline: "none" },
+          }),
+          /*#__PURE__*/ React.createElement("button", {
+            onClick: saveProfileName,
+            style: { padding: "8px 14px", borderRadius: 6, border: "none", background: "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer", marginBottom: 20 },
+          }, "Save name"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, borderTop: `1px solid ${C.border}`, paddingTop: 16 } }, "Change password"),
+          /*#__PURE__*/ React.createElement("input", {
+            type: "password", value: profileNewPw, onChange: (e) => setProfileNewPw(e.target.value), placeholder: "New password (min 6 characters)",
+            style: { width: "100%", padding: "10px 12px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 13, fontFamily: "inherit", marginBottom: 8, boxSizing: "border-box", outline: "none" },
+          }),
+          /*#__PURE__*/ React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 } },
+            /*#__PURE__*/ React.createElement("button", {
+              onClick: changePassword,
+              style: { padding: "8px 14px", borderRadius: 6, border: "none", background: "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer" },
+            }, "Update password"),
+            /*#__PURE__*/ React.createElement("button", {
+              onClick: sendResetEmail,
+              style: { padding: "8px 14px", borderRadius: 6, border: `1px solid ${C.border}`, background: C.card, color: C.text, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" },
+            }, "Email me a reset link")
+          ),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: profileMsg ? 8 : 0 } }, "You type your own new password; it is sent straight to the secure auth service and never stored in the dashboard."),
+          profileMsg && /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: profileMsg.indexOf("✅") === 0 ? "#059669" : C.text, marginTop: 4 } }, profileMsg),
+          /*#__PURE__*/ React.createElement("button", {
+            onClick: () => setShowProfileModal(false),
+            style: { marginTop: 18, width: "100%", padding: "10px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.muted, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" },
+          }, "Close")
+        )
+      ),
     showApiKeyModal &&
       /*#__PURE__*/ React.createElement(
         "div",
