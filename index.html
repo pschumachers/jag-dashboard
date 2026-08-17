@@ -11679,8 +11679,8 @@ Return this exact JSON structure:
           }),
         ),
       ),
-    // ── Super-section tabs: shown as the header on every view except the clean Dashboard ──
-    activeSection !== "dashboard" && /*#__PURE__*/ React.createElement(
+    // ── Super-section tabs: header on account/analysis views; hidden on the clean Dashboard and Help ──
+    activeSection !== "dashboard" && activeSection !== "help" && /*#__PURE__*/ React.createElement(
       "div",
       {
         style: {
@@ -11697,8 +11697,8 @@ Return this exact JSON structure:
         "div",
         { style: { display: "flex", padding: "0 8px", minWidth: "max-content" } },
         (["dashboard", "analysis", "help"].indexOf(activeSection) !== -1
-          ? SUPER_SECTIONS.filter((s) => ["analysis", "help"].indexOf(s.id) !== -1)
-          : SUPER_SECTIONS.filter((s) => s.id !== "dashboard")
+          ? SUPER_SECTIONS.filter((s) => s.id === "analysis")
+          : SUPER_SECTIONS.filter((s) => s.id !== "dashboard" && s.id !== "help")
         ).map((ss) =>
           /*#__PURE__*/ React.createElement(
             "button",
