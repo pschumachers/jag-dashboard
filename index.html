@@ -11433,9 +11433,9 @@ Return this exact JSON structure:
                   textOverflow: "ellipsis",
                 },
               },
-              activeSection === "dashboard" ? "Dashboard" : activeSection === "help" ? "Help" : (account.companyName || "Select Account"),
+              activeSection === "dashboard" ? "Dashboard" : activeSection === "help" ? "Help" : activeSection === "analysis" ? "How I Would Help Build Northern Europe for JAGGAER" : (account.companyName || "Select Account"),
             ),
-            activeSection !== "dashboard" && activeSection !== "help" && account.companyName && /*#__PURE__*/ React.createElement(
+            activeSection !== "dashboard" && activeSection !== "help" && activeSection !== "analysis" && account.companyName && /*#__PURE__*/ React.createElement(
               "button",
               {
                 onClick: function () {
@@ -11455,7 +11455,7 @@ Return this exact JSON structure:
               "\u270F\uFE0F",
             ),
           ),
-          activeSection !== "dashboard" && activeSection !== "help" && /*#__PURE__*/ React.createElement(
+          activeSection !== "dashboard" && activeSection !== "help" && activeSection !== "analysis" && /*#__PURE__*/ React.createElement(
             "div",
             { style: { display: "flex", gap: 6, alignItems: "center", marginTop: 2 } },
             /*#__PURE__*/ React.createElement(
