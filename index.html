@@ -10428,9 +10428,8 @@ function ProspectDashboard() {
   const saveProfile = () => {
     if (!(auth && auth.currentUser)) { setProfileMsg("Sign in to save your profile."); return; }
     var f = profileForm;
-    var tasks = [auth.currentUser.updateProfile({ displayName: (f.name || "").trim() })];
-    try { if (db) tasks.push(db.collection("users").doc(auth.currentUser.uid).set({ profile: f }, { merge: true })); } catch (e) {}
-    Promise.all(tasks)
+    try { if (db) db.collection("users").doc(auth.currentUser.uid).set({ profile: f }, { merge: true }).catch(function () {}); } catch (e) {}
+    auth.currentUser.updateProfile({ displayName: (f.name || "").trim() })
       .then(() => { setProfileMsg("✅ Profile saved."); if (user) setUser(Object.assign({}, user, { displayName: (f.name || "").trim() })); })
       .catch((e) => setProfileMsg("❌ " + (e && e.message ? e.message : "Could not save profile.")));
   };
@@ -11080,7 +11079,8 @@ Return this exact JSON structure:
   const selectAccount = (id) => {
     setSelectedId(id);
     setDrawerOpen(false);
-    if (activeSection === "dashboard") { setActiveSuperSection("onepager"); setActiveSection("onepager"); }
+    setActiveSuperSection("onepager");
+    setActiveSection("onepager");
   };
   return /*#__PURE__*/ React.createElement(
     "div",
@@ -11697,8 +11697,8 @@ Return this exact JSON structure:
         "div",
         { style: { display: "flex", padding: "0 8px", minWidth: "max-content" } },
         (["dashboard", "analysis", "help"].indexOf(activeSection) !== -1
-          ? SUPER_SECTIONS.filter((s) => ["dashboard", "analysis", "help"].indexOf(s.id) !== -1)
-          : SUPER_SECTIONS
+          ? SUPER_SECTIONS.filter((s) => ["analysis", "help"].indexOf(s.id) !== -1)
+          : SUPER_SECTIONS.filter((s) => s.id !== "dashboard")
         ).map((ss) =>
           /*#__PURE__*/ React.createElement(
             "button",
