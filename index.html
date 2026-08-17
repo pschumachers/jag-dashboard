@@ -9691,7 +9691,15 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
     var t = String(s).replace(/\r/g, "").trim();
     t = t.replace(/\s+(\d{1,2}[\.\)])\s+/g, "\n$1 ");
     t = t.replace(/\s*•\s+/g, "\n• ");
-    return t.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
+    var parts = t.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
+    var out = [];
+    parts.forEach(function (p) {
+      var isList = /^(\d{1,2}[\.\)]|•)/.test(p);
+      if (!isList && p.length > 160) {
+        p.replace(/([.!?])\s+(?=[A-Z€$£"'])/g, "$1\n").split(/\n/).forEach(function (x) { x = x.trim(); if (x) out.push(x); });
+      } else { out.push(p); }
+    });
+    return out;
   }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function printPage() {
