@@ -11168,7 +11168,7 @@ Return this exact JSON structure:
         "div",
         { style: { padding: "10px 10px", borderBottom: "1px solid #2D3448", maxHeight: "45vh", overflowY: "auto" } },
         /*#__PURE__*/ React.createElement("div", { style: { color: "#8892A4", fontSize: 10, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", padding: "0 6px 6px" } }, "Menu"),
-        SUPER_SECTIONS.map(function (ss) {
+        SUPER_SECTIONS.filter(function (s) { return ["dashboard", "analysis", "help"].indexOf(s.id) !== -1; }).map(function (ss) {
           var activeSuper = activeSuperSection === ss.id;
           return /*#__PURE__*/ React.createElement("button", {
             key: ss.id,
