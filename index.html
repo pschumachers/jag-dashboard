@@ -9686,15 +9686,22 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
 
   function jump(sec) { var sup = (sec === "compelling") ? "opportunity" : "dealqual"; setActiveSuperSection && setActiveSuperSection(sup); setActiveSection && setActiveSection(sec); }
 
+  function splitParas(s) {
+    if (!s) return [];
+    var t = String(s).replace(/\r/g, "").trim();
+    t = t.replace(/\s+(\d{1,2}[\.\)])\s+/g, "\n$1 ");
+    t = t.replace(/\s*•\s+/g, "\n• ");
+    return t.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
+  }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function printPage() {
-    function sec(t, b) { b = (b || "").trim(); if (!b) return ""; return "<div class='sec'><h3>" + esc(t) + "</h3><p>" + esc(b) + "</p></div>"; }
+    function sec(t, b) { b = (b || "").trim(); if (!b) return ""; var ps = splitParas(b).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join(""); return "<div class='sec'><h3>" + esc(t) + "</h3>" + ps + "</div>"; }
     var html = "<!doctype html><html><head><meta charset='utf-8'><title>" + esc(account.companyName || "Account") + " — Deal One-Pager</title>" +
       "<style>body{font-family:-apple-system,Segoe UI,sans-serif;color:#111827;margin:34px;line-height:1.5}h1{font-size:24px;margin:0}" +
       ".sub{color:#6B7280;font-size:13px;margin:3px 0 18px}.band{display:flex;gap:12px;margin:16px 0}" +
       ".kpi{flex:1;border:1px solid #E5E7EB;border-radius:10px;padding:12px}.kpi .l{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;font-weight:700}" +
       ".kpi .v{font-size:20px;font-weight:800;color:#0F766E;margin-top:5px}.sec{margin:14px 0}.sec h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#6B7280;margin:0 0 4px}" +
-      ".sec p{margin:0;font-size:13px;white-space:pre-wrap}.pill{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;background:#F1F5F9;margin-right:8px}" +
+      ".sec p{margin:0 0 8px;font-size:13px;white-space:pre-wrap}.pill{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;background:#F1F5F9;margin-right:8px}" +
       ".foot{margin-top:26px;border-top:1px solid #E5E7EB;padding-top:10px;color:#6B7280;font-size:10px;text-align:center}</style></head><body>" +
       "<h1>" + esc(account.companyName || "Account") + "</h1>" +
       "<div class='sub'>" + esc(account.industry || "") + (account.priority ? " · " + esc(account.priority) + " priority" : "") + " · JAGGAER Source-to-Pay</div>" +
@@ -9731,7 +9738,10 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5 } }, title),
         openSec ? React.createElement("button", { onClick: function () { jump(openSec); }, style: { background: "none", border: "none", color: C.teal, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" } }, "Open ›") : null
       ),
-      React.createElement("div", { style: { fontSize: 13, color: txt ? C.text : C.muted, lineHeight: 1.55, whiteSpace: "pre-wrap" } }, txt || "Not captured yet")
+      txt
+        ? React.createElement("div", { style: { fontSize: 13, color: C.text, lineHeight: 1.55 } },
+            splitParas(txt).map(function (p, i) { return React.createElement("div", { key: i, style: { marginBottom: 8 } }, p); }))
+        : React.createElement("div", { style: { fontSize: 13, color: C.muted, lineHeight: 1.55 } }, "Not captured yet")
     );
   }
 
