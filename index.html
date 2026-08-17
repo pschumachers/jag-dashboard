@@ -10073,18 +10073,18 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 } }, "Deals by likelihood"),
         pipeSorted.map(function(d) {
           return React.createElement("div", { key: d.a.id, onClick: function() { goToAccount(d.a.id, "oppscore", "dealqual"); },
-            style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 6px", borderBottom: "1px solid #F3F4F6", cursor: "pointer" } },
+            style: { display: "flex", alignItems: "center", gap: 8, padding: "9px 4px", borderBottom: "1px solid #F3F4F6", cursor: "pointer" } },
             React.createElement("div", { style: { flex: 1, minWidth: 0 } },
               React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, d.a.companyName),
-              React.createElement("div", { style: { fontSize: 11, color: C.muted } }, (d.fit || "Unrated") + (d.timing ? " · " + d.timing : "") + (d.proj ? " · " + fmtMonthYear(d.proj) : ""))
+              React.createElement("div", { style: { fontSize: 11, color: C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, (d.fit || "Unrated") + (d.timing ? " · " + d.timing : "") + (d.proj ? " · " + fmtMonthYear(d.proj) : ""))
             ),
-            React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "#0F766E", minWidth: 64, textAlign: "right" } }, d.val != null ? fmtMoney(d.val) : "—"),
-            React.createElement("div", { style: { width: 90 } },
+            React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "#0F766E", minWidth: 48, textAlign: "right", whiteSpace: "nowrap", flexShrink: 0 } }, d.val != null ? fmtMoney(d.val) : "—"),
+            React.createElement("div", { style: { width: 48, flexShrink: 0 } },
               React.createElement("div", { style: { height: 8, borderRadius: 5, background: "#F1F5F9", overflow: "hidden" } },
                 React.createElement("div", { style: { width: d.lik + "%", height: "100%", background: likColOf(d.lik), borderRadius: 5 } })
               )
             ),
-            React.createElement("div", { style: { fontSize: 12, fontWeight: 800, color: likColOf(d.lik), minWidth: 38, textAlign: "right" } }, d.lik + "%")
+            React.createElement("div", { style: { fontSize: 12, fontWeight: 800, color: likColOf(d.lik), minWidth: 34, textAlign: "right", flexShrink: 0 } }, d.lik + "%")
           );
         })
       ) : React.createElement("div", { style: { fontSize: 12, color: C.muted } }, "No deals scored yet. Set a fit, value and 7 Musts on an account to build the pipeline view.")
