@@ -11579,8 +11579,8 @@ Return this exact JSON structure:
           }),
         ),
       ),
-    // ── Super-section tabs (top level) ──
-    /*#__PURE__*/ React.createElement(
+    // ── Super-section tabs (top level) — only once an account is selected ──
+    account && /*#__PURE__*/ React.createElement(
       "div",
       {
         style: {
