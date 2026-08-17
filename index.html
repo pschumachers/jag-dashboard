@@ -3315,26 +3315,31 @@ function MetricCard({ value, label, sub }) {
     sub && /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.teal, marginTop: 3, whiteSpace: "pre-wrap", lineHeight: 1.45, wordBreak: "break-word" } }, sub),
   );
 }
+function MetricField({ value, onChange, placeholder, fontSize, fontWeight, color, minRows, margin }) {
+  var _fs = React.useState(false);
+  var focused = _fs[0], setFocused = _fs[1];
+  var formatted = paragraphize(value || "");
+  var shown = focused ? (value || "") : formatted;
+  var lineCount = formatted ? formatted.split("\n").length : 1;
+  var autoRows = Math.max(minRows || 2, Math.min(24, lineCount + Math.ceil((formatted.length || 0) / 60)));
+  return /*#__PURE__*/ React.createElement("textarea", {
+    value: shown,
+    onChange: (e) => onChange(e.target.value),
+    placeholder: placeholder,
+    rows: autoRows,
+    style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", resize: "vertical", background: "transparent", fontFamily: "inherit", fontSize: fontSize, fontWeight: fontWeight, color: color, lineHeight: 1.5, whiteSpace: "pre-wrap", padding: 0, margin: margin || 0 },
+    onFocus: () => setFocused(true),
+    onBlur: () => setFocused(false),
+  });
+}
 function EditableMetricCard({ account, update, field, label, subField, subStatic, valuePlaceholder, subPlaceholder }) {
   return /*#__PURE__*/ React.createElement(
     "div",
     { style: { background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", flex: 1, minWidth: 160, textAlign: "left" } },
     /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
-    /*#__PURE__*/ React.createElement("textarea", {
-      value: account[field] || "",
-      onChange: (e) => update(field, e.target.value),
-      placeholder: valuePlaceholder || "—",
-      rows: 3,
-      style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", resize: "vertical", background: "transparent", fontFamily: "inherit", fontSize: 14, fontWeight: 600, color: C.blue, lineHeight: 1.45, padding: 0, margin: 0 },
-    }),
+    /*#__PURE__*/ React.createElement(MetricField, { value: account[field] || "", onChange: (v) => update(field, v), placeholder: valuePlaceholder || "—", fontSize: 14, fontWeight: 600, color: C.blue, minRows: 2 }),
     subField
-      ? /*#__PURE__*/ React.createElement("textarea", {
-          value: account[subField] || "",
-          onChange: (e) => update(subField, e.target.value),
-          placeholder: subPlaceholder || "",
-          rows: 2,
-          style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", resize: "vertical", background: "transparent", fontFamily: "inherit", fontSize: 12, fontWeight: 500, color: C.teal, lineHeight: 1.45, padding: 0, margin: "3px 0 0" },
-        })
+      ? /*#__PURE__*/ React.createElement(MetricField, { value: account[subField] || "", onChange: (v) => update(subField, v), placeholder: subPlaceholder || "", fontSize: 12, fontWeight: 500, color: C.teal, minRows: 1, margin: "3px 0 0" })
       : (subStatic ? /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.teal, marginTop: 3 } }, subStatic) : null),
   );
 }
@@ -6796,7 +6801,14 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
           ),
           React.createElement("div", { style: { height: 8, borderRadius: 5, background: "#F1F5F9", overflow: "hidden", marginTop: 8 } },
             React.createElement("div", { style: { width: (has ? n : 0) + "%", height: "100%", background: col, borderRadius: 5, transition: "width .2s" } })
-          )
+          ),
+          (function () {
+            var r = (account.oppRationale || "").trim();
+            if (!r) return null;
+            var mm = r.match(/^[^.!?]*[.!?]/);
+            var line = (mm ? mm[0] : r).trim();
+            return React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 8, lineHeight: 1.5 } }, line);
+          })()
         );
       })(),
       React.createElement(FieldLabel, null, "Is this a real opportunity?"),
