@@ -11011,7 +11011,7 @@ Return this exact JSON structure:
   const [addAccountAutoPopulate, setAddAccountAutoPopulate] = useState(false);
   const [addAccountApiKey, setAddAccountApiKey] = useState("");
   const [addAccountLoading, setAddAccountLoading] = useState(false);
-  const account = accounts.find((a) => a.id === selectedId);
+  const account = accounts.find((a) => a.id === selectedId) || accounts[0] || {};
   useEffect(() => {
     if (accounts.length > 0 && !accounts.some((a) => a.id === selectedId)) {
       setSelectedId(accounts[0].id);
@@ -11598,6 +11598,26 @@ Return this exact JSON structure:
         /*#__PURE__*/ React.createElement(
           "button",
           {
+            onClick: openProfile,
+            title: "My profile",
+            style: {
+              background: "none",
+              border: "1px solid #E5E7EB",
+              borderRadius: 6,
+              color: C.muted,
+              cursor: "pointer",
+              fontSize: 11,
+              padding: "5px 10px",
+              fontFamily: "inherit",
+              minHeight: 36,
+              whiteSpace: "nowrap",
+            },
+          },
+          "👤 Profile",
+        ),
+        /*#__PURE__*/ React.createElement(
+          "button",
+          {
             onClick: () => {
               if (auth) auth.signOut();
               else window.location.reload();
@@ -11617,26 +11637,6 @@ Return this exact JSON structure:
             },
           },
           "Sign Out",
-        ),
-        /*#__PURE__*/ React.createElement(
-          "button",
-          {
-            onClick: openProfile,
-            title: "My profile",
-            style: {
-              background: "none",
-              border: "1px solid #E5E7EB",
-              borderRadius: 6,
-              color: C.muted,
-              cursor: "pointer",
-              fontSize: 11,
-              padding: "5px 10px",
-              fontFamily: "inherit",
-              minHeight: 36,
-              whiteSpace: "nowrap",
-            },
-          },
-          "👤 Profile",
         ),
       ),
     false &&
@@ -11696,7 +11696,10 @@ Return this exact JSON structure:
       /*#__PURE__*/ React.createElement(
         "div",
         { style: { display: "flex", padding: "0 8px", minWidth: "max-content" } },
-        SUPER_SECTIONS.map((ss) =>
+        (["dashboard", "analysis", "help"].indexOf(activeSection) !== -1
+          ? SUPER_SECTIONS.filter((s) => ["dashboard", "analysis", "help"].indexOf(s.id) !== -1)
+          : SUPER_SECTIONS
+        ).map((ss) =>
           /*#__PURE__*/ React.createElement(
             "button",
             {
