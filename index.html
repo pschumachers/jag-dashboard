@@ -10055,7 +10055,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
       ),
       // Expanded stage accounts list
       expandedStage && React.createElement("div", { style: { marginTop: 12, padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, maxHeight: 200, overflowY: "auto" } },
-        React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: stageColor[expandedStage], marginBottom: 8 } }, expandedStage + " \u2014 " + (stageGroups[expandedStage] || []).length + " accounts"),
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: stageColor[expandedStage], marginBottom: 8 } }, expandedStage + " \u00b7 " + (stageGroups[expandedStage] || []).length + " accounts"),
         (stageGroups[expandedStage] || []).length === 0
           ? React.createElement("div", { style: { fontSize: 11, color: "#9CA3AF" } }, "No accounts in this stage")
           : (stageGroups[expandedStage] || []).map(function(a) { return accRow(a, "pipe"); })
@@ -10148,7 +10148,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
     // ══════════════════════════════════════════════════════════
     // ── ORG CHART — Project Teams by Department ──
     // ══════════════════════════════════════════════════════════
-    React.createElement("div", { style: { background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: 20, marginBottom: 16 } },
+    false && React.createElement("div", { style: { background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: 20, marginBottom: 16 } },
       React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 } }, "\uD83C\uDFD7\uFE0F Project Teams \u2014 Org Chart"),
       React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 14 } }, "All mapped executives across accounts, grouped by department. Includes Procurement."),
       // Department cards grid
@@ -10199,7 +10199,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
       // Needs Attention
       React.createElement("div", { style: { flex: "1 1 350px", minWidth: 300, background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: 18 } },
         React.createElement("div", { style: { fontSize: 14, fontWeight: 700, color: "#1E293B", marginBottom: 12 } }, "\u26A0\uFE0F Accounts Needing Attention"),
-        React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 12 } }, "Readiness below 30% \u2014 these accounts need more research."),
+        React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 12 } }, "Readiness below 30%. These accounts need more research."),
         needsAttention.length === 0
           ? React.createElement("div", { style: { textAlign: "center", padding: 20, color: "#10B981", fontSize: 13 } }, "\u2705 All accounts above 30% readiness!")
           : needsAttention.slice(0, 6).map(function(a) { return accRow(a, "needsAtt"); }),
