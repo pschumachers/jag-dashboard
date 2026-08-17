@@ -10447,7 +10447,7 @@ function ProspectDashboard() {
     var f = profileForm;
     try { if (db) db.collection("users").doc(auth.currentUser.uid).set({ profile: f }, { merge: true }).catch(function () {}); } catch (e) {}
     auth.currentUser.updateProfile({ displayName: (f.name || "").trim() })
-      .then(() => { setProfileMsg("✅ Profile saved."); if (user) setUser(Object.assign({}, user, { displayName: (f.name || "").trim() })); })
+      .then(() => { setProfileMsg("✅ Profile saved."); })
       .catch((e) => setProfileMsg("❌ " + (e && e.message ? e.message : "Could not save profile.")));
   };
   const changePassword = () => {
@@ -10461,7 +10461,8 @@ function ProspectDashboard() {
       });
   };
   const sendResetEmail = () => {
-    if (auth && user && user.email) { auth.sendPasswordResetEmail(user.email).then(() => setProfileMsg("✅ Reset email sent to " + user.email + ".")).catch((e) => setProfileMsg("❌ " + e.message)); }
+    var em = auth && auth.currentUser && auth.currentUser.email;
+    if (em) { auth.sendPasswordResetEmail(em).then(() => setProfileMsg("✅ Reset email sent to " + em + ".")).catch((e) => setProfileMsg("❌ " + e.message)); }
     else { setProfileMsg("No email on file."); }
   };
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
@@ -11905,7 +11906,7 @@ Return this exact JSON structure:
             style: { background: C.card, borderRadius: 12, border: `1px solid ${C.border}`, padding: 24, maxWidth: 420, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", maxHeight: "85vh", overflowY: "auto" },
           },
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 } }, "👤 My profile"),
-          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 16 } }, user && user.email ? "Signed in as " + user.email : "Not signed in"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 16 } }, (auth && auth.currentUser && auth.currentUser.email) ? "Signed in as " + auth.currentUser.email : "Signed in"),
           [
             ["name", "Full name", "e.g. Pascal Schumachers"],
             ["title", "Job title", "e.g. Strategic Account Executive"],
