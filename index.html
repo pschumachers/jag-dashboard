@@ -10408,18 +10408,31 @@ function ProspectDashboard() {
   });
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileName, setProfileName] = useState("");
+  const [profileForm, setProfileForm] = useState({ name: "", title: "", company: "", phone: "", region: "" });
   const [profileNewPw, setProfileNewPw] = useState("");
   const [profileMsg, setProfileMsg] = useState("");
+  const setProfileField = (k, v) => setProfileForm((prev) => Object.assign({}, prev, { [k]: v }));
   const openProfile = () => {
-    setProfileName((auth && auth.currentUser && auth.currentUser.displayName) || "");
-    setProfileNewPw(""); setProfileMsg(""); setShowProfileModal(true);
+    setProfileNewPw(""); setProfileMsg("");
+    var base = { name: (auth && auth.currentUser && auth.currentUser.displayName) || "", title: "", company: "", phone: "", region: "" };
+    setProfileForm(base);
+    setShowProfileModal(true);
+    try {
+      if (db && auth && auth.currentUser) {
+        db.collection("users").doc(auth.currentUser.uid).get().then(function (doc) {
+          if (doc && doc.exists && doc.data() && doc.data().profile) { setProfileForm(Object.assign({}, base, doc.data().profile)); }
+        }).catch(function () {});
+      }
+    } catch (e) {}
   };
-  const saveProfileName = () => {
+  const saveProfile = () => {
     if (!(auth && auth.currentUser)) { setProfileMsg("Sign in to save your profile."); return; }
-    auth.currentUser.updateProfile({ displayName: profileName.trim() })
-      .then(() => { setProfileMsg("✅ Name saved."); if (user) setUser(Object.assign({}, user, { displayName: profileName.trim() })); })
-      .catch((e) => setProfileMsg("❌ " + e.message));
+    var f = profileForm;
+    var tasks = [auth.currentUser.updateProfile({ displayName: (f.name || "").trim() })];
+    try { if (db) tasks.push(db.collection("users").doc(auth.currentUser.uid).set({ profile: f }, { merge: true })); } catch (e) {}
+    Promise.all(tasks)
+      .then(() => { setProfileMsg("✅ Profile saved."); if (user) setUser(Object.assign({}, user, { displayName: (f.name || "").trim() })); })
+      .catch((e) => setProfileMsg("❌ " + (e && e.message ? e.message : "Could not save profile.")));
   };
   const changePassword = () => {
     if (!(auth && auth.currentUser)) { setProfileMsg("Sign in first."); return; }
@@ -11666,8 +11679,8 @@ Return this exact JSON structure:
           }),
         ),
       ),
-    // ── Super-section tabs replaced by the ☰ menu; kept hidden ──
-    false && /*#__PURE__*/ React.createElement(
+    // ── Super-section tabs: shown as the header on every view except the clean Dashboard ──
+    activeSection !== "dashboard" && /*#__PURE__*/ React.createElement(
       "div",
       {
         style: {
@@ -11873,15 +11886,25 @@ Return this exact JSON structure:
           },
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 } }, "👤 My profile"),
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 16 } }, user && user.email ? "Signed in as " + user.email : "Not signed in"),
-          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 } }, "Name"),
-          /*#__PURE__*/ React.createElement("input", {
-            type: "text", value: profileName, onChange: (e) => setProfileName(e.target.value), placeholder: "Your full name",
-            style: { width: "100%", padding: "10px 12px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 13, fontFamily: "inherit", marginBottom: 8, boxSizing: "border-box", outline: "none" },
+          [
+            ["name", "Full name", "e.g. Pascal Schumachers"],
+            ["title", "Job title", "e.g. Strategic Account Executive"],
+            ["company", "Company", "e.g. JAGGAER"],
+            ["phone", "Phone", "e.g. +49 …"],
+            ["region", "Region / Territory", "e.g. Northern Europe"]
+          ].map(function (fld) {
+            return /*#__PURE__*/ React.createElement("div", { key: fld[0], style: { marginBottom: 10 } },
+              /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, fld[1]),
+              /*#__PURE__*/ React.createElement("input", {
+                type: "text", value: profileForm[fld[0]] || "", onChange: (e) => setProfileField(fld[0], e.target.value), placeholder: fld[2],
+                style: { width: "100%", padding: "10px 12px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 13, fontFamily: "inherit", boxSizing: "border-box", outline: "none" },
+              })
+            );
           }),
           /*#__PURE__*/ React.createElement("button", {
-            onClick: saveProfileName,
-            style: { padding: "8px 14px", borderRadius: 6, border: "none", background: "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer", marginBottom: 20 },
-          }, "Save name"),
+            onClick: saveProfile,
+            style: { padding: "9px 16px", borderRadius: 6, border: "none", background: "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4, marginBottom: 20 },
+          }, "Save profile"),
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, borderTop: `1px solid ${C.border}`, paddingTop: 16 } }, "Change password"),
           /*#__PURE__*/ React.createElement("input", {
             type: "password", value: profileNewPw, onChange: (e) => setProfileNewPw(e.target.value), placeholder: "New password (min 6 characters)",
