@@ -21,11 +21,10 @@
     .tabs-strip::-webkit-scrollbar { display: none; }
     .tabs-strip { scrollbar-width: none; -ms-overflow-style: none; }
     @media (max-width: 700px) {
-      .app-header { overflow-x: auto; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; }
-      .app-header::-webkit-scrollbar { display: none; }
-      .app-header > * { flex-shrink: 0 !important; }
+      .app-header { flex-wrap: wrap !important; row-gap: 6px; }
+      .app-header > * { flex-shrink: 0; }
       .app-header-sub { display: none !important; }
-      .app-header-title { flex: 0 0 auto !important; max-width: 46vw; }
+      .app-header-title { flex: 1 1 55% !important; min-width: 100px; max-width: none !important; }
     }
   </style>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
