@@ -9681,6 +9681,9 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
   var projStr = pd ? fmtMonthYear(pd) : "";
   var parsed = parseMoney(account.oppValue);
   var valStr = parsed != null ? fmtMoney(parsed) : (account.oppValue && account.oppValue.trim() ? account.oppValue.trim() : "—");
+  var compMust = normMusts(account.sevenMusts).competition.summary;
+  var stackTxt = (account.erpSystem || "").trim();
+  var compBody = (stackTxt ? "Currently using: " + stackTxt : "") + (compMust && compMust.trim() ? (stackTxt ? "\n\n" : "") + compMust.trim() : "");
   var likCol = lik >= 70 ? "#059669" : lik >= 40 ? "#D97706" : "#DC2626";
   var scoreCol = score == null ? C.muted : score >= 70 ? "#059669" : score >= 40 ? "#D97706" : "#DC2626";
 
@@ -9722,6 +9725,7 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
       "</div>" +
       sec("Why now — compelling event", account.compellingEvent) +
       sec("Why we win — hypothesis", account.hypothesis || account.leadNarrative) +
+      sec("Competition & who they use", compBody) +
       sec("What has to be done to close", account.oppNextSteps) +
       sec("Why this rating", account.oppRationale) +
       "<div class='foot'>© 2026 Pascal Schumachers. All rights reserved. Confidential. AI-assisted intel, verify figures before use.</div></body></html>";
@@ -9772,6 +9776,7 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
     ),
     card("Why now — compelling event", account.compellingEvent, "compelling"),
     card("Why we win — hypothesis", account.hypothesis || account.leadNarrative, "oppscore"),
+    card("Competition & who they use", compBody, "sevenmusts"),
     card("What has to be done to close", account.oppNextSteps, "oppscore"),
     card("Why this rating", account.oppRationale, "oppscore"),
     React.createElement("div", { style: { fontSize: 11, color: C.muted, marginTop: 8, lineHeight: 1.5, fontStyle: "italic" } }, "This one-pager rolls up the account's live intelligence. Figures are AI-assisted, verify before quoting. Open any card to edit the source data.")
