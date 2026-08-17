@@ -11468,6 +11468,26 @@ Return this exact JSON structure:
         /*#__PURE__*/ React.createElement(
           "button",
           {
+            onClick: () => { setActiveSuperSection("help"); setActiveSection("help"); },
+            title: "Help & documentation",
+            style: {
+              background: "none",
+              border: "1px solid #E5E7EB",
+              borderRadius: 6,
+              color: C.muted,
+              cursor: "pointer",
+              fontSize: 11,
+              padding: "5px 10px",
+              fontFamily: "inherit",
+              minHeight: 36,
+              whiteSpace: "nowrap",
+            },
+          },
+          "\u2753 Help",
+        ),
+        /*#__PURE__*/ React.createElement(
+          "button",
+          {
             onClick: () => setShowApiKeyModal(true),
             title: "Set Claude API Key",
             style: {
