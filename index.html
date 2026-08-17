@@ -140,7 +140,44 @@ var DEFAULT_MUST_WEIGHTS = { buyer: 22, influencers: 15, competition: 9, win: 13
 function normWeights(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { var v = parseFloat(w[k]); out[k] = (isNaN(v) || v < 0) ? DEFAULT_MUST_WEIGHTS[k] : v; }); return out; }
 function normMustNotes(w){ w = (w && typeof w === "object") ? w : {}; var out = {}; Object.keys(DEFAULT_MUST_WEIGHTS).forEach(function (k) { out[k] = typeof w[k] === "string" ? w[k] : ""; }); return out; }
 function normMusts(m){ m = (m && typeof m === "object") ? m : {}; var keys = ["buyer","influencers","competition","win","lose","decision","taught"]; var out = {}; keys.forEach(function(k){ var e = (m[k] && typeof m[k] === "object") ? m[k] : {}; var checks = Array.isArray(e.checks) ? e.checks.slice(0,5) : []; while (checks.length < 5) checks.push(false); out[k] = { summary: typeof e.summary === "string" ? e.summary : "", checks: checks.map(Boolean) }; }); return out; }
-function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [], salesCycle: "", dealStartDate: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), weightNotes: normMustNotes(a.weightNotes), dealObjectives: normDeal(a.dealObjectives) }); }
+function normMSP(m){
+  m = (m && typeof m === "object") ? m : {};
+  var steps = Array.isArray(m.steps) ? m.steps.slice(0, 12).map(function (s) { s = (s && typeof s === "object") ? s : {}; return { step: typeof s.step === "string" ? s.step : "", who: typeof s.who === "string" ? s.who : "", when: typeof s.when === "string" ? s.when : "", done: !!s.done }; }) : [];
+  return {
+    conversationDate: typeof m.conversationDate === "string" ? m.conversationDate : "",
+    currency: (m.currency === "$" || m.currency === "£" || m.currency === "€") ? m.currency : "€",
+    steps: steps,
+    whereToday: typeof m.whereToday === "string" ? m.whereToday : "",
+    whereWant: typeof m.whereWant === "string" ? m.whereWant : "",
+    whyNow: typeof m.whyNow === "string" ? m.whyNow : "",
+    stillNeed: typeof m.stillNeed === "string" ? m.stillNeed : ""
+  };
+}
+var MSP_MILESTONES = [
+  { key: "discovery", label: "Discovery conversation held", from: "conversation", pos: 0.05 },
+  { key: "buyer", label: "Economic buyer confirmed", must: "buyer", pos: 0.15 },
+  { key: "influencers", label: "Buying group and influencers mapped", must: "influencers", pos: 0.25 },
+  { key: "taught", label: "Insight shared and credibility built", must: "taught", pos: 0.35 },
+  { key: "competition", label: "Competitive landscape understood", must: "competition", pos: 0.45 },
+  { key: "win", label: "Win themes validated with the prospect", must: "win", pos: 0.60 },
+  { key: "lose", label: "Risks and objections have a plan", must: "lose", pos: 0.70 },
+  { key: "decision", label: "Decision date and close plan agreed", must: "decision", pos: 0.85 },
+  { key: "close", label: "Contract signed and kickoff scheduled", from: "close", pos: 1.0 }
+];
+function mspMilestoneDate(a, pos){
+  var c = parseInt(a.salesCycle, 10);
+  var base = a.dealStartDate ? new Date(a.dealStartDate) : null;
+  if (!base || isNaN(base.getTime()) || isNaN(c) || c < 0) return null;
+  var d = new Date(base.getTime()); d.setMonth(d.getMonth() + Math.round(pos * c)); return d;
+}
+function mspFmtDay(d){ return d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : ""; }
+function mspStatus(a, m){
+  if (m.from === "conversation") { var mp = normMSP(a.mutualPlan); return mp.conversationDate ? "done" : "open"; }
+  if (m.from === "close") { var deal = normDeal(a.dealObjectives); return deal.close.seller[0] ? "done" : (dealLikelihood(a) >= 70 ? "progress" : "open"); }
+  var musts = normMusts(a.sevenMusts); var done = musts[m.must].checks.filter(Boolean).length;
+  return done >= 4 ? "done" : done > 0 ? "progress" : "open";
+}
+function cleanAccountLists(a){ if (!a || typeof a !== "object") return a; return Object.assign({ cogs: "", erpSystem: "", compellingEvent: "", compellingDeadline: "", compellingCost: "", oppFit: "", oppTiming: "", oppValue: "", oppRationale: "", oppNextSteps: "", oppScore: "", oppSources: [], salesCycle: "", dealStartDate: "" }, a, { keySignals: capSignals(dedupeSignals(a.keySignals || []), 12), executives: dedupeByName(a.executives || []).map(boardDept), projectTeam: dedupeByName(a.projectTeam || []).map(boardDept), hrTechStack: dedupeByName(a.hrTechStack || []), challenges: dedupeByName(a.challenges || []), buLeaders: dedupeByName(a.buLeaders || []), sevenMusts: normMusts(a.sevenMusts), mustWeights: normWeights(a.mustWeights), weightNotes: normMustNotes(a.weightNotes), dealObjectives: normDeal(a.dealObjectives), mutualPlan: normMSP(a.mutualPlan) }); }
 // Robust JSON extraction — finds the largest valid JSON object in a string
 const extractJSON = (raw) => {
   let text = raw.trim();
@@ -2644,6 +2681,60 @@ function buildAccountHTML(account) {
   });
   return _html;
 } // ─── PDF: open in new window → browser Print → Save as PDF ───────────────────
+function buildMSPDoc(account, userName){
+  var mp = normMSP(account.mutualPlan);
+  var cur = mp.currency || "€";
+  function esc(s){ return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function para(s){ s = String(s || "").trim(); if (!s) return "<p style='color:#94a3b8'>To be completed with the prospect.</p>"; return s.split(/\n\n+/).map(function (p) { return "<p>" + esc(p).replace(/\n/g, "<br>") + "</p>"; }).join(""); }
+  var company = account.companyName || "This company";
+  var by = (userName && userName.trim()) ? userName.trim() : "your name";
+  var conv = mp.conversationDate ? (" following our conversation of " + esc(mp.conversationDate) + " ·") : "";
+  // Cost table rows from problems / challenges
+  var costRows = [];
+  if (Array.isArray(account.problems) && account.problems.length) {
+    account.problems.forEach(function (p) { if (!p) return; costRows.push({ problem: p.name || p.title || (typeof p === "string" ? p : ""), impact: p.impact || p.desc || p.detail || "", status: p.status || "" }); });
+  } else if (Array.isArray(account.challenges) && account.challenges.length) {
+    account.challenges.forEach(function (c) { if (!c) return; costRows.push({ problem: c.name || c.title || (typeof c === "string" ? c : ""), impact: c.desc || c.impact || c.detail || "", status: "Not yet quantified" }); });
+  }
+  if (account.compellingEvent) costRows.push({ problem: "Compelling event", impact: account.compellingEvent + (account.compellingDeadline ? (" (by " + account.compellingDeadline + ")") : ""), status: account.compellingCost ? ("Worth " + cur + esc(account.compellingCost)) : "" });
+  var costHtml = costRows.length ? costRows.map(function (r, i) { return "<tr><td class='n'>" + (i + 1) + "</td><td class='b'>" + esc(r.problem) + "</td><td>" + esc(r.impact) + "</td><td class='st'>" + esc(r.status) + "</td></tr>"; }).join("") : "<tr><td class='n'></td><td colspan='3' style='color:#94a3b8'>Add the confirmed problems and their cost in the Problems tab, then regenerate.</td></tr>";
+  // Milestones with target dates
+  var msMap = { done: "Confirmed", progress: "In progress", open: "Open" };
+  var msColor = { done: "#059669", progress: "#D97706", open: "#94a3b8" };
+  var msHtml = MSP_MILESTONES.map(function (m) { var st = mspStatus(account, m); var d = m.from === "conversation" && mp.conversationDate ? mp.conversationDate : mspFmtDay(mspMilestoneDate(account, m.pos)); return "<tr><td class='b'>" + esc(m.label) + "</td><td>" + esc(d || "To be confirmed") + "</td><td style='color:" + msColor[st] + ";font-weight:600'>" + msMap[st] + "</td></tr>"; }).join("");
+  // Editable steps
+  var stepRows = mp.steps.filter(function (s) { return (s.step || "").trim(); });
+  var stepHtml = stepRows.length ? stepRows.map(function (s, i) { return "<tr><td class='n'>" + (i + 1) + "</td><td class='b'>" + esc(s.step) + "</td><td>" + esc(s.who) + "</td><td>" + esc(s.when) + "</td></tr>"; }).join("") : "<tr><td class='n'></td><td colspan='3' style='color:#94a3b8'>Draft or add the joint steps in the Mutual Success Plan tab, then regenerate.</td></tr>";
+  var musts = normMusts(account.sevenMusts);
+  var decisionNote = musts.decision.summary ? ("<p>" + esc(musts.decision.summary) + "</p>") : "";
+  var css = "@page{margin:20mm}*{box-sizing:border-box}body{font-family:Georgia,'Times New Roman',serif;color:#1a2230;line-height:1.5;max-width:820px;margin:0 auto;padding:24px;font-size:13px}h1{font-size:22px;color:#12233b;margin:0 0 2px}.sub{color:#5b6b7f;font-size:12px;font-family:Arial,Helvetica,sans-serif;border-bottom:2px solid #12233b;padding-bottom:10px;margin-bottom:16px}h2{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#12233b;font-family:Arial,Helvetica,sans-serif;margin:20px 0 6px}p{margin:0 0 8px}table{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:12.5px}th{text-align:left;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:#8a97a8;border-bottom:1px solid #d8dee6;padding:6px 8px}td{border-bottom:1px solid #eef1f5;padding:7px 8px;vertical-align:top}td.n{width:22px;color:#8a97a8}td.b{font-weight:700}td.st{color:#0a7d47;font-family:Arial,Helvetica,sans-serif;font-size:11px}.want{background:#f1f6fb;border-left:3px solid #12233b;padding:10px 12px;margin:6px 0}.foot{font-style:italic;color:#3a5a3a;border-top:1px solid #e2e8f0;margin-top:22px;padding-top:12px;font-size:12px}";
+  var body =
+    "<h1>" + esc(company) + ": Value Summary</h1>" +
+    "<div class='sub'>Prepared by " + esc(by) + " ·" + conv + " Draft v1, for your correction</div>" +
+    "<p>I will not put a proposal in front of you before we agree what the problem is worth. This is my understanding so far, including what I still do not know.</p>" +
+    "<h2>Where you are today</h2>" + para(mp.whereToday) +
+    "<h2>What it is costing you</h2><table><tr><th></th><th>Problem</th><th>Impact</th><th>Status</th></tr>" + costHtml + "</table>" +
+    "<h2>Where you want to be, in your words</h2><div class='want'>" + para(mp.whereWant) + "</div>" +
+    "<h2>Why now, and how the decision gets made</h2>" + para(mp.whyNow) + decisionNote +
+    "<h2>What I still need to understand</h2>" + para(mp.stillNeed) +
+    "<h2>Mutual success plan: milestones and target dates</h2><table><tr><th>Milestone</th><th>Target</th><th>Status</th></tr>" + msHtml + "</table>" +
+    "<h2>A plan, for us to build together</h2><table><tr><th></th><th>Step</th><th>Who</th><th>When</th></tr>" + stepHtml + "</table>" +
+    "<div class='foot'>This document is only useful if it is yours and not mine. Please correct anything I have wrong, and add anything I have missed. I would rather hear it now than later.</div>";
+  return "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>" + esc(company) + " — Value Summary</title><style>" + css + "</style></head><body>" + body + "</body></html>";
+}
+function exportMSPPrint(account, userName){
+  var html = buildMSPDoc(account, userName);
+  var printHtml = html.replace("</body>", "<script>window.onload=function(){setTimeout(function(){window.print();},400);}<\/script></body>");
+  var win = window.open("", "_blank");
+  if (!win) { var blob = new Blob([html], { type: "text/html;charset=utf-8" }); var nm = (account.companyName || "Account").replace(/[^a-zA-Z0-9\s_-]/g, "").trim(); dlBlob(blob, nm + "_Value_Summary.html"); alert('Popups are blocked.\nAn HTML file was downloaded — open it, then press Cmd+P (or Ctrl+P) and choose "Save as PDF".'); return; }
+  win.document.open(); win.document.write(printHtml); win.document.close();
+}
+function exportMSPWord(account, userName){
+  var html = buildMSPDoc(account, userName);
+  var blob = new Blob(["﻿", html], { type: "application/msword" });
+  var nm = (account.companyName || "Account").replace(/[^a-zA-Z0-9\s_-]/g, "").trim();
+  dlBlob(blob, nm + "_Value_Summary.doc");
+}
 async function exportToPDF(account) {
   var html = buildAccountHTML(account); // Inject print-trigger script into the HTML before </body>
   var printHtml = html.replace(
@@ -3009,6 +3100,7 @@ const emptyAccount = (id, name = "") => ({
   mustWeights: normWeights(null),
   weightNotes: normMustNotes(null),
   dealObjectives: normDeal(null),
+  mutualPlan: normMSP(null),
   hypothesis: "",
   keySignals: [],
   primarySponsor: "",
@@ -7279,6 +7371,169 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
   );
 }
 
+var DEFAULT_MSP_STEPS = [
+  { step: "Short discovery calls with the key stakeholders, so the demo speaks to what each of them needs", who: "You, introduced by the sponsor", when: "This week", done: false },
+  { step: "Run the tailored demo past the sponsor first, before the wider group sees it", who: "You and the sponsor", when: "Next week", done: false },
+  { step: "Demo to the wider buying group (procurement, IT, finance and the business units)", who: "You plus the buying group", when: "Next week", done: false },
+  { step: "Build the business case in the prospect's own numbers, with finance in the room", who: "You, the sponsor and the CFO", when: "Week after", done: false },
+  { step: "Business case and success plan go to the economic buyer for the decision", who: "The sponsor", when: "To agree", done: false }
+];
+function MutualPlanSection({ account, update, claudeApiKey, userName }) {
+  var mp = normMSP(account.mutualPlan);
+  function setField(f, v) { var next = Object.assign({}, mp); next[f] = v; update("mutualPlan", next); }
+  function setSteps(arr) { var next = Object.assign({}, mp); next.steps = arr; update("mutualPlan", next); }
+  function setStep(i, k, v) { var arr = mp.steps.slice(); var o = Object.assign({}, arr[i]); o[k] = v; arr[i] = o; setSteps(arr); }
+  function addStep() { setSteps(mp.steps.concat([{ step: "", who: "", when: "", done: false }])); }
+  function removeStep(i) { setSteps(mp.steps.filter(function (_, x) { return x !== i; })); }
+  function toggleDone(i) { var arr = mp.steps.slice(); var o = Object.assign({}, arr[i]); o.done = !o.done; arr[i] = o; setSteps(arr); }
+  function seedDefault() { setSteps(DEFAULT_MSP_STEPS.map(function (s) { return Object.assign({}, s); })); }
+  var dg = useState(false); var drafting = dg[0]; var setDrafting = dg[1];
+  var dst = useState(""); var draftStatus = dst[0]; var setDraftStatus = dst[1];
+
+  var doneCount = 0; MSP_MILESTONES.forEach(function (m) { if (mspStatus(account, m) === "done") doneCount++; });
+  var pct = Math.round(doneCount / MSP_MILESTONES.length * 100);
+  var proj = projectedCloseDate(account);
+  var likelihood = dealLikelihood(account);
+
+  var draftPlan = async function () {
+    if (!claudeApiKey) { alert("Set your API key first (🔑 button in the ☰ menu)"); return; }
+    setDrafting(true); setDraftStatus("Reading the account intel, the 7 Musts and your notes, and drafting the plan…");
+    try {
+      var musts = normMusts(account.sevenMusts);
+      var mustSummary = MUSTS.map(function (m) { return m.title + ": " + (musts[m.key].summary || "(not yet captured)"); }).join("\n");
+      var context = {
+        companyName: account.companyName || "", industry: account.industry || "",
+        businessPain: safeStr(account.businessPain).substring(0, 400),
+        compellingEvent: safeStr(account.compellingEvent).substring(0, 300),
+        compellingDeadline: safeStr(account.compellingDeadline).substring(0, 150),
+        compellingCost: safeStr(account.compellingCost).substring(0, 150),
+        transcriptNotes: safeStr(account.transcriptNotes).substring(0, 600),
+        challenges: (account.challenges || []).map(function (c) { return (c && (c.name || c.title)) || (typeof c === "string" ? c : ""); }).filter(Boolean).slice(0, 6),
+        sevenMusts: mustSummary,
+        salesCycle: account.salesCycle || "", dealStartDate: account.dealStartDate || ""
+      };
+      var schema = { whereToday: "text", whereWant: "text", whyNow: "text", stillNeed: "text", steps: [{ step: "text", who: "text", when: "text" }] };
+      var prompt = "You are a JAGGAER source-to-pay Strategic AE writing a mutual success plan and a value summary for a procurement software opportunity, in the style of a buyer-first sales professional. Use ONLY the intelligence below. Write four short narrative fields and a joint step plan.\n\nFIELDS:\n- whereToday: 2 to 4 sentences on the prospect's current situation and process, grounded in the intel.\n- whereWant: 2 to 3 sentences on where they want to be, phrased as if in the buyer's own words.\n- whyNow: 2 to 3 sentences on why this is on the agenda now and how the decision gets made (who signs, procurement, timing).\n- stillNeed: a short list, in prose, of the specific numbers and facts you still need to build the case on their figures.\n- steps: 4 to 6 joint steps to build the case together. Each step has step (what happens), who (who is involved), when (This week / Next week / Week after / To agree, or a rough timing).\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape:\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Be specific to this account, not generic. If a fact is unknown, say what still needs confirming rather than inventing it.";
+      var resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!resp.ok) { var _e = ""; try { var _b = await resp.json(); _e = (_b && _b.error && _b.error.message) ? _b.error.message : ""; } catch (_x) {} throw new Error("API " + resp.status + (_e ? ": " + _e : "")); }
+      var data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      var raw = apiText(data).trim();
+      if (raw.indexOf("```") !== -1) raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+      var r = extractJSON(raw);
+      var next = Object.assign({}, mp);
+      if (typeof r.whereToday === "string") next.whereToday = r.whereToday;
+      if (typeof r.whereWant === "string") next.whereWant = r.whereWant;
+      if (typeof r.whyNow === "string") next.whyNow = r.whyNow;
+      if (typeof r.stillNeed === "string") next.stillNeed = r.stillNeed;
+      if (Array.isArray(r.steps) && r.steps.length) { next.steps = r.steps.slice(0, 10).map(function (s) { s = s || {}; return { step: typeof s.step === "string" ? s.step : "", who: typeof s.who === "string" ? s.who : "", when: typeof s.when === "string" ? s.when : "", done: false }; }); }
+      update("mutualPlan", normMSP(next));
+      setDraftStatus("✅ Drafted the plan and the summary fields. Review and correct every line before you send it.");
+      setTimeout(function () { setDraftStatus(""); }, 10000);
+    } catch (err) { setDraftStatus("❌ " + err.message); }
+    setDrafting(false);
+  };
+
+  var stColor = { done: "#059669", progress: "#D97706", open: "#94A3B8" };
+  var stText = { done: "Confirmed", progress: "In progress", open: "Open" };
+
+  return React.createElement(
+    "div",
+    null,
+    React.createElement(SectionHeader, { title: "Mutual Success Plan", badge: doneCount + " / " + MSP_MILESTONES.length + " milestones", badgeColor: pct >= 80 ? "#059669" : "#1E293B" }),
+    React.createElement(Card, { style: { marginBottom: 12, borderLeft: "4px solid #12233B", background: "#F8FAFC" } },
+      React.createElement("div", { style: { fontSize: 15, fontWeight: 800, color: "#12233B" } }, (account.companyName || "This account") + ": Value Summary"),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 2 } }, "Prepared by " + ((userName && userName.trim()) ? userName.trim() : "your name") + " · a living plan that fills in as the 7 Musts get answered and you hold conversations."),
+      React.createElement("div", { style: { display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end", marginTop: 12 } },
+        React.createElement("div", null,
+          React.createElement(FieldLabel, null, "Following our conversation of"),
+          React.createElement(Input, { value: mp.conversationDate, onChange: function (v) { setField("conversationDate", v); }, placeholder: "e.g. 14 August 2026", width: 200 })
+        ),
+        React.createElement("div", null,
+          React.createElement(FieldLabel, null, "Currency"),
+          React.createElement(Select, { value: mp.currency, onChange: function (v) { setField("currency", v); }, options: ["€", "$", "£"] })
+        )
+      )
+    ),
+    React.createElement(Card, { style: { borderLeft: "4px solid " + (pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : "#94A3B8") } },
+      React.createElement("div", { style: { display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 6 } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text } }, "Milestones and target dates"),
+        React.createElement("div", { style: { fontSize: 12, color: C.muted } }, proj ? ("Projected close " + fmtMonthYear(proj)) : "Set a deal start date and sales cycle in Opportunity Rating for dates")
+      ),
+      React.createElement("div", { style: { height: 8, borderRadius: 5, background: "#F1F5F9", overflow: "hidden", marginBottom: 12 } },
+        React.createElement("div", { style: { width: pct + "%", height: "100%", borderRadius: 5, background: pct >= 80 ? "#059669" : pct >= 40 ? "#D97706" : "#94A3B8", transition: "width .2s" } })
+      ),
+      MSP_MILESTONES.map(function (m) {
+        var st = mspStatus(account, m);
+        var d = (m.from === "conversation" && mp.conversationDate) ? mp.conversationDate : mspFmtDay(mspMilestoneDate(account, m.pos));
+        return React.createElement("div", { key: m.key, style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: "1px solid #F1F5F9" } },
+          React.createElement("div", { style: { flex: "0 0 12px", width: 12, height: 12, borderRadius: "50%", background: stColor[st] } }),
+          React.createElement("div", { style: { flex: 1, fontSize: 13, color: C.text, fontWeight: st === "done" ? 600 : 500 } }, m.label),
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, minWidth: 96, textAlign: "right" } }, d || "To be confirmed"),
+          React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: stColor[st], minWidth: 78, textAlign: "right" } }, stText[st])
+        );
+      }),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 10, lineHeight: 1.5 } }, "These update on their own: each milestone turns green as you complete the matching Must, and the dates space across your deal start date and sales cycle. Deal likelihood is currently " + likelihood + "%.")
+    ),
+    React.createElement(Card, { style: { marginBottom: 12, borderLeft: "4px solid #00BFA5", background: "#F0FDFA" } },
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
+        React.createElement("div", { style: { flex: 1, minWidth: 200 } },
+          React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 2 } }, "✨ Draft the plan with AI"),
+          React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.5 } }, "Reads the account intel, the 7 Musts summaries and your notes, then drafts the summary fields and the joint steps below. Review and correct every line before you send it.")
+        ),
+        React.createElement("button", { onClick: draftPlan, disabled: drafting, style: { background: drafting ? "#9CA3AF" : "linear-gradient(135deg, #0D9488, #14B8A6)", border: "none", borderRadius: 8, color: "#fff", cursor: drafting ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700, padding: "10px 16px", fontFamily: "inherit", whiteSpace: "nowrap" } }, drafting ? "⏳ Drafting…" : "✨ Draft plan")
+      ),
+      draftStatus && React.createElement("div", { style: { fontSize: 12, color: C.muted, marginTop: 10, lineHeight: 1.5 } }, draftStatus)
+    ),
+    React.createElement(Card, null,
+      React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 } }, "The summary, in your understanding"),
+      React.createElement(FieldLabel, null, "Where you are today"),
+      React.createElement(TextArea, { value: mp.whereToday, onChange: function (v) { setField("whereToday", v); }, placeholder: "Their current process and situation, grounded in what they told you…", rows: 3 }),
+      React.createElement(FieldLabel, null, "Where you want to be, in your words"),
+      React.createElement(TextArea, { value: mp.whereWant, onChange: function (v) { setField("whereWant", v); }, placeholder: "Where they want to get to, phrased as they would say it…", rows: 3 }),
+      React.createElement(FieldLabel, null, "Why now, and how the decision gets made"),
+      React.createElement(TextArea, { value: mp.whyNow, onChange: function (v) { setField("whyNow", v); }, placeholder: "Why this is on the agenda now, who signs, procurement and timing…", rows: 3 }),
+      React.createElement(FieldLabel, null, "What I still need to understand"),
+      React.createElement(TextArea, { value: mp.stillNeed, onChange: function (v) { setField("stillNeed", v); }, placeholder: "The specific numbers and facts you still need to build the case on their figures…", rows: 3 })
+    ),
+    React.createElement(Card, null,
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8, flexWrap: "wrap" } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text } }, "A plan, for us to build together"),
+        React.createElement("div", { style: { display: "flex", gap: 8 } },
+          mp.steps.length === 0 && React.createElement("button", { onClick: seedDefault, style: { background: "none", border: "1px solid " + C.border, borderRadius: 6, color: C.muted, cursor: "pointer", fontSize: 12, fontWeight: 600, padding: "6px 10px", fontFamily: "inherit" } }, "Insert default steps"),
+          React.createElement("button", { onClick: addStep, style: { background: "none", border: "1px solid " + C.teal, borderRadius: 6, color: C.teal, cursor: "pointer", fontSize: 12, fontWeight: 700, padding: "6px 10px", fontFamily: "inherit" } }, "＋ Add step")
+        )
+      ),
+      mp.steps.length === 0 && React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.5 } }, "No steps yet. Draft the plan with AI, insert the default steps, or add your own. Step / Who / When mirror the joint action plan in your value summary."),
+      mp.steps.map(function (s, i) {
+        return React.createElement("div", { key: i, style: { display: "flex", gap: 8, alignItems: "flex-start", padding: "8px 0", borderBottom: "1px solid #F1F5F9" } },
+          React.createElement("button", { onClick: function () { toggleDone(i); }, title: "Mark done", style: { flex: "0 0 22px", width: 22, height: 22, marginTop: 4, borderRadius: "50%", border: s.done ? "none" : "1.5px solid " + C.border, background: s.done ? "#059669" : "transparent", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" } }, s.done ? "✓" : ""),
+          React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+            React.createElement(Input, { value: s.step, onChange: function (v) { setStep(i, "step", v); }, placeholder: "Step " + (i + 1) + " — what happens", width: "100%" }),
+            React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" } },
+              React.createElement("div", { style: { flex: 1, minWidth: 120 } }, React.createElement(Input, { value: s.who, onChange: function (v) { setStep(i, "who", v); }, placeholder: "Who", width: "100%" })),
+              React.createElement("div", { style: { flex: "0 0 130px" } }, React.createElement(Input, { value: s.when, onChange: function (v) { setStep(i, "when", v); }, placeholder: "When", width: "100%" }))
+            )
+          ),
+          React.createElement("button", { onClick: function () { removeStep(i); }, title: "Remove", style: { flex: "0 0 30px", background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 15, padding: 4, marginTop: 2 } }, "🗑")
+        );
+      })
+    ),
+    React.createElement(Card, { style: { borderLeft: "4px solid #12233B" } },
+      React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 2 } }, "Follow-up document"),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.5, marginBottom: 10 } }, "Builds a value summary from everything above, in the same style as your Flanagan example: where they are today, what it is costing them, the milestones with dates, and the joint plan."),
+      React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } },
+        React.createElement("button", { onClick: function () { exportMSPPrint(account, userName); }, style: { background: "linear-gradient(135deg, #0D9488, #14B8A6)", border: "none", borderRadius: 8, color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700, padding: "10px 16px", fontFamily: "inherit" } }, "🖨 Open printable / PDF"),
+        React.createElement("button", { onClick: function () { exportMSPWord(account, userName); }, style: { background: "none", border: "1.5px solid #12233B", borderRadius: 8, color: "#12233B", cursor: "pointer", fontSize: 13, fontWeight: 700, padding: "10px 16px", fontFamily: "inherit" } }, "⬇ Download Word (.doc)")
+      )
+    )
+  );
+}
+
 function DealRow({ label, checked, onToggle }) {
   return React.createElement("button", {
     onClick: onToggle,
@@ -10459,6 +10714,7 @@ const SUPER_SECTIONS = [
     { id: "oppscore", label: "Opportunity Rating" },
     { id: "sevenmusts", label: "7 Musts" },
     { id: "dealobjectives", label: "Deal Objectives" },
+    { id: "mutualplan", label: "Mutual Success Plan" },
   ]},
   { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
     { id: "bugrowth", label: "BU Growth & JAGGAER" },
@@ -11946,6 +12202,8 @@ Return this exact JSON structure:
             /*#__PURE__*/ React.createElement(SevenMustsSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "dealobjectives" &&
             /*#__PURE__*/ React.createElement(DealObjectivesSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
+          activeSection === "mutualplan" &&
+            /*#__PURE__*/ React.createElement(MutualPlanSection, { account: account, update: update, claudeApiKey: claudeApiKey, userName: (profileForm && profileForm.name) || "" }),
           activeSection === "bugrowth" &&
             /*#__PURE__*/ React.createElement(BUGrowthJAGGAERSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "buleaders" &&
