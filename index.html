@@ -1601,7 +1601,7 @@ async function exportToPPTX(account) {
   const outcomes = [
     { label: 'HIGH VALUE', color: '10B981', path: '→ Sourcing Event' },
     { label: 'ON-CONTRACT', color: 'FFD700', path: '→ Guided Buying' },
-    { label: 'TAIL SPEND', color: 'EF4444', path: '→ Catalog / P-Card' }
+    { label: 'TAIL SPEND', color: 'EF4444', path: '→ Catalogue / P-Card' }
   ];
 
   outcomes.forEach((outcome, idx) => {
@@ -1645,7 +1645,7 @@ async function exportToPPTX(account) {
   // Benefits boxes
   const benefits = [
     'Reduces requisition-to-PO from days to hours',
-    'Lifts on-contract / catalog buying by 35%',
+    'Lifts on-contract / catalogue buying by 35%',
     'Enables 24/7 guided buying & supplier self-service'
   ];
 
@@ -1711,7 +1711,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const sources = ['Supplier Network', 'ERP + P2P', 'Category Catalogs'];
+  const sources = ['Supplier Network', 'ERP + P2P', 'Category Catalogues'];
   const sourceX = [0.7, 3.5, 6.5];
 
   sources.forEach((source, idx) => {
@@ -1805,9 +1805,9 @@ async function exportToPPTX(account) {
 
   const enhancements = [
     { title: 'Smart Supplier Matching', desc: 'JAGGAER AI ranks suppliers by fit, risk & total cost of ownership' },
-    { title: 'Bid Insights', desc: 'Real-time bid analysis and sourcing-scenario optimization' },
+    { title: 'Bid Insights', desc: 'Real-time bid analysis and sourcing-scenario optimisation' },
     { title: 'Supplier Development', desc: 'Engage and develop strategic suppliers over time' },
-    { title: 'Award Analytics', desc: 'Optimize award scenarios and predict realised savings' }
+    { title: 'Award Analytics', desc: 'Optimise award scenarios and predict realised savings' }
   ];
 
   enhancements.forEach((enh, idx) => {
@@ -1991,7 +1991,7 @@ async function exportToPPTX(account) {
   const zone4Features = [
     { title: 'Supplier Pool Intelligence', desc: 'Maintain a qualified, pre-vetted supplier base ready for strategic sourcing' },
     { title: 'Cross-Functional Coordination', desc: 'AI-assisted stakeholder collaboration and real-time bid evaluation' },
-    { title: 'Long-Cycle Supplier Development', desc: 'Develop strategic suppliers over 6-24 month cycles with performance programs' },
+    { title: 'Long-Cycle Supplier Development', desc: 'Develop strategic suppliers over 6-24 month cycles with performance programmes' },
     { title: 'Negotiation Support', desc: 'Should-cost and TCO modeling with savings prediction for competitive categories' }
   ];
 
@@ -2305,7 +2305,7 @@ async function exportToPPTX(account) {
   });
 
   // Footer note
-  slide11.addText('Outreach & engagement approach customized per executive based on priorities and decision-making style', {
+  slide11.addText('Outreach & engagement approach customised per executive based on priorities and decision-making style', {
     x: 0.5,
     y: 6.8,
     w: 12.33,
@@ -2584,7 +2584,7 @@ function buildAccountHTML(account) {
       ? '<h2>Strategic Priorities</h2><h3>CEO Priorities</h3><div class="box">' + account.ceoPriorities + "</div>"
       : "") +
     (account.transformationPrograms
-      ? "<h3>Transformation Programs</h3><p>" + account.transformationPrograms + "</p>"
+      ? "<h3>Transformation Programmes</h3><p>" + account.transformationPrograms + "</p>"
       : "") +
     (account.growthInvestments ? "<h3>Growth Investments</h3><p>" + account.growthInvestments + "</p>" : "") +
     (account.techBets ? "<h3>Tech Bets</h3><p>" + account.techBets + "</p>" : "") +
@@ -3557,7 +3557,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     if (!text || text.length < 50) { setUploadProgress("\u274C Conversation text too short"); return; }
     setProcessingChat(true);
     setUploading(true);
-    setUploadProgress("Analyzing conversation for " + account.companyName + " intel...");
+    setUploadProgress("Analysing conversation for " + account.companyName + " intel...");
     try {
       const truncated = text.substring(0, 20000);
       const prompt = "You are a B2B sales intelligence analyst. The following is a conversation (likely from ChatGPT or similar AI assistant) that contains intelligence relevant to \"" + account.companyName + "\" (industry: " + (account.industry || "unknown") + "). Extract ALL useful sales intelligence from this conversation. IMPORTANT: For any people mentioned, ONLY include them if they verifiably work at " + account.companyName + ". Return ONLY valid JSON:\n\n" +
@@ -3789,7 +3789,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     if (!text || text.length < 50) { setUploadProgress("\u274C Transcript text too short"); return; }
     setProcessingGong(true);
     setUploading(true);
-    setUploadProgress("Analyzing Gong call transcript for " + account.companyName + " intel...");
+    setUploadProgress("Analysing Gong call transcript for " + account.companyName + " intel...");
     try {
       const truncated = text.substring(0, 25000);
       const prompt = "You are a B2B sales intelligence analyst. The following is a transcript from a Gong sales call related to \"" + account.companyName + "\" (industry: " + (account.industry || "unknown") + "). Extract ALL actionable sales intelligence. Pay close attention to: who spoke, their roles, pain points discussed, objections raised, next steps agreed, competitors mentioned, budget signals, timeline signals, and decision-making dynamics. IMPORTANT: For any people, ONLY include individuals confirmed as employees of " + account.companyName + " — not your own team members or external parties. Return ONLY valid JSON:\n\n" +
@@ -3989,10 +3989,10 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
   // ── JAGGAER Spend & Supplier Intelligence Processing ──
   const processJAGGAERContent = async (text, sourceName) => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    if (!text || text.length < 30) { alert("Not enough content to analyze."); return; }
+    if (!text || text.length < 30) { alert("Not enough content to analyse."); return; }
     setProcessingJAGGAER(true);
     setUploading(true);
-    setUploadProgress("Analyzing JAGGAER spend & supplier intelligence...");
+    setUploadProgress("Analysing JAGGAER spend & supplier intelligence...");
     try {
       const truncated = text.substring(0, 14000);
       const companyName = account.companyName || "this company";
@@ -4002,7 +4002,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       const prompt = "You are an elite procurement intelligence analyst specialising in JAGGAER's source-to-pay platform. You have been given content from JAGGAER's platform or related JAGGAER data about or relevant to \"" + companyName + "\".\n\nEXISTING ACCOUNT INTEL:\n- Industry: " + (account.industry || "unknown") + "\n- Workforce data: " + (existingWorkforce || "none yet") + "\n- Problems identified: " + (existingProblems || "none yet") + "\n\nAnalyse the JAGGAER content below and extract intelligence mapped to these EXACT sections. Use JAGGAER-specific terminology and metrics. Return ONLY valid JSON:\n\n" + JSON.stringify({
         workforceIntelligence: {
           workforceScale: "Spend & supplier scale from JAGGAER analysis: total addressable spend, direct vs indirect split, number of active suppliers, tail-spend concentration, and source-to-pay automation maturity",
-          hiringShape: "Sourcing & buying shape from JAGGAER lens: sourcing event volume and cycle time, contract coverage, catalog vs off-catalog buying, PO and invoice volumes, and AP automation rate",
+          hiringShape: "Sourcing & buying shape from JAGGAER lens: sourcing event volume and cycle time, contract coverage, catalogue vs off-catalogue buying, PO and invoice volumes, and AP automation rate",
           criticalRoles: "Key spend categories & supplier dependencies via JAGGAER analysis: highest-spend categories, single-source and supply risks, tail-spend sprawl, contract coverage gaps, and savings opportunities",
           geoPatterns: "Geographic procurement patterns from JAGGAER data: spend by region and entity, multi-country supplier base, local sourcing and compliance needs, and cross-border e-invoicing requirements",
           talentPressure: "Cost, savings & supply pressure indicators: margin pressure and savings mandates, input-cost inflation, supply-chain and supplier risk exposure, procurement digital maturity, and ESG/compliance demands"
@@ -4245,13 +4245,13 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       }
 
       if (!pageText || pageText.length < 50) {
-        // Last resort: send URL to Claude with request to analyze based on known information
-        setUploadProgress("Analyzing URL with Claude API (knowledge-based)...");
-        pageText = "URL to analyze: " + url + "\n\nNote: The page content could not be fetched directly. Please analyze this URL based on your knowledge of this website and company.";
+        // Last resort: send URL to Claude with request to analyse based on known information
+        setUploadProgress("Analysing URL with Claude API (knowledge-based)...");
+        pageText = "URL to analyse: " + url + "\n\nNote: The page content could not be fetched directly. Please analyse this URL based on your knowledge of this website and company.";
       }
 
       const truncated = pageText.substring(0, 12000);
-      setUploadProgress("Analyzing URL content with Claude API (1/2)...");
+      setUploadProgress("Analysing URL content with Claude API (1/2)...");
 
       // Reuse the same 2-call analysis pipeline as file uploads
       const p1 = "You are a sales intelligence analyst. Below is content from a web page (URL: " + url + ") about or relevant to \"" + account.companyName + "\". Extract ALL relevant intelligence and return ONLY valid JSON (no markdown). Use \"\" for fields where no information is found. Be comprehensive:\n\n" +
@@ -4287,7 +4287,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       if (text1.startsWith("\`\`\`")) text1 = text1.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
       const d1 = extractJSON(text1);
 
-      setUploadProgress("Analyzing URL content with Claude API (2/2)...");
+      setUploadProgress("Analysing URL content with Claude API (2/2)...");
 
       const p2 = "You are a B2B sales strategist. Based on this web content about or related to \"" + account.companyName + "\" (URL: " + url + "), extract sales positioning intelligence. IMPORTANT: For any people (executives, project team), ONLY include individuals who the content confirms work at " + account.companyName + ". Do NOT include external people, consultants, or anyone not verified as an employee. Return ONLY valid JSON:\n\n" +
         JSON.stringify({
@@ -4473,7 +4473,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       }
 
       const truncated = content.substring(0, 12000);
-      setUploadProgress("Analyzing with Claude API (1/2)...");
+      setUploadProgress("Analysing with Claude API (1/2)...");
 
       // Call 1: Extract financials, fundamentals, strategy, workforce
       const p1 = "You are a sales intelligence analyst. Below is a document about \"" + account.companyName + "\". Extract ALL relevant intelligence and return ONLY valid JSON (no markdown). Use \"\" for fields where no information is found in the document. Be comprehensive — extract every data point you can find:\n\n" +
@@ -4509,7 +4509,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       if (text1.startsWith("\`\`\`")) text1 = text1.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
       const d1 = extractJSON(text1);
 
-      setUploadProgress("Analyzing with Claude API (2/2)...");
+      setUploadProgress("Analysing with Claude API (2/2)...");
 
       // Call 2: Extract problems, use cases, outcomes, executives
       const p2 = "You are a B2B sales strategist. Based on this document about \"" + account.companyName + "\", extract intelligence for sales positioning. IMPORTANT: For any people (executives, project team), ONLY include individuals who the document confirms work at " + account.companyName + ". Do NOT include external people, consultants, or anyone not verified as an employee. Return ONLY valid JSON:\n\n" +
@@ -4756,7 +4756,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         : /*#__PURE__*/ React.createElement("div", null,
             /*#__PURE__*/ React.createElement("div", { style: { fontSize: 24, marginBottom: 4 } }, "\uD83D\uDCC4"),
             /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: C.text } }, "Drop file here or click to upload"),
-            /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, color: C.muted, marginTop: 4 } }, "PDF, TXT, CSV, DOCX, HTML, MD, JSON — max ~15K chars analyzed"),
+            /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, color: C.muted, marginTop: 4 } }, "PDF, TXT, CSV, DOCX, HTML, MD, JSON — max ~15K chars analysed"),
           ),
     ),
     /*#__PURE__*/ React.createElement("div", {
@@ -4768,7 +4768,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         value: urlInput,
         onChange: (e) => setUrlInput(e.target.value),
         onKeyDown: (e) => { if (e.key === "Enter" && urlInput.trim() && !uploading) processUrl(); },
-        placeholder: "Paste a URL to fetch & analyze as intelligence...",
+        placeholder: "Paste a URL to fetch & analyse as intelligence...",
         disabled: uploading,
         style: {
           flex: 1, padding: "8px 12px", border: "1px solid " + C.border, borderRadius: 8,
@@ -4834,7 +4834,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           onClick: () => processConversation(chatGptText, "Pasted conversation"),
           disabled: processingChat,
           style: { width: "100%", padding: "8px 12px", borderRadius: 6, border: "none", cursor: processingChat ? "wait" : "pointer", background: processingChat ? C.muted : "#10A37F", color: "#fff", fontSize: 12, fontWeight: 600, fontFamily: "inherit" },
-        }, processingChat ? "\u23F3 Analyzing..." : "\u2728 Extract Intelligence from Conversation"),
+        }, processingChat ? "\u23F3 Analysing..." : "\u2728 Extract Intelligence from Conversation"),
       ),
     ), // end chatgpt tab
     // ── Gong tab ──
@@ -4885,7 +4885,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           onClick: () => processGongContent(gongText, "Pasted transcript"),
           disabled: processingGong,
           style: { width: "100%", padding: "8px 12px", borderRadius: 6, border: "none", cursor: processingGong ? "wait" : "pointer", background: processingGong ? C.muted : "#7C3AED", color: "#fff", fontSize: 12, fontWeight: 600, fontFamily: "inherit" },
-        }, processingGong ? "\u23F3 Analyzing..." : "\u2728 Extract Intelligence from Gong Call"),
+        }, processingGong ? "\u23F3 Analysing..." : "\u2728 Extract Intelligence from Gong Call"),
       ),
     ), // end gong tab
     // ── JAGGAER tab ──
@@ -4933,7 +4933,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           onClick: () => processJAGGAERContent(phenomText, "Pasted JAGGAER data"),
           disabled: processingJAGGAER,
           style: { width: "100%", padding: "8px 12px", borderRadius: 6, border: "none", cursor: processingJAGGAER ? "wait" : "pointer", background: processingJAGGAER ? C.muted : "#0D9488", color: "#fff", fontSize: 12, fontWeight: 600, fontFamily: "inherit" },
-        }, processingJAGGAER ? "\u23F3 Analyzing JAGGAER Data..." : "\uD83E\uDDE0 Enrich 5 Sections with JAGGAER Intelligence"),
+        }, processingJAGGAER ? "\u23F3 Analysing JAGGAER Data..." : "\uD83E\uDDE0 Enrich 5 Sections with JAGGAER Intelligence"),
         // Quick-enrich without content (uses Claude general knowledge + account data)
         /*#__PURE__*/ React.createElement("div", { style: { marginTop: 8, paddingTop: 8, borderTop: "1px dashed " + C.border } },
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, color: C.muted, marginBottom: 6 } }, "No JAGGAER data to paste? Use AI to enrich sections with JAGGAER frameworks and benchmarks based on your existing account intelligence:"),
@@ -5260,9 +5260,9 @@ function StrategicPrioritiesSection({ account, update }) {
       ],
       [
         "🔄",
-        "Transformation Programs",
+        "Transformation Programmes",
         "transformationPrograms",
-        "Active restructuring, system integrations, offshoring, org redesign programs…",
+        "Active restructuring, system integrations, offshoring, org redesign programmes…",
       ],
       [
         "🚀",
@@ -5274,7 +5274,7 @@ function StrategicPrioritiesSection({ account, update }) {
         "✂️",
         "Cost & Efficiency",
         "costEfficiency",
-        "Cost reduction targets, automation investments, margin expansion programs…",
+        "Cost reduction targets, automation investments, margin expansion programmes…",
       ],
       [
         "💻",
@@ -5343,7 +5343,7 @@ function SectionFileUpload({ label, icon, claudeApiKey, prompt, onResult }) {
           reader.onerror = () => reject(new Error("Image read failed"));
           reader.readAsDataURL(file);
         });
-        setStatus("Analyzing image with Claude API...");
+        setStatus("Analysing image with Claude API...");
         const mediaType = file.type || "image/png";
         const resp = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
@@ -5367,7 +5367,7 @@ function SectionFileUpload({ label, icon, claudeApiKey, prompt, onResult }) {
         content = await readFile(file);
       }
       if (typeof content === "string") content = content.substring(0, 15000);
-      setStatus("Analyzing with Claude API...");
+      setStatus("Analysing with Claude API...");
       const fullPrompt = prompt + "\n\nDOCUMENT CONTENT:\n" + content;
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -5430,7 +5430,7 @@ const HR_TECH_CATEGORIES = [
   { key: "payroll", label: "Supplier Management (SRM)", icon: "\uD83E\uDD1D", placeholder: "e.g. SAP Ariba SLP, Coupa Supplier Management, HICX, Ivalua SRM..." },
   { key: "wfm", label: "AP / Invoicing", icon: "\uD83D\uDCB0", placeholder: "e.g. Basware, Tungsten, Tipalti, SAP Ariba Invoice Mgmt, Coupa Pay..." },
   { key: "analytics", label: "Sourcing / eAuction", icon: "\u2699\uFE0F", placeholder: "e.g. SAP Ariba Sourcing, Coupa Sourcing, Keelvar, Scanmarket, Zycus..." },
-  { key: "engagement", label: "Catalog / Marketplace", icon: "\uD83D\uDECD\uFE0F", placeholder: "e.g. SAP Ariba Catalog, Coupa Marketplace, Amazon Business, punchout catalogs..." },
+  { key: "engagement", label: "Catalogue / Marketplace", icon: "\uD83D\uDECD\uFE0F", placeholder: "e.g. SAP Ariba Catalogue, Coupa Marketplace, Amazon Business, punchout catalogues..." },
 ];
 const HR_CAT_COLORS = {
   ats: { bg: "#DBEAFE", text: "#2563EB" },
@@ -5645,7 +5645,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
         "\uD83D\uDED2",
         "Sourcing & Buying Profile",
         "hiringShape",
-        "Sourcing event volume & cycle time, contract coverage, catalog vs off-catalog buying, PO/invoice volumes, AP automation\u2026",
+        "Sourcing event volume & cycle time, contract coverage, catalogue vs off-catalogue buying, PO/invoice volumes, AP automation\u2026",
       ],
       [
         "\uD83D\uDCE6",
@@ -6424,7 +6424,7 @@ function UseCaseMappingSection({ account, update, claudeApiKey }) {
     setEnriching(true); setEnrichStatus("Mapping JAGGAER use cases...");
     try {
       const existing = { workflowAssessment: account.workflowAssessment || "", highestOpportunity: account.highestOpportunity || "", capabilityMatch: account.capabilityMatch || "", proofPoints: account.proofPoints || "", personaValueMap: account.personaValueMap || "" };
-      const prompt = "You are a JAGGAER solution architect. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), map JAGGAER use cases. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with same keys. APPEND [JAGGAER Intel] insights. Map JAGGAER capabilities: Spend Analytics (spend visibility & savings tracking), Category Management (category strategy), Sourcing (RFx, e-auctions, optimization), Contract Management (lifecycle & compliance), Supplier Management (onboarding, risk, performance), eProcurement (guided buying, catalogs), Procure-to-Pay & Invoicing (Autonomous AP, e-invoicing), Supply Chain Collaboration, Quality Management, JAGGAER AI (JAI). Use proof points: $2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 50% faster requisition-to-PO, 85% faster invoicing. Map persona value: CPO/Procurement (savings, spend visibility, digital transformation), CFO/Finance (working capital, cost control, AP automation, compliance), CIO/IT (ERP integration, platform consolidation), Head of Sourcing (competitive sourcing, cycle time), Category Manager (category strategy, tail-spend), Supplier Management (risk, performance).";
+      const prompt = "You are a JAGGAER solution architect. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), map JAGGAER use cases. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with same keys. APPEND [JAGGAER Intel] insights. Map JAGGAER capabilities: Spend Analytics (spend visibility & savings tracking), Category Management (category strategy), Sourcing (RFx, e-auctions, optimisation), Contract Management (lifecycle & compliance), Supplier Management (onboarding, risk, performance), eProcurement (guided buying, catalogues), Procure-to-Pay & Invoicing (Autonomous AP, e-invoicing), Supply Chain Collaboration, Quality Management, JAGGAER AI (JAI). Use proof points: $2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 50% faster requisition-to-PO, 85% faster invoicing. Map persona value: CPO/Procurement (savings, spend visibility, digital transformation), CFO/Finance (working capital, cost control, AP automation, compliance), CIO/IT (ERP integration, platform consolidation), Head of Sourcing (competitive sourcing, cycle time), Category Manager (category strategy, tail-spend), Supplier Management (risk, performance).";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -6991,6 +6991,48 @@ var MUST_WHY = {
   taught: "The best sellers change how the buyer sees their own problem, bringing insight, benchmarks and best practice they could not get elsewhere. When a prospect seeks your counsel and values the process itself, you have built the credibility and trust that win the close and the renewal. It is more of an enabler than a determinant, which is why it carries the lowest weight, but it is what separates a trusted advisor from a vendor."
 };
 
+var MUST_SAMPLES = {
+  buyer: [
+    "How will you be measured on this initiative?",
+    "What would success look like on this initiative?",
+    "Could you explain the procurement process at your company? Who needs to have input on this initiative? Who will ultimately sign this contract?",
+    "Review publicly available data to identify the executive names."
+  ],
+  influencers: [
+    "Can you explain the buying or procurement process at your company?",
+    "With clients of similar complexity we typically have discovery calls with the head of IT, HR, Operations etc. Can you help make those connections?",
+    "This initiative cuts across various departments. How can I help you communicate the goals, objectives and ROI to your colleagues?"
+  ],
+  competition: [
+    "What other potential solutions to this opportunity or problem is your company considering? Have you outlined the pros and cons of each alternative?",
+    "What functionality or features have you seen in the marketplace that you are impressed with?",
+    "Who do you currently consider to be your top partner or vendor? Why?"
+  ],
+  win: [
+    "How will you be measured on this initiative?",
+    "What does success look like on this project?",
+    "Do you have all the information you need from us to confidently support this decision?"
+  ],
+  lose: [
+    "Are all key business influencers aligned on this decision? If not, how can we help get them there?",
+    "Is there anything about our value proposition that we have worked on together that does not solve your problems or that you are unsure of?",
+    "Is there any reason we would not win your business?"
+  ],
+  decision: [
+    "When is the business counting on impact or ROI from this initiative? We need to sign and kick off by ______ date to realise that.",
+    "How can we be helpful in facilitating your procurement process?",
+    "We both have a number of moving parts at each of our respective organisations. Can we create a schedule of steps and dates so that we can keep the legal and procurement teams moving?"
+  ],
+  taught: [
+    "People buy from those they trust, like and learn from.",
+    "Prospects must feel listened to.",
+    "Core needs must be met before you can move to advisory selling.",
+    "Be an expert in your field or craft.",
+    "Position your company's subject matter experts to add value.",
+    "Practice your story selling skills."
+  ]
+};
+
 function MustCheckRow({ label, checked, onToggle }) {
   return React.createElement("button", {
     onClick: onToggle,
@@ -7037,6 +7079,9 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
   var no = useState("");
   var openNote = no[0];
   var setOpenNote = no[1];
+  var sq = useState("");
+  var openSamples = sq[0];
+  var setOpenSamples = sq[1];
   var wTotal = 0; MUSTS.forEach(function (m) { wTotal += weights[m.key]; });
   var likAcc = 0; MUSTS.forEach(function (m) { likAcc += weights[m.key] * (musts[m.key].checks.filter(Boolean).length / 5); });
   var likelihood = wTotal > 0 ? Math.round(likAcc / wTotal * 100) : 0;
@@ -7203,7 +7248,31 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
           React.createElement("div", { style: { height: 6 } }),
           m.checks.map(function (lbl, idx) {
             return React.createElement(MustCheckRow, { key: idx, label: lbl, checked: !!e.checks[idx], onToggle: function () { toggleCheck(m.key, idx); } });
-          })
+          }),
+          (MUST_SAMPLES[m.key] && MUST_SAMPLES[m.key].length > 0) && React.createElement(
+            "div",
+            { style: { marginTop: 14, borderRadius: 8, border: "1px solid " + C.border, overflow: "hidden" } },
+            React.createElement("button", {
+              onClick: function () { setOpenSamples(openSamples === m.key ? "" : m.key); },
+              style: { display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: "10px 12px", border: "none", background: "#F8FAFC", cursor: "pointer", fontFamily: "inherit", fontSize: 12.5, fontWeight: 700, color: "#334155" } },
+              React.createElement("span", { style: { display: "inline-block", transform: openSamples === m.key ? "rotate(90deg)" : "none", transition: "transform .15s", fontSize: 10 } }, "▶"),
+              "💬 Sample questions to ask"
+            ),
+            (openSamples === m.key) && React.createElement("div", { style: { padding: "14px 16px", background: "#fff", borderTop: "1px solid " + C.border } },
+              React.createElement("ul", { style: { margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 10 } },
+                MUST_SAMPLES[m.key].map(function (q, qi) {
+                  return React.createElement("li", { key: qi, style: { fontSize: 13, color: C.text, lineHeight: 1.5 } }, q);
+                })
+              ),
+              React.createElement("div", { style: { display: "flex", justifyContent: "flex-end", marginTop: 14 } },
+                React.createElement("button", {
+                  onClick: function () { setOpenSamples(""); },
+                  style: { background: "#16A34A", border: "none", borderRadius: 6, color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700, padding: "8px 22px", fontFamily: "inherit" } },
+                  "OK"
+                )
+              )
+            )
+          )
         )
       );
     })
@@ -8763,7 +8832,7 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
           /*#__PURE__*/ React.createElement(
             "div",
             { style: { fontSize: 12 } },
-            "Each sequence will be AI-generated and ready to customize or send",
+            "Each sequence will be AI-generated and ready to customise or send",
           ),
         ),
     ),
@@ -8771,7 +8840,7 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
 } // ─── Transcript Analysis Section ───────────────────────────────────────────────
 function TranscriptAnalysisSection({ account, update, claudeApiKey = "" }) {
   const [transcripts, setTranscripts] = useState([]);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [analysing, setAnalyzing] = useState(false);
   const [activeTranscript, setActiveTranscript] = useState(null);
   const [uploadText, setUploadText] = useState("");
   const [showApiKeyInput, setShowApiKeyInput] = useState(!claudeApiKey);
@@ -8791,7 +8860,7 @@ function TranscriptAnalysisSection({ account, update, claudeApiKey = "" }) {
       return;
     }
     setAnalyzing(true);
-    const prompt = `Analyze this sales call/meeting transcript for ${account.companyName}. Extract and return a structured analysis in this exact format:
+    const prompt = `Analyse this sales call/meeting transcript for ${account.companyName}. Extract and return a structured analysis in this exact format:
 
 ## Call Summary
 [2-3 sentence summary of what was discussed]
@@ -8956,22 +9025,22 @@ ${text}`;
         "button",
         {
           onClick: () => analyzeTranscript(uploadText),
-          disabled: analyzing,
+          disabled: analysing,
           style: {
             width: "100%",
             padding: "10px 16px",
-            background: analyzing ? C.muted : C.teal,
+            background: analysing ? C.muted : C.teal,
             color: "#FFF",
             border: "none",
             borderRadius: 6,
-            cursor: analyzing ? "not-allowed" : "pointer",
+            cursor: analysing ? "not-allowed" : "pointer",
             fontSize: 13,
             fontWeight: 600,
             fontFamily: "inherit",
             minHeight: 44,
           },
         },
-        analyzing ? "Analyzing..." : "Analyze Transcript",
+        analysing ? "Analysing..." : "Analyse Transcript",
       ),
     ),
     transcripts.length > 0 &&
@@ -8981,7 +9050,7 @@ ${text}`;
         /*#__PURE__*/ React.createElement(
           "div",
           { style: { fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 12 } },
-          "Analyzed Transcripts (",
+          "Analysed Transcripts (",
           transcripts.length,
           ")",
         ),
@@ -9049,7 +9118,7 @@ ${text}`;
         ),
       ),
     transcripts.length === 0 &&
-      !analyzing &&
+      !analysing &&
       /*#__PURE__*/ React.createElement(
         "div",
         { style: { textAlign: "center", padding: "40px 20px", color: C.muted, fontSize: 13 } },
@@ -9239,12 +9308,12 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
 
   var enrichBUData = async function() {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Analyzing fastest-growing BU and JAGGAER product fit...");
+    setEnriching(true); setEnrichStatus("Analysing fastest-growing BU and JAGGAER product fit...");
     try {
       var resp = await fetchWithRetry("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint. You ONLY output valid JSON objects. Never include any text, explanation, or commentary outside the JSON.", messages: [{ role: "user", content: "Research \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ". Use ONLY current-year data and publicly available information.\n\nDEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:\n- At a Glance: " + safeStr(account.atAGlance).substring(0, 400) + "\n- Business Segments: " + safeStr(account.businessSegments).substring(0, 400) + "\n- CEO Priorities: " + safeStr(account.ceoPriorities).substring(0, 300) + "\n- Revenue & Growth: " + safeStr(account.revenueGrowth).substring(0, 300) + "\n- Strategy: " + safeStr(account.strategy).substring(0, 300) + "\n- Key Signals: " + safeStr(account.keySignals).substring(0, 400) + "\n- Challenges: " + safeStr(account.challenges).substring(0, 400) + "\n- Spend & Sourcing Strategy: " + safeStr(account.workforceStrategy).substring(0, 300) + "\n- Sourcing Trends: " + safeStr(account.hiringTrends).substring(0, 300) + "\n- Employees: " + safeStr(account.employees) + "\n- Open Roles: " + safeStr(account.openRoles) + "\n- Problems: " + safeStr(account.problems).substring(0, 300) + "\n- Use Cases: " + safeStr(account.useCases).substring(0, 300) + "\n\nIMPORTANT: Cross-reference ALL the above intelligence. Your BU analysis must be CONSISTENT with the challenges, strategy, and signals already identified. Reference specific facts from this intelligence to ground your analysis.\n\nJAGGAER's products: eProcurement (guided buying, catalogs, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.\n\nReturn this exact JSON structure:\n{\n  \"fastestGrowingBU\": \"Name the SPECIFIC fastest-growing BU at " + account.companyName + " with growth rate, revenue, and strategic importance. Must be grounded in their actual publicly reported segments and strategy.\",\n  \"buGrowthDrivers\": \"What drives this BU's growth — cite specific recent acquisitions, product launches, or market moves from " + new Date().getFullYear() + ". Connect to the key signals and strategy above.\",\n  \"buTalentNeeds\": \"What procurement, sourcing and supplier pressures this BU faces — spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.\",\n  \"phenomProductMatch\": \"Map 4-5 SPECIFIC JAGGAER products to THIS company's SPECIFIC challenges listed above: '[Product] → [Their specific challenge/use case] → [Expected impact with numbers]'\",\n  \"phenomQuickWins\": \"3 concrete things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above. Include timelines and metrics.\",\n  \"phenomROIStory\": \"12-month ROI narrative using their actual scale — addressable spend, active supplier count, and sourcing/invoice volumes. Be specific with $ amounts (realised savings, cycle-time reduction, working capital freed).\",\n  \"wowInsights\": \"5 jaw-drop insights that connect dots across the intelligence above in ways the CPO wouldn't expect — each 2-3 sentences with specific data from their public filings, earnings calls, or news. Include: (1) recent event most missed, (2) supply-chain or supplier risk threatening their business, (3) hidden off-contract cost they're not tracking, (4) connection between two of their initiatives creating urgency, (5) prediction for next 6-12 months\"\n}" }] }),
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint. You ONLY output valid JSON objects. Never include any text, explanation, or commentary outside the JSON.", messages: [{ role: "user", content: "Research \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ". Use ONLY current-year data and publicly available information.\n\nDEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:\n- At a Glance: " + safeStr(account.atAGlance).substring(0, 400) + "\n- Business Segments: " + safeStr(account.businessSegments).substring(0, 400) + "\n- CEO Priorities: " + safeStr(account.ceoPriorities).substring(0, 300) + "\n- Revenue & Growth: " + safeStr(account.revenueGrowth).substring(0, 300) + "\n- Strategy: " + safeStr(account.strategy).substring(0, 300) + "\n- Key Signals: " + safeStr(account.keySignals).substring(0, 400) + "\n- Challenges: " + safeStr(account.challenges).substring(0, 400) + "\n- Spend & Sourcing Strategy: " + safeStr(account.workforceStrategy).substring(0, 300) + "\n- Sourcing Trends: " + safeStr(account.hiringTrends).substring(0, 300) + "\n- Employees: " + safeStr(account.employees) + "\n- Open Roles: " + safeStr(account.openRoles) + "\n- Problems: " + safeStr(account.problems).substring(0, 300) + "\n- Use Cases: " + safeStr(account.useCases).substring(0, 300) + "\n\nIMPORTANT: Cross-reference ALL the above intelligence. Your BU analysis must be CONSISTENT with the challenges, strategy, and signals already identified. Reference specific facts from this intelligence to ground your analysis.\n\nJAGGAER's products: eProcurement (guided buying, catalogues, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.\n\nReturn this exact JSON structure:\n{\n  \"fastestGrowingBU\": \"Name the SPECIFIC fastest-growing BU at " + account.companyName + " with growth rate, revenue, and strategic importance. Must be grounded in their actual publicly reported segments and strategy.\",\n  \"buGrowthDrivers\": \"What drives this BU's growth — cite specific recent acquisitions, product launches, or market moves from " + new Date().getFullYear() + ". Connect to the key signals and strategy above.\",\n  \"buTalentNeeds\": \"What procurement, sourcing and supplier pressures this BU faces — spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.\",\n  \"phenomProductMatch\": \"Map 4-5 SPECIFIC JAGGAER products to THIS company's SPECIFIC challenges listed above: '[Product] → [Their specific challenge/use case] → [Expected impact with numbers]'\",\n  \"phenomQuickWins\": \"3 concrete things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above. Include timelines and metrics.\",\n  \"phenomROIStory\": \"12-month ROI narrative using their actual scale — addressable spend, active supplier count, and sourcing/invoice volumes. Be specific with $ amounts (realised savings, cycle-time reduction, working capital freed).\",\n  \"wowInsights\": \"5 jaw-drop insights that connect dots across the intelligence above in ways the CPO wouldn't expect — each 2-3 sentences with specific data from their public filings, earnings calls, or news. Include: (1) recent event most missed, (2) supply-chain or supplier risk threatening their business, (3) hidden off-contract cost they're not tracking, (4) connection between two of their initiatives creating urgency, (5) prediction for next 6-12 months\"\n}" }] }),
       }, 3, function(msg) { setEnrichStatus(msg); });
       var data = await resp.json();
       var rawText = (apiText(data) || "");
@@ -9282,7 +9351,7 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
       React.createElement("button", {
         onClick: enrichBUData, disabled: enriching,
         style: { padding: "8px 16px", borderRadius: 8, border: "none", background: enriching ? "#9CA3AF" : "linear-gradient(135deg, #7C3AED, #3B82F6)", color: "#fff", fontWeight: 700, fontSize: 12, cursor: enriching ? "not-allowed" : "pointer" },
-      }, enriching ? "\u23F3 Analyzing..." : "\uD83D\uDE80 AI-Generate BU Intel & JAGGAER Match"),
+      }, enriching ? "\u23F3 Analysing..." : "\uD83D\uDE80 AI-Generate BU Intel & JAGGAER Match"),
       enrichStatus && React.createElement("span", { style: { fontSize: 11, color: enrichStatus.includes("Error") ? "#DC2626" : "#0D9488" } }, enrichStatus),
     ),
 
@@ -9769,7 +9838,7 @@ var HELP_TOPICS = [
     items: [
       ["Multi-tenant accounts", "Add organisation-level tenancy so each customer's data, users and billing are isolated from every other customer."],
       ["Billing & plans", "Add subscription billing and usage limits. Decide whether AI usage is bundled, metered, or brings-your-own-key."],
-      ["Managed AI", "Move AI calls behind your own backend so customers do not need their own Anthropic key, and so you can control cost, caching and rate limits."],
+      ["Managed AI", "Move AI calls behind your own backend so customers do not need their own AI provider key, and so you can control cost, caching and rate limits."],
       ["Onboarding & support", "A guided first-run, sample data, and a support channel. This Help centre is the starting point for that."],
       ["Security & compliance", "SSO, audit logging, data residency options and a security review. Enterprise buyers will ask for all four."],
       ["White-label & CRM sync", "Themeable branding and a two-way sync with Salesforce or your customer's CRM so this complements their system of record rather than replacing it."]
@@ -10796,11 +10865,11 @@ function ProspectDashboard() {
   "ceoPriorities": "CEO name and top 3-4 strategic priorities",
   "transformationPrograms": "Major transformation or restructuring initiatives",
   "growthInvestments": "Key investment areas, M&A activity",
-  "costEfficiency": "Cost reduction programs, efficiency targets",
+  "costEfficiency": "Cost reduction programmes, efficiency targets",
   "techBets": "Technology stack, digital transformation, AI initiatives",
   "regulatoryContext": "Key regulatory factors affecting the business",
   "workforceScale": "Total addressable / annual spend; direct vs indirect split; number of active suppliers; tail-spend concentration; source-to-pay automation maturity",
-  "hiringShape": "Sourcing event volume and cycle time; contract coverage; catalog vs off-catalog buying; PO and invoice volumes; AP automation rate",
+  "hiringShape": "Sourcing event volume and cycle time; contract coverage; catalogue vs off-catalogue buying; PO and invoice volumes; AP automation rate",
   "criticalRoles": "Top spend categories and supplier dependencies: highest-spend categories, single-source and supply risks, tail-spend sprawl, contract coverage gaps, and savings opportunities",
   "geoPatterns": "Spend by region and entity, multi-country supplier base, local sourcing and compliance needs, and cross-border e-invoicing requirements",
   "talentPressure": "Cost and margin pressure driving savings mandates, supply-chain and supplier risk, procurement digital maturity, and ESG/compliance demands"
@@ -10924,7 +10993,7 @@ DEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:
 
 CRITICAL: Cross-reference ALL the above intelligence. Your analysis must be CONSISTENT with the challenges, strategy, signals, and segments above. Reference specific facts to ground every claim.
 
-JAGGAER's products: eProcurement (guided buying, catalogs, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.
+JAGGAER's products: eProcurement (guided buying, catalogues, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.
 
 Return this exact JSON structure:
 {
@@ -12042,16 +12111,7 @@ Return this exact JSON structure:
           /*#__PURE__*/ React.createElement(
             "div",
             { style: { fontSize: 11, color: C.muted, marginBottom: 16, lineHeight: 1.5 } },
-            "Your API key is saved locally and synced across devices when signed in. Find your key at ",
-            /*#__PURE__*/ React.createElement(
-              "a",
-              {
-                href: "https://console.anthropic.com",
-                target: "_blank",
-                style: { color: C.teal, textDecoration: "none" },
-              },
-              "console.anthropic.com",
-            ),
+            "Your API key is saved locally and synced across devices when signed in. Paste the key from your AI provider's console.",
           ),
           /*#__PURE__*/ React.createElement(
             "div",
