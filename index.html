@@ -20,11 +20,14 @@
     input, textarea, select { -webkit-user-select: text; user-select: text; }
     .tabs-strip::-webkit-scrollbar { display: none; }
     .tabs-strip { scrollbar-width: none; -ms-overflow-style: none; }
+    .drawer-actions { display: none; }
     @media (max-width: 700px) {
       .app-header { flex-wrap: wrap !important; row-gap: 6px; }
       .app-header > * { flex-shrink: 0; }
       .app-header-sub { display: none !important; }
-      .app-header-title { flex: 1 1 55% !important; min-width: 100px; max-width: none !important; }
+      .app-header-title { flex: 1 1 auto !important; min-width: 100px; max-width: none !important; }
+      .hdr-hide-mobile { display: none !important; }
+      .drawer-actions { display: block !important; }
     }
   </style>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -11203,6 +11206,27 @@ Return this exact JSON structure:
       ),
       /*#__PURE__*/ React.createElement(
         "div",
+        { className: "drawer-actions", style: { padding: "10px 10px", borderBottom: "1px solid #2D3448" } },
+        /*#__PURE__*/ React.createElement("div", { style: { color: "#8892A4", fontSize: 10, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", padding: "0 6px 6px" } }, "Actions"),
+        /*#__PURE__*/ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, padding: "4px 6px 8px" } },
+          /*#__PURE__*/ React.createElement("span", { style: { color: "#8892A4", fontSize: 13 } }, "📤 Export"),
+          /*#__PURE__*/ React.createElement(ExportMenu, { account: account })
+        ),
+        /*#__PURE__*/ React.createElement("button", {
+          onClick: function () { saveToCloud(accounts); setDrawerOpen(false); },
+          style: { display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: "9px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500, background: "transparent", color: "#C9D1DC", marginBottom: 2 },
+        }, "💾  Save to cloud"),
+        /*#__PURE__*/ React.createElement("button", {
+          onClick: function () { openProfile(); setDrawerOpen(false); },
+          style: { display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: "9px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500, background: "transparent", color: "#C9D1DC", marginBottom: 2 },
+        }, "👤  My profile"),
+        /*#__PURE__*/ React.createElement("button", {
+          onClick: function () { setShowApiKeyModal(true); setDrawerOpen(false); },
+          style: { display: "flex", alignItems: "center", gap: 8, width: "100%", textAlign: "left", padding: "9px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500, background: "transparent", color: "#C9D1DC", marginBottom: 2 },
+        }, "🔑  API key")
+      ),
+      /*#__PURE__*/ React.createElement(
+        "div",
         { style: { padding: "12px 16px", borderBottom: "1px solid #2D3448" } },
         /*#__PURE__*/ React.createElement("div", { style: { color: "#8892A4", fontSize: 10, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 8 } }, "Accounts"),
         /*#__PURE__*/ React.createElement("input", {
@@ -11505,7 +11529,7 @@ Return this exact JSON structure:
             /*#__PURE__*/ React.createElement("span", { style: { fontSize: 10, color: C.muted } }, account.industry),
           ),
         ),
-        /*#__PURE__*/ React.createElement(ExportMenu, { account: account }),
+        /*#__PURE__*/ React.createElement("span", { className: "hdr-hide-mobile", style: { display: "flex", alignItems: "center" } }, /*#__PURE__*/ React.createElement(ExportMenu, { account: account })),
         false && /*#__PURE__*/ React.createElement(
           "button",
           {
@@ -11573,6 +11597,7 @@ Return this exact JSON structure:
         /*#__PURE__*/ React.createElement(
           "button",
           {
+            className: "hdr-hide-mobile",
             onClick: () => setShowApiKeyModal(true),
             title: "Set Claude API Key",
             style: {
@@ -11591,6 +11616,7 @@ Return this exact JSON structure:
           "\uD83D\uDD11 API Key",
         ),
         /*#__PURE__*/ React.createElement("span", {
+          className: "hdr-hide-mobile",
           title: syncStatus === "error" ? "Sync error: " + saveError + " (click to retry)" : syncStatus === "saving" ? "Saving to cloud..." : syncStatus === "synced" ? "Synced to cloud" : syncStatus === "loading" ? "Loading..." : "Saved locally only (sign in for cloud sync)",
           style: { fontSize: 14, padding: "5px 4px", opacity: syncStatus === "saving" ? 0.5 : 1, transition: "opacity 0.3s", cursor: syncStatus === "error" ? "pointer" : "default" },
           onClick: syncStatus === "error" ? () => { setSaveError(""); saveToCloud(accounts); } : undefined,
@@ -11598,6 +11624,7 @@ Return this exact JSON structure:
         /*#__PURE__*/ React.createElement(
           "button",
           {
+            className: "hdr-hide-mobile",
             onClick: () => { saveToCloud(accounts); },
             title: "Save all data to cloud now",
             style: {
@@ -11623,6 +11650,7 @@ Return this exact JSON structure:
         /*#__PURE__*/ React.createElement(
           "button",
           {
+            className: "hdr-hide-mobile",
             onClick: openProfile,
             title: "My profile",
             style: {
