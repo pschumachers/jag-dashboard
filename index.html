@@ -82,31 +82,6 @@
       }
     } catch (e) { /* Firebase unavailable — app runs without auth */ }
   </script>
-  <!-- Modular Firebase Auth: provides TOTP MFA classes the compat SDK does not include -->
-  <script type="module">
-    async function __loadMfa() {
-      var urls = [
-        "./firebase-mfa.js",
-        "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-        "https://esm.sh/firebase@10.12.0/auth"
-      ];
-      var errs = [];
-      for (var i = 0; i < urls.length; i++) {
-        try {
-          var m = await import(urls[i]);
-          if (m && m.TotpMultiFactorGenerator) {
-            window.__mfa = { multiFactor: m.multiFactor, TotpMultiFactorGenerator: m.TotpMultiFactorGenerator, getMultiFactorResolver: m.getMultiFactorResolver };
-            window.dispatchEvent(new Event("mfa-ready"));
-            console.log("[MFA] loaded from " + urls[i]);
-            return;
-          }
-          errs.push(urls[i] + " -> loaded but no TotpMultiFactorGenerator (exports: " + (m ? Object.keys(m).slice(0, 6).join(",") : "none") + ")");
-        } catch (e) { errs.push(urls[i] + " -> " + (e && e.message ? e.message : String(e))); }
-      }
-      console.error("[MFA] Could not load modular Firebase Auth for TOTP:\n" + errs.join("\n"));
-    }
-    __loadMfa();
-  </script>
 </head>
 <body>
   <div id="root"></div>
@@ -267,94 +242,137 @@ function mfaFriendlyError(err) {
   if (code === "auth/requires-recent-login") return "For security, re-enter your password to continue.";
   return "❌ " + (err && (err.message || err.code) ? (err.message || err.code) : "Something went wrong.");
 }
+// ─── Self-contained TOTP (RFC 6238) via Web Crypto ─────────────────────────
+async function totpHmacSha1(keyBytes, msgBytes) {
+  var k = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: { name: "SHA-1" } }, false, ["sign"]);
+  var sig = await crypto.subtle.sign("HMAC", k, msgBytes);
+  return new Uint8Array(sig);
+}
+function totpB32decode(s) {
+  s = String(s || "").replace(/=+$/, "").replace(/\s/g, "").toUpperCase();
+  var alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = 0, val = 0, out = [];
+  for (var i = 0; i < s.length; i++) { var idx = alph.indexOf(s.charAt(i)); if (idx < 0) continue; val = (val << 5) | idx; bits += 5; if (bits >= 8) { out.push((val >>> (bits - 8)) & 255); bits -= 8; } }
+  return new Uint8Array(out);
+}
+function totpB32encode(bytes) {
+  var alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = 0, val = 0, out = "";
+  for (var i = 0; i < bytes.length; i++) { val = (val << 8) | bytes[i]; bits += 8; while (bits >= 5) { out += alph.charAt((val >>> (bits - 5)) & 31); bits -= 5; } }
+  if (bits > 0) out += alph.charAt((val << (5 - bits)) & 31);
+  return out;
+}
+async function totpAt(secretB32, counter) {
+  var key = totpB32decode(secretB32), msg = new Uint8Array(8), c = counter;
+  for (var i = 7; i >= 0; i--) { msg[i] = c & 255; c = Math.floor(c / 256); }
+  var h = await totpHmacSha1(key, msg), off = h[19] & 15;
+  var bin = ((h[off] & 127) << 24) | ((h[off + 1] & 255) << 16) | ((h[off + 2] & 255) << 8) | (h[off + 3] & 255);
+  var code = String(bin % 1000000); while (code.length < 6) code = "0" + code; return code;
+}
+async function totpVerify(secretB32, input) {
+  input = String(input || "").trim(); if (!/^[0-9]{6}$/.test(input)) return false;
+  var step = Math.floor(Date.now() / 30000);
+  for (var w = -1; w <= 1; w++) { try { if ((await totpAt(secretB32, step + w)) === input) return true; } catch (e) {} }
+  return false;
+}
+function totpRandomSecret() { var b = new Uint8Array(20); crypto.getRandomValues(b); return totpB32encode(b); }
+function totpOtpauthUrl(secretB32, email) { return "otpauth://totp/JAGGAER%20Dashboard:" + encodeURIComponent(email || "user") + "?secret=" + secretB32 + "&issuer=JAGGAER%20Dashboard&algorithm=SHA1&digits=6&period=30"; }
+
 function TwoFactorSection() {
-  var _f = useState([]); var factors = _f[0]; var setFactors = _f[1];
+  var _f = useState(false); var enrolled = _f[0]; var setEnrolled = _f[1];
   var _p = useState("idle"); var phase = _p[0]; var setPhase = _p[1];
-  var _s = useState(null); var secret = _s[0]; var setSecret = _s[1];
+  var _s = useState(""); var secret = _s[0]; var setSecret = _s[1];
   var _c = useState(""); var code = _c[0]; var setCode = _c[1];
   var _m = useState(""); var msg = _m[0]; var setMsg = _m[1];
-  var _r = useState(""); var reauthPw = _r[0]; var setReauthPw = _r[1];
   var qrRef = useRef(null);
-  function mfaLib() { return (typeof window !== "undefined" && window.__mfa) ? window.__mfa : null; }
-  function mUser() { var u = auth && auth.currentUser; return u ? (u._delegate || u) : null; }
-  function mfaOf() { var L = mfaLib(), mu = mUser(); return (L && mu) ? L.multiFactor(mu) : null; }
-  function refreshFactors() { try { var mf = mfaOf(); setFactors((mf && mf.enrolledFactors) ? mf.enrolledFactors : []); } catch (e) {} }
-  useEffect(function () { refreshFactors(); var h = function () { refreshFactors(); }; window.addEventListener("mfa-ready", h); return function () { window.removeEventListener("mfa-ready", h); }; }, []);
-  function totpGen() { var L = mfaLib(); return (L && L.TotpMultiFactorGenerator) ? L.TotpMultiFactorGenerator : null; }
-  async function begin() {
+  function uid() { return (auth && auth.currentUser) ? auth.currentUser.uid : null; }
+  function email() { return (auth && auth.currentUser && auth.currentUser.email) || "user"; }
+  function refresh() { try { var u = uid(); if (db && u) { db.collection("users").doc(u).get().then(function (d) { setEnrolled(!!(d && d.exists && d.data() && d.data().totpSecret)); }).catch(function () {}); } } catch (e) {} }
+  useEffect(function () { refresh(); }, []);
+  function begin() {
     setMsg("");
-    var u = auth && auth.currentUser;
-    if (!u) { setMsg("Sign in first."); return; }
-    if (!totpGen() || !mfaOf()) { setMsg("Two factor is still loading. Wait a second and try again."); return; }
-    setPhase("generating");
-    try {
-      var session = await mfaOf().getSession();
-      var sec = await totpGen().generateSecret(session);
-      setSecret(sec); setPhase("showqr");
-      setTimeout(async function () {
-        try {
-          await loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js", "QRCode");
-          if (qrRef.current && window.QRCode) { qrRef.current.innerHTML = ""; new window.QRCode(qrRef.current, { text: sec.generateQrCodeUrl((auth.currentUser.email || "user"), "JAGGAER Dashboard"), width: 176, height: 176 }); }
-        } catch (e) {}
-      }, 60);
-    } catch (err) {
-      if (err && err.code === "auth/requires-recent-login") { setPhase("reauth"); setMsg("Please re-enter your password to continue."); }
-      else { setPhase("idle"); setMsg(mfaFriendlyError(err)); }
-    }
-  }
-  async function doReauth() {
-    setMsg("");
-    try {
-      var u = auth.currentUser;
-      var cred = firebase.auth.EmailAuthProvider.credential(u.email, reauthPw);
-      await u.reauthenticateWithCredential(cred);
-      setReauthPw(""); begin();
-    } catch (err) { setMsg(mfaFriendlyError(err)); }
+    if (!uid()) { setMsg("Sign in first."); return; }
+    var sec = totpRandomSecret(); setSecret(sec); setCode(""); setPhase("showqr");
+    setTimeout(function () {
+      loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js", "QRCode").then(function () {
+        if (qrRef.current && window.QRCode) { qrRef.current.innerHTML = ""; new window.QRCode(qrRef.current, { text: totpOtpauthUrl(sec, email()), width: 176, height: 176 }); }
+      }).catch(function () {});
+    }, 60);
   }
   async function confirmEnroll() {
     setMsg("");
     if (!/^[0-9]{6}$/.test((code || "").trim())) { setMsg("Enter the 6 digit code from your app."); return; }
     setPhase("verifying");
+    var ok = false; try { ok = await totpVerify(secret, code.trim()); } catch (e) { ok = false; }
+    if (!ok) { setPhase("showqr"); setMsg("That code is not right. Check the clock on your phone and enter the current code."); return; }
     try {
-      var assertion = totpGen().assertionForEnrollment(secret, code.trim());
-      await mfaOf().enroll(assertion, "Authenticator app");
-      setSecret(null); setCode(""); setPhase("idle");
+      await db.collection("users").doc(uid()).set({ totpSecret: secret }, { merge: true });
+      if (typeof window !== "undefined") window.__totpVerified = true;
+      setSecret(""); setCode(""); setPhase("idle"); setEnrolled(true);
       setMsg("✅ Two factor is on. You will be asked for a code next time you sign in.");
-      refreshFactors();
-    } catch (err) { setPhase("showqr"); setMsg(mfaFriendlyError(err)); }
+    } catch (err) { setPhase("showqr"); setMsg("Could not save. " + (err && err.message ? err.message : "")); }
   }
-  async function removeFactor(f) {
+  async function remove() {
     setMsg("");
-    try { await mfaOf().unenroll(f); setMsg("Two factor removed."); refreshFactors(); }
-    catch (err) { setMsg(mfaFriendlyError(err)); }
+    try {
+      var upd = {}; upd.totpSecret = firebase.firestore.FieldValue.delete();
+      await db.collection("users").doc(uid()).set(upd, { merge: true });
+      if (typeof window !== "undefined") window.__totpVerified = false;
+      setEnrolled(false); setMsg("Two factor removed.");
+    } catch (err) { setMsg("Could not remove. " + (err && err.message ? err.message : "")); }
   }
   var box = { fontSize: 13, fontFamily: "inherit" };
   var children = [
     React.createElement("div", { key: "h", style: { fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, borderTop: "1px solid " + C.border, paddingTop: 16 } }, "Two factor authentication (TOTP)")
   ];
-  if (factors.length > 0) {
+  if (enrolled) {
     children.push(React.createElement("div", { key: "on", style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 8, padding: "10px 12px", marginBottom: 8 } },
       React.createElement("div", { style: { fontSize: 12.5, color: "#166534", fontWeight: 600 } }, "✅ On. A 6 digit code is required at sign in."),
-      React.createElement("button", { onClick: function () { removeFactor(factors[0]); }, style: { padding: "6px 10px", borderRadius: 6, border: "1px solid " + C.border, background: C.card, color: "#DC2626", fontFamily: "inherit", fontSize: 12, fontWeight: 600, cursor: "pointer" } }, "Turn off")
+      React.createElement("button", { onClick: remove, style: { padding: "6px 10px", borderRadius: 6, border: "1px solid " + C.border, background: C.card, color: "#DC2626", fontFamily: "inherit", fontSize: 12, fontWeight: 600, cursor: "pointer" } }, "Turn off")
     ));
-  } else if (phase === "idle" || phase === "generating") {
+  } else if (phase === "idle") {
     children.push(React.createElement("div", { key: "intro", style: { fontSize: 12, color: C.muted, lineHeight: 1.5, marginBottom: 8 } }, "Add a second step at sign in using an authenticator app such as Google Authenticator or Authy. Works offline, no phone number needed."));
-    children.push(React.createElement("button", { key: "start", onClick: begin, disabled: phase === "generating", style: { padding: "9px 16px", borderRadius: 6, border: "none", background: phase === "generating" ? "#9CA3AF" : "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: phase === "generating" ? "not-allowed" : "pointer" } }, phase === "generating" ? "Preparing…" : "Set up two factor"));
-  } else if (phase === "reauth") {
-    children.push(React.createElement("input", { key: "rpw", type: "password", value: reauthPw, onChange: function (e) { setReauthPw(e.target.value); }, placeholder: "Your current password", style: { width: "100%", padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 6, marginBottom: 8, boxSizing: "border-box", outline: "none", ...box } }));
-    children.push(React.createElement("button", { key: "rbtn", onClick: doReauth, style: { padding: "9px 16px", borderRadius: 6, border: "none", background: "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer" } }, "Continue"));
+    children.push(React.createElement("button", { key: "start", onClick: begin, style: { padding: "9px 16px", borderRadius: 6, border: "none", background: "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer" } }, "Set up two factor"));
   } else if (phase === "showqr" || phase === "verifying") {
     children.push(React.createElement("div", { key: "step", style: { fontSize: 12, color: C.muted, lineHeight: 1.5, marginBottom: 8 } }, "Scan this in your authenticator app, or enter the key by hand, then type the 6 digit code it shows."));
     children.push(React.createElement("div", { key: "qr", ref: qrRef, style: { display: "flex", justifyContent: "center", padding: 8, background: "#fff", borderRadius: 8, border: "1px solid " + C.border, marginBottom: 8, minHeight: 100 } }));
-    if (secret && secret.secretKey) children.push(React.createElement("div", { key: "key", style: { fontSize: 11, color: C.muted, marginBottom: 8, wordBreak: "break-all" } }, "Setup key: ", React.createElement("code", { style: { fontSize: 12, color: C.text } }, secret.secretKey)));
+    if (secret) children.push(React.createElement("div", { key: "key", style: { fontSize: 11, color: C.muted, marginBottom: 8, wordBreak: "break-all" } }, "Setup key: ", React.createElement("code", { style: { fontSize: 12, color: C.text } }, secret)));
     children.push(React.createElement("input", { key: "code", type: "text", inputMode: "numeric", maxLength: 6, value: code, onChange: function (e) { setCode(e.target.value.replace(/[^0-9]/g, "")); }, placeholder: "6 digit code", style: { width: "100%", padding: "10px 12px", border: "1px solid " + C.border, borderRadius: 6, letterSpacing: 4, textAlign: "center", marginBottom: 8, boxSizing: "border-box", outline: "none", ...box } }));
     children.push(React.createElement("div", { key: "acts", style: { display: "flex", gap: 8 } },
       React.createElement("button", { onClick: confirmEnroll, disabled: phase === "verifying", style: { flex: 1, padding: "9px 16px", borderRadius: 6, border: "none", background: phase === "verifying" ? "#9CA3AF" : "#0D9488", color: "#fff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: phase === "verifying" ? "not-allowed" : "pointer" } }, phase === "verifying" ? "Verifying…" : "Verify and turn on"),
-      React.createElement("button", { onClick: function () { setPhase("idle"); setSecret(null); setCode(""); setMsg(""); }, style: { padding: "9px 14px", borderRadius: 6, border: "1px solid " + C.border, background: C.card, color: C.muted, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" } }, "Cancel")
+      React.createElement("button", { onClick: function () { setPhase("idle"); setSecret(""); setCode(""); setMsg(""); }, style: { padding: "9px 14px", borderRadius: 6, border: "1px solid " + C.border, background: C.card, color: C.muted, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" } }, "Cancel")
     ));
   }
   if (msg) children.push(React.createElement("div", { key: "msg", style: { fontSize: 12, fontWeight: 600, color: msg.indexOf("✅") === 0 ? "#059669" : C.text, marginTop: 8, lineHeight: 1.5 } }, msg));
   return React.createElement("div", { style: { marginTop: 4, marginBottom: 8 } }, children);
+}
+
+function TotpGate({ secret, onPass, onSignOut }) {
+  var _c = useState(""); var code = _c[0]; var setCode = _c[1];
+  var _e = useState(""); var err = _e[0]; var setErr = _e[1];
+  var _l = useState(false); var loading = _l[0]; var setLoading = _l[1];
+  async function submit(e) {
+    if (e) e.preventDefault();
+    setErr("");
+    if (!/^[0-9]{6}$/.test((code || "").trim())) { setErr("Enter the 6 digit code."); return; }
+    setLoading(true);
+    var ok = false; try { ok = await totpVerify(secret, code.trim()); } catch (x) { ok = false; }
+    setLoading(false);
+    if (ok) { onPass(); } else { setErr("That code is not right. Enter the current code from your authenticator app."); }
+  }
+  return React.createElement("div", { style: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)", padding: 20, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" } },
+    React.createElement("div", { style: { width: "100%", maxWidth: 380, background: "#fff", borderRadius: 16, padding: "36px 30px", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" } },
+      React.createElement("div", { style: { textAlign: "center", marginBottom: 22 } },
+        React.createElement("div", { style: { width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, #00BFA5, #0D9488)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#fff", marginBottom: 14 } }, "🔐"),
+        React.createElement("h1", { style: { margin: 0, fontSize: 20, fontWeight: 700, color: "#1E293B" } }, "Two factor"),
+        React.createElement("p", { style: { margin: "6px 0 0", fontSize: 14, color: "#64748B", lineHeight: 1.5 } }, "Enter the current 6 digit code from your authenticator app.")
+      ),
+      err && React.createElement("div", { style: { background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: "#DC2626" } }, err),
+      React.createElement("form", { onSubmit: submit },
+        React.createElement("input", { type: "text", inputMode: "numeric", maxLength: 6, autoFocus: true, value: code, onChange: function (e) { setCode(e.target.value.replace(/[^0-9]/g, "")); }, placeholder: "000000", style: { width: "100%", padding: "12px 14px", border: "1px solid #E5E7EB", borderRadius: 8, fontSize: 22, letterSpacing: 8, textAlign: "center", fontFamily: "inherit", boxSizing: "border-box", outline: "none", marginBottom: 14 } }),
+        React.createElement("button", { type: "submit", disabled: loading, style: { width: "100%", padding: "12px", borderRadius: 8, border: "none", background: loading ? "#9CA3AF" : "linear-gradient(135deg, #00BFA5, #0D9488)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit" } }, loading ? "Checking…" : "Verify"),
+        React.createElement("button", { type: "button", onClick: onSignOut, style: { width: "100%", padding: "10px", marginTop: 10, borderRadius: 8, border: "none", background: "none", color: "#64748B", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" } }, "Sign out")
+      )
+    )
+  );
 }
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -730,37 +748,45 @@ function LoginPage({ onLogin }) {
 function App() {
   const [user, setUser] = useState(firebaseAvailable ? null : { email: "local" });
   const [authChecked, setAuthChecked] = useState(!firebaseAvailable);
+  const [totpChecked, setTotpChecked] = useState(false);
+  const [totpSecret, setTotpSecret] = useState("");
+  const [totpPassed, setTotpPassed] = useState(false);
   useEffect(() => {
     if (!firebaseAvailable || !auth) {
       setAuthChecked(true);
       return;
     }
     const unsubscribe = auth.onAuthStateChanged((u) => {
+      if (!u && typeof window !== "undefined") window.__totpVerified = false;
       setUser(u);
       setAuthChecked(true);
     });
     return unsubscribe;
   }, []);
-  if (!authChecked) {
-    return /*#__PURE__*/ React.createElement(
-      "div",
-      {
-        style: {
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#0F172A",
-          color: "#00BFA5",
-          fontSize: 16,
-          fontFamily: "sans-serif",
-        },
-      },
-      "Loading\u2026",
-    );
-  }
-  if (!user) {
-    return /*#__PURE__*/ React.createElement(LoginPage, null);
+  useEffect(() => {
+    if (!user || !db || !user.uid) { setTotpSecret(""); setTotpPassed(true); setTotpChecked(true); return; }
+    setTotpChecked(false);
+    db.collection("users").doc(user.uid).get().then((d) => {
+      const s = (d && d.exists && d.data() && d.data().totpSecret) ? d.data().totpSecret : "";
+      setTotpSecret(s);
+      setTotpPassed(!s || (typeof window !== "undefined" && window.__totpVerified === true));
+      setTotpChecked(true);
+    }).catch(() => { setTotpSecret(""); setTotpPassed(true); setTotpChecked(true); });
+  }, [user]);
+  const loadingScreen = /*#__PURE__*/ React.createElement(
+    "div",
+    { style: { height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0F172A", color: "#00BFA5", fontSize: 16, fontFamily: "sans-serif" } },
+    "Loading\u2026",
+  );
+  if (!authChecked) return loadingScreen;
+  if (!user) return /*#__PURE__*/ React.createElement(LoginPage, null);
+  if (!totpChecked) return loadingScreen;
+  if (totpSecret && !totpPassed) {
+    return /*#__PURE__*/ React.createElement(TotpGate, {
+      secret: totpSecret,
+      onPass: () => { if (typeof window !== "undefined") window.__totpVerified = true; setTotpPassed(true); },
+      onSignOut: () => { if (auth) auth.signOut(); else window.location.reload(); },
+    });
   }
   return /*#__PURE__*/ React.createElement(ProspectDashboard, { currentUser: user });
 } // ─── Color palette matching the PDF ───────────────────────────────────────────
