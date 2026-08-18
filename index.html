@@ -86,20 +86,24 @@
   <script type="module">
     async function __loadMfa() {
       var urls = [
+        "./firebase-mfa.js",
         "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
         "https://esm.sh/firebase@10.12.0/auth"
       ];
+      var errs = [];
       for (var i = 0; i < urls.length; i++) {
         try {
           var m = await import(urls[i]);
           if (m && m.TotpMultiFactorGenerator) {
             window.__mfa = { multiFactor: m.multiFactor, TotpMultiFactorGenerator: m.TotpMultiFactorGenerator, getMultiFactorResolver: m.getMultiFactorResolver };
             window.dispatchEvent(new Event("mfa-ready"));
+            console.log("[MFA] loaded from " + urls[i]);
             return;
           }
-        } catch (e) { /* try next CDN */ }
+          errs.push(urls[i] + " -> loaded but no TotpMultiFactorGenerator (exports: " + (m ? Object.keys(m).slice(0, 6).join(",") : "none") + ")");
+        } catch (e) { errs.push(urls[i] + " -> " + (e && e.message ? e.message : String(e))); }
       }
-      console.error("Could not load modular Firebase Auth for TOTP");
+      console.error("[MFA] Could not load modular Firebase Auth for TOTP:\n" + errs.join("\n"));
     }
     __loadMfa();
   </script>
