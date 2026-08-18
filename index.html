@@ -82,6 +82,27 @@
       }
     } catch (e) { /* Firebase unavailable — app runs without auth */ }
   </script>
+  <!-- Modular Firebase Auth: provides TOTP MFA classes the compat SDK does not include -->
+  <script type="module">
+    async function __loadMfa() {
+      var urls = [
+        "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+        "https://esm.sh/firebase@10.12.0/auth"
+      ];
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          var m = await import(urls[i]);
+          if (m && m.TotpMultiFactorGenerator) {
+            window.__mfa = { multiFactor: m.multiFactor, TotpMultiFactorGenerator: m.TotpMultiFactorGenerator, getMultiFactorResolver: m.getMultiFactorResolver };
+            window.dispatchEvent(new Event("mfa-ready"));
+            return;
+          }
+        } catch (e) { /* try next CDN */ }
+      }
+      console.error("Could not load modular Firebase Auth for TOTP");
+    }
+    __loadMfa();
+  </script>
 </head>
 <body>
   <div id="root"></div>
@@ -250,17 +271,20 @@ function TwoFactorSection() {
   var _m = useState(""); var msg = _m[0]; var setMsg = _m[1];
   var _r = useState(""); var reauthPw = _r[0]; var setReauthPw = _r[1];
   var qrRef = useRef(null);
-  function refreshFactors() { try { var u = auth && auth.currentUser; setFactors((u && u.multiFactor && u.multiFactor.enrolledFactors) ? u.multiFactor.enrolledFactors : []); } catch (e) {} }
-  useEffect(function () { refreshFactors(); }, []);
-  function totpGen() { return (typeof firebase !== "undefined" && firebase.auth && firebase.auth.TotpMultiFactorGenerator) ? firebase.auth.TotpMultiFactorGenerator : null; }
+  function mfaLib() { return (typeof window !== "undefined" && window.__mfa) ? window.__mfa : null; }
+  function mUser() { var u = auth && auth.currentUser; return u ? (u._delegate || u) : null; }
+  function mfaOf() { var L = mfaLib(), mu = mUser(); return (L && mu) ? L.multiFactor(mu) : null; }
+  function refreshFactors() { try { var mf = mfaOf(); setFactors((mf && mf.enrolledFactors) ? mf.enrolledFactors : []); } catch (e) {} }
+  useEffect(function () { refreshFactors(); var h = function () { refreshFactors(); }; window.addEventListener("mfa-ready", h); return function () { window.removeEventListener("mfa-ready", h); }; }, []);
+  function totpGen() { var L = mfaLib(); return (L && L.TotpMultiFactorGenerator) ? L.TotpMultiFactorGenerator : null; }
   async function begin() {
     setMsg("");
     var u = auth && auth.currentUser;
     if (!u) { setMsg("Sign in first."); return; }
-    if (!totpGen()) { setMsg("This build does not support TOTP. Update the Firebase SDK."); return; }
+    if (!totpGen() || !mfaOf()) { setMsg("Two factor is still loading. Wait a second and try again."); return; }
     setPhase("generating");
     try {
-      var session = await u.multiFactor.getSession();
+      var session = await mfaOf().getSession();
       var sec = await totpGen().generateSecret(session);
       setSecret(sec); setPhase("showqr");
       setTimeout(async function () {
@@ -289,7 +313,7 @@ function TwoFactorSection() {
     setPhase("verifying");
     try {
       var assertion = totpGen().assertionForEnrollment(secret, code.trim());
-      await auth.currentUser.multiFactor.enroll(assertion, "Authenticator app");
+      await mfaOf().enroll(assertion, "Authenticator app");
       setSecret(null); setCode(""); setPhase("idle");
       setMsg("✅ Two factor is on. You will be asked for a code next time you sign in.");
       refreshFactors();
@@ -297,7 +321,7 @@ function TwoFactorSection() {
   }
   async function removeFactor(f) {
     setMsg("");
-    try { await auth.currentUser.multiFactor.unenroll(f); setMsg("Two factor removed."); refreshFactors(); }
+    try { await mfaOf().unenroll(f); setMsg("Two factor removed."); refreshFactors(); }
     catch (err) { setMsg(mfaFriendlyError(err)); }
   }
   var box = { fontSize: 13, fontFamily: "inherit" };
@@ -364,12 +388,16 @@ function LoginPage({ onLogin }) {
     setError("");
     setLoading(true);
     try {
-      var totp = (typeof firebase !== "undefined" && firebase.auth) ? firebase.auth.TotpMultiFactorGenerator : null;
+      var lib = (typeof window !== "undefined" && window.__mfa) ? window.__mfa : null;
+      if (!lib || !lib.TotpMultiFactorGenerator) { setError("Two factor is still loading. Wait a second and try again."); setLoading(false); return; }
+      var totp = lib.TotpMultiFactorGenerator;
+      var resolver = (mfaResolver && mfaResolver._delegate) ? mfaResolver._delegate : mfaResolver;
+      var hints = resolver.hints || [];
       var hint = null;
-      for (var i = 0; i < mfaResolver.hints.length; i++) { if (totp && mfaResolver.hints[i].factorId === totp.FACTOR_ID) { hint = mfaResolver.hints[i]; break; } }
-      if (!hint) hint = mfaResolver.hints[0];
+      for (var i = 0; i < hints.length; i++) { if (hints[i].factorId === totp.FACTOR_ID) { hint = hints[i]; break; } }
+      if (!hint) hint = hints[0];
       var assertion = totp.assertionForSignIn(hint.uid, (mfaCode || "").trim());
-      await mfaResolver.resolveSignIn(assertion);
+      await resolver.resolveSignIn(assertion);
     } catch (err) {
       setError(mfaFriendlyError(err));
     }
