@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#00BFA5">
-  <title>JAGGAER — Prospect Intelligence</title>
+  <title>JAG — Prospect Intelligence</title>
   <link rel="manifest" href="manifest.json">
   <style>
     * { box-sizing: border-box; }
@@ -274,7 +274,7 @@ async function totpVerify(secretB32, input) {
   return false;
 }
 function totpRandomSecret() { var b = new Uint8Array(20); crypto.getRandomValues(b); return totpB32encode(b); }
-function totpOtpauthUrl(secretB32, email) { return "otpauth://totp/JAGGAER%20Dashboard:" + encodeURIComponent(email || "user") + "?secret=" + secretB32 + "&issuer=JAGGAER%20Dashboard&algorithm=SHA1&digits=6&period=30"; }
+function totpOtpauthUrl(secretB32, email) { return "otpauth://totp/JAG%20Dashboard:" + encodeURIComponent(email || "user") + "?secret=" + secretB32 + "&issuer=JAG%20Dashboard&algorithm=SHA1&digits=6&period=30"; }
 
 function TwoFactorSection() {
   var _f = useState(false); var enrolled = _f[0]; var setEnrolled = _f[1];
@@ -487,7 +487,7 @@ function LoginPage({ onLogin }) {
         /*#__PURE__*/ React.createElement(
           "h1",
           { style: { margin: 0, fontSize: 22, fontWeight: 700, color: "#1E293B" } },
-          "JAGGAER",
+          "JAG",
         ),
         /*#__PURE__*/ React.createElement(
           "div",
@@ -848,7 +848,7 @@ function dlBlob(blob, filename) {
 const PPTX_CDN = "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js";
 const XLSX_CDN = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
 const SEV_COLOR = { CRITICAL: "DC2626", HIGH: "D97706", MEDIUM: "2563EB" };
-const COMPANY_BRAND = { name: "JAGGAER", color: "EA580C" };
+const COMPANY_BRAND = { name: "JAG", color: "EA580C" };
 async function exportToPPTX(account) {
   await loadScript(PPTX_CDN, "pptx");
   if (!window.PptxGenJS) throw new Error("PptxGenJS library not loaded — check internet connection");
@@ -1035,7 +1035,7 @@ async function exportToPPTX(account) {
       tags: ['Suppliers', 'Process', 'Categories']
     },
     {
-      title: 'JAGGAER Entry Angle',
+      title: 'JAG Entry Angle',
       body: truncate(`Opportunity: ${account.highestOpportunity || 'N/A'}\n\nCapability Match: ${account.capabilityMatch || 'N/A'}\n\nNarrative: ${account.leadNarrative || 'N/A'}`, 180),
       tags: ['Solution', 'Fit', 'Value']
     }
@@ -1259,12 +1259,12 @@ async function exportToPPTX(account) {
     }
   }
 
-  // ========== SLIDE 4: WHERE JAGGAER HAS IMPACT ==========
+  // ========== SLIDE 4: WHERE JAG HAS IMPACT ==========
   const slide4 = pptx.addSlide();
   slide4.background = { color: 'FFFFFF' };
 
   // Title
-  slide4.addText(`Where JAGGAER Has Specific, Measurable Impact at ${account.companyName || 'Company'}`, {
+  slide4.addText(`Where JAG Has Specific, Measurable Impact at ${account.companyName || 'Company'}`, {
     x: 0.5,
     y: 0.3,
     w: 12.33,
@@ -1366,8 +1366,8 @@ async function exportToPPTX(account) {
       fontFace: 'Calibri'
     });
 
-    // JAGGAER impact section
-    slide4.addText('JAGGAER Impact:', {
+    // JAG impact section
+    slide4.addText('JAG Impact:', {
       x: colX + 0.1,
       y: colY + 1.7,
       w: colWidth - 0.2,
@@ -1431,7 +1431,7 @@ async function exportToPPTX(account) {
   slide5.background = { color: 'FFFFFF' };
 
   // Title
-  slide5.addText(`Where JAGGAER Has Specific, Measurable Impact at ${account.companyName || 'Company'}`, {
+  slide5.addText(`Where JAG Has Specific, Measurable Impact at ${account.companyName || 'Company'}`, {
     x: 0.5,
     y: 0.3,
     w: 12.33,
@@ -1446,7 +1446,7 @@ async function exportToPPTX(account) {
     {
       title: account.hyperCellTitle || 'Hypothesis 1',
       evidence: `${account.hyperCellNarrative || 'Key evidence and analysis'}`,
-      phenomImpact: account.capabilityMatch || 'JAGGAER solution alignment',
+      phenomImpact: account.capabilityMatch || 'JAG solution alignment',
       question: account.discoveryQuestions ? (typeof account.discoveryQuestions === 'string' ? account.discoveryQuestions : account.discoveryQuestions[0]) : 'Discovery question?'
     },
     {
@@ -1522,8 +1522,8 @@ async function exportToPPTX(account) {
       fontFace: 'Calibri'
     });
 
-    // JAGGAER impact
-    slide5.addText('JAGGAER\'s Specific Impact:', {
+    // JAG impact
+    slide5.addText('JAG\'s Specific Impact:', {
       x: hypX + 0.2,
       y: hypY + 2.7,
       w: hypW - 0.4,
@@ -1765,8 +1765,8 @@ async function exportToPPTX(account) {
     }
   });
 
-  // JAGGAER layer
-  slide7.addText('JAGGAER Layer (Source-to-Pay Automation):', {
+  // JAG layer
+  slide7.addText('JAG Layer (Source-to-Pay Automation):', {
     x: 0.5,
     y: 2.25,
     w: 12.33,
@@ -1818,7 +1818,7 @@ async function exportToPPTX(account) {
   });
 
   // Decision outcomes
-  slide7.addText('JAGGAER AI Spend Triage:', {
+  slide7.addText('JAG AI Spend Triage:', {
     x: 0.5,
     y: 3.35,
     w: 12.33,
@@ -2022,8 +2022,8 @@ async function exportToPPTX(account) {
     }
   });
 
-  // JAGGAER enhancements
-  slide8.addText('JAGGAER Enhancements:', {
+  // JAG enhancements
+  slide8.addText('JAG Enhancements:', {
     x: 0.5,
     y: 3.5,
     w: 12.33,
@@ -2035,7 +2035,7 @@ async function exportToPPTX(account) {
   });
 
   const enhancements = [
-    { title: 'Smart Supplier Matching', desc: 'JAGGAER AI ranks suppliers by fit, risk & total cost of ownership' },
+    { title: 'Smart Supplier Matching', desc: 'JAG AI ranks suppliers by fit, risk & total cost of ownership' },
     { title: 'Bid Insights', desc: 'Real-time bid analysis and sourcing-scenario optimisation' },
     { title: 'Supplier Development', desc: 'Engage and develop strategic suppliers over time' },
     { title: 'Award Analytics', desc: 'Optimise award scenarios and predict realised savings' }
@@ -2207,8 +2207,8 @@ async function exportToPPTX(account) {
     }
   });
 
-  // JAGGAER for zone 4
-  slide9.addText('JAGGAER\'s Role in Zone 4:', {
+  // JAG for zone 4
+  slide9.addText('JAG\'s Role in Zone 4:', {
     x: 0.5,
     y: 3.5,
     w: 12.33,
@@ -2575,7 +2575,7 @@ async function exportToPPTX(account) {
     fontFace: 'Calibri'
   });
 
-  const stepsText = account.nextSteps || 'Schedule initial discovery meeting to align on procurement challenges and JAGGAER solution fit.\nConduct deep-dive assessment of current source-to-pay workflows.\nDevelop implementation roadmap and quick-win opportunities.';
+  const stepsText = account.nextSteps || 'Schedule initial discovery meeting to align on procurement challenges and JAG solution fit.\nConduct deep-dive assessment of current source-to-pay workflows.\nDevelop implementation roadmap and quick-win opportunities.';
 
   slide12.addText(stepsText, {
     x: 0.5,
@@ -2954,7 +2954,7 @@ async function exportToXLSX(account) {
   await loadScript(XLSX_CDN, "xlsx");
   var XLSX = window.XLSX;
   var wb = XLSX.utils.book_new();
-  wb.Props = { Title: (account.companyName || "Account") + " — Prospect Brief", Author: "JAGGAER Sales" }; // ── Sheet 1: Overview ──
+  wb.Props = { Title: (account.companyName || "Account") + " — Prospect Brief", Author: "JAG Sales" }; // ── Sheet 1: Overview ──
   var overviewRows = [
     ["PROSPECT BRIEF — " + (account.companyName || "").toUpperCase(), ""],
     ["", ""],
@@ -3091,7 +3091,7 @@ async function exportToXLSX(account) {
     ["FIELD", "CONTENT"],
     ["Geo Conflict Impact", account.geoConflictImpact || ""],
     ["Micro Growth Area", account.microGrowthArea || ""],
-    ["JAGGAER Geo Play", account.phenomGeoPlay || ""],
+    ["JAG Geo Play", account.phenomGeoPlay || ""],
     ["Supply & Sourcing Shift", account.geoTalentShift || ""],
     ["", ""],
     ["HYPER-CELL TITLE", account.hyperCellTitle || ""],
@@ -3397,7 +3397,7 @@ const emptyAccount = (id, name = "") => ({
   transcriptNotes: "",
   campaigns: [],
   actionItems: [],
-  // Fastest Growing BU + JAGGAER Product Match
+  // Fastest Growing BU + JAG Product Match
   fastestGrowingBU: "",
   buGrowthDrivers: "",
   buTalentNeeds: "",
@@ -4272,46 +4272,46 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     }
   };
 
-  // ── JAGGAER Spend & Supplier Intelligence Processing ──
+  // ── JAG Spend & Supplier Intelligence Processing ──
   const processJAGGAERContent = async (text, sourceName) => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
     if (!text || text.length < 30) { alert("Not enough content to analyse."); return; }
     setProcessingJAGGAER(true);
     setUploading(true);
-    setUploadProgress("Analysing JAGGAER spend & supplier intelligence...");
+    setUploadProgress("Analysing JAG spend & supplier intelligence...");
     try {
       const truncated = text.substring(0, 14000);
       const companyName = account.companyName || "this company";
       const existingWorkforce = [account.workforceScale, account.hiringShape, account.criticalRoles, account.geoPatterns, account.talentPressure].filter(Boolean).join(" | ");
       const existingProblems = [account.cioProblems, account.chroProblems, account.businessPain, account.whyNow].filter(Boolean).join(" | ");
 
-      const prompt = "You are an elite procurement intelligence analyst specialising in JAGGAER's source-to-pay platform. You have been given content from JAGGAER's platform or related JAGGAER data about or relevant to \"" + companyName + "\".\n\nEXISTING ACCOUNT INTEL:\n- Industry: " + (account.industry || "unknown") + "\n- Workforce data: " + (existingWorkforce || "none yet") + "\n- Problems identified: " + (existingProblems || "none yet") + "\n\nAnalyse the JAGGAER content below and extract intelligence mapped to these EXACT sections. Use JAGGAER-specific terminology and metrics. Return ONLY valid JSON:\n\n" + JSON.stringify({
+      const prompt = "You are an elite procurement intelligence analyst specialising in JAG's source-to-pay platform. You have been given content from JAG's platform or related JAG data about or relevant to \"" + companyName + "\".\n\nEXISTING ACCOUNT INTEL:\n- Industry: " + (account.industry || "unknown") + "\n- Workforce data: " + (existingWorkforce || "none yet") + "\n- Problems identified: " + (existingProblems || "none yet") + "\n\nAnalyse the JAG content below and extract intelligence mapped to these EXACT sections. Use JAG-specific terminology and metrics. Return ONLY valid JSON:\n\n" + JSON.stringify({
         workforceIntelligence: {
-          workforceScale: "Spend & supplier scale from JAGGAER analysis: total addressable spend, direct vs indirect split, number of active suppliers, tail-spend concentration, and source-to-pay automation maturity",
-          hiringShape: "Sourcing & buying shape from JAGGAER lens: sourcing event volume and cycle time, contract coverage, catalogue vs off-catalogue buying, PO and invoice volumes, and AP automation rate",
-          criticalRoles: "Key spend categories & supplier dependencies via JAGGAER analysis: highest-spend categories, single-source and supply risks, tail-spend sprawl, contract coverage gaps, and savings opportunities",
-          geoPatterns: "Geographic procurement patterns from JAGGAER data: spend by region and entity, multi-country supplier base, local sourcing and compliance needs, and cross-border e-invoicing requirements",
+          workforceScale: "Spend & supplier scale from JAG analysis: total addressable spend, direct vs indirect split, number of active suppliers, tail-spend concentration, and source-to-pay automation maturity",
+          hiringShape: "Sourcing & buying shape from JAG lens: sourcing event volume and cycle time, contract coverage, catalogue vs off-catalogue buying, PO and invoice volumes, and AP automation rate",
+          criticalRoles: "Key spend categories & supplier dependencies via JAG analysis: highest-spend categories, single-source and supply risks, tail-spend sprawl, contract coverage gaps, and savings opportunities",
+          geoPatterns: "Geographic procurement patterns from JAG data: spend by region and entity, multi-country supplier base, local sourcing and compliance needs, and cross-border e-invoicing requirements",
           talentPressure: "Cost, savings & supply pressure indicators: margin pressure and savings mandates, input-cost inflation, supply-chain and supplier risk exposure, procurement digital maturity, and ESG/compliance demands"
         },
         problemIdentification: {
-          cioProblems: "CIO/CTO problems surfaced by JAGGAER analysis: fragmented procurement/ERP tool landscape, weak ERP integration, manual procurement data, no unified source-to-pay platform, data silos between ERP-sourcing-AP systems",
-          chroProblems: "CPO & Procurement problems from JAGGAER analysis: poor spend visibility, off-contract/maverick spend, savings leakage, supplier and supply-chain risk, manual source-to-pay processes, weak contract coverage, and ESG/compliance gaps",
+          cioProblems: "CIO/CTO problems surfaced by JAG analysis: fragmented procurement/ERP tool landscape, weak ERP integration, manual procurement data, no unified source-to-pay platform, data silos between ERP-sourcing-AP systems",
+          chroProblems: "CPO & Procurement problems from JAG analysis: poor spend visibility, off-contract/maverick spend, savings leakage, supplier and supply-chain risk, manual source-to-pay processes, weak contract coverage, and ESG/compliance gaps",
           businessPain: "Business-level pain quantified: % of spend off-contract, unrealised savings vs addressable spend, manual PO/invoice processing cost and cycle time, supplier risk exposure, and working-capital tied up in slow AP",
           whyNow: "Why-now triggers: cost and margin pressure driving savings mandates, supply-chain and supplier risk, ERP migration/upgrade window, tariff and cost volatility, e-invoicing and ESG regulation, and competitors modernising to AI-driven source-to-pay"
         },
         useCaseMapping: {
-          workflowAssessment: "Current state vs JAGGAER-enabled state: manual/email sourcing vs guided eSourcing & e-auctions, spreadsheets vs real-time spend analytics, fragmented point tools vs one source-to-pay suite, manual AP vs Autonomous AP invoicing",
-          highestOpportunity: "Highest-impact JAGGAER use case for this account based on their specific procurement challenges. Map to JAGGAER modules: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Autonomous AP",
-          capabilityMatch: "JAGGAER capability-to-pain mapping: Spend Analytics -> spend visibility & savings; Sourcing -> faster competitive sourcing; Contract Management -> contract coverage & compliance; Supplier Management -> supplier risk & performance; eProcurement -> on-contract buying; Procure-to-Pay & Autonomous AP -> invoice cost & cycle time; JAGGAER AI (JAI) -> automation across the suite"
+          workflowAssessment: "Current state vs JAG-enabled state: manual/email sourcing vs guided eSourcing & e-auctions, spreadsheets vs real-time spend analytics, fragmented point tools vs one source-to-pay suite, manual AP vs Autonomous AP invoicing",
+          highestOpportunity: "Highest-impact JAG use case for this account based on their specific procurement challenges. Map to JAG modules: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Autonomous AP",
+          capabilityMatch: "JAG capability-to-pain mapping: Spend Analytics -> spend visibility & savings; Sourcing -> faster competitive sourcing; Contract Management -> contract coverage & compliance; Supplier Management -> supplier risk & performance; eProcurement -> on-contract buying; Procure-to-Pay & Autonomous AP -> invoice cost & cycle time; JAG AI (JAI) -> automation across the suite"
         },
         businessChallenges: [
-          { severity: "CRITICAL or HIGH or MEDIUM", title: "Challenge title from JAGGAER analysis", businessChallenge: "Specific challenge with JAGGAER spend & supplier data and benchmarks", solution: "JAGGAER module and expected outcome with metrics (e.g. 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing, more spend under management)", proofPoint: "JAGGAER proof point (e.g. JAGGAER manages $2.9T in spend across 1,400+ enterprises and 13M+ suppliers)" }
+          { severity: "CRITICAL or HIGH or MEDIUM", title: "Challenge title from JAG analysis", businessChallenge: "Specific challenge with JAG spend & supplier data and benchmarks", solution: "JAG module and expected outcome with metrics (e.g. 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing, more spend under management)", proofPoint: "JAG proof point (e.g. JAG manages $2.9T in spend across 1,400+ enterprises and 13M+ suppliers)" }
         ],
         hyperCell: {
-          hyperCellTitle: "Single highest-value JAGGAER opportunity for this account — one sentence",
-          hyperCellNarrative: "Executive narrative: why this specific JAGGAER capability is the #1 priority for this account. Reference their specific spend & supplier data, industry benchmarks, and JAGGAER ROI metrics. Include: the business problem, the JAGGAER solution, quantified expected impact, and the urgency driver."
+          hyperCellTitle: "Single highest-value JAG opportunity for this account — one sentence",
+          hyperCellNarrative: "Executive narrative: why this specific JAG capability is the #1 priority for this account. Reference their specific spend & supplier data, industry benchmarks, and JAG ROI metrics. Include: the business problem, the JAG solution, quantified expected impact, and the urgency driver."
         }
-      }) + "\n\nJAGGAER DATA/CONTENT:\n" + truncated + "\n\nCRITICAL RULES:\n1. Use REAL JAGGAER metrics and benchmarks (e.g. $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing).\n2. Reference JAGGAER product modules by name: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Invoicing (Autonomous AP), Supply Chain Collaboration, Quality Management, and JAGGAER AI (JAI).\n3. Map challenges to JAGGAER outcomes: more spend under management and realised savings, faster sourcing and requisition-to-PO cycles, reduced supplier risk, and lower invoice processing cost via Autonomous AP.\n4. If the content doesn't contain company-specific data, use JAGGAER industry benchmarks and frameworks to ENRICH the existing account intel.\n5. For businessChallenges, provide 2-4 challenges. Each must have a JAGGAER-specific solution and proof point.\n6. APPEND to existing intelligence, don't replace. Prefix new insights with '[JAGGAER Intel]' tag.";
+      }) + "\n\nJAGGAER DATA/CONTENT:\n" + truncated + "\n\nCRITICAL RULES:\n1. Use REAL JAG metrics and benchmarks (e.g. $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing).\n2. Reference JAG product modules by name: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Invoicing (Autonomous AP), Supply Chain Collaboration, Quality Management, and JAG AI (JAI).\n3. Map challenges to JAG outcomes: more spend under management and realised savings, faster sourcing and requisition-to-PO cycles, reduced supplier risk, and lower invoice processing cost via Autonomous AP.\n4. If the content doesn't contain company-specific data, use JAG industry benchmarks and frameworks to ENRICH the existing account intel.\n5. For businessChallenges, provide 2-4 challenges. Each must have a JAG-specific solution and proof point.\n6. APPEND to existing intelligence, don't replace. Prefix new insights with '[JAG Intel]' tag.";
 
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -4382,7 +4382,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
           if (existingTitles.includes(ch.title.toLowerCase())) return;
           existingChallenges.push({
             severity: ch.severity || "HIGH",
-            title: "[JAGGAER] " + ch.title,
+            title: "[JAG] " + ch.title,
             businessChallenge: ch.businessChallenge || "",
             solution: ch.solution || "",
             proofPoint: ch.proofPoint || "",
@@ -4399,16 +4399,16 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         if (hc.hyperCellTitle && hc.hyperCellTitle.length > 5) {
           const existingTitle = account.hyperCellTitle || "";
           if (!existingTitle) {
-            update("hyperCellTitle", "[JAGGAER] " + hc.hyperCellTitle);
+            update("hyperCellTitle", "[JAG] " + hc.hyperCellTitle);
           } else {
-            update("hyperCellTitle", existingTitle + " | [JAGGAER] " + hc.hyperCellTitle);
+            update("hyperCellTitle", existingTitle + " | [JAG] " + hc.hyperCellTitle);
           }
           updatedCount++;
           updatedFields.push("hyperCellTitle");
         }
         if (hc.hyperCellNarrative && hc.hyperCellNarrative.length > 10) {
           const existingNarr = account.hyperCellNarrative || "";
-          const newNarr = existingNarr ? existingNarr + "\n\n[JAGGAER Intel] " + hc.hyperCellNarrative : "[JAGGAER Intel] " + hc.hyperCellNarrative;
+          const newNarr = existingNarr ? existingNarr + "\n\n[JAG Intel] " + hc.hyperCellNarrative : "[JAG Intel] " + hc.hyperCellNarrative;
           update("hyperCellNarrative", newNarr);
           updatedCount++;
           updatedFields.push("hyperCellNarrative");
@@ -4417,16 +4417,16 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
 
       // Record in upload history
       const now = new Date().toISOString().split("T")[0];
-      const newHistory = [...uploadHistory, { filename: "JAGGAER: " + sourceName, date: now, fields: updatedCount, updatedFields: updatedFields }];
+      const newHistory = [...uploadHistory, { filename: "JAG: " + sourceName, date: now, fields: updatedCount, updatedFields: updatedFields }];
       setUploadHistory(newHistory);
       update("_uploadHistory", newHistory);
       update("lastUpdated", new Date().toISOString());
 
-      setUploadProgress("\u2705 JAGGAER Intel: Updated " + updatedCount + " fields across 5 sections: " + updatedFields.slice(0, 6).join(", ") + (updatedFields.length > 6 ? " +" + (updatedFields.length - 6) + " more" : ""));
+      setUploadProgress("\u2705 JAG Intel: Updated " + updatedCount + " fields across 5 sections: " + updatedFields.slice(0, 6).join(", ") + (updatedFields.length > 6 ? " +" + (updatedFields.length - 6) + " more" : ""));
       setTimeout(() => setUploadProgress(""), 15000);
       setJAGGAERText("");
     } catch (err) {
-      setUploadProgress("\u274C JAGGAER error: " + err.message);
+      setUploadProgress("\u274C JAG error: " + err.message);
     }
     setProcessingJAGGAER(false);
     setUploading(false);
@@ -4438,7 +4438,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
     setProcessingJAGGAER(true);
     setUploading(true);
-    setUploadProgress("Fetching JAGGAER URL...");
+    setUploadProgress("Fetching JAG URL...");
     try {
       let text = "";
       try {
@@ -4453,7 +4453,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         } catch (e) { /* proxy also failed */ }
       }
       if (!text || text.length < 50) {
-        setUploadProgress("\u274C Could not fetch JAGGAER URL. Please paste the content manually instead.");
+        setUploadProgress("\u274C Could not fetch JAG URL. Please paste the content manually instead.");
         setProcessingJAGGAER(false);
         setUploading(false);
         return;
@@ -4469,7 +4469,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
   const processJAGGAERFile = async (file) => {
     setProcessingJAGGAER(true);
     setUploading(true);
-    setUploadProgress("Reading JAGGAER data file...");
+    setUploadProgress("Reading JAG data file...");
     try {
       let text = "";
       if (file.name.endsWith(".pdf")) {
@@ -4957,7 +4957,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
     { id: "upload", label: "\uD83D\uDCC4 Upload", color: C.teal },
     { id: "chatgpt", label: "\uD83E\uDD16 ChatGPT", color: "#10A37F" },
     { id: "gong", label: "\uD83C\uDFA4 Gong", color: "#7C3AED" },
-    { id: "phenom", label: "\uD83E\uDDE0 JAGGAER", color: "#0D9488" },
+    { id: "phenom", label: "\uD83E\uDDE0 JAG", color: "#0D9488" },
     { id: "history", label: "\uD83D\uDCCB History", color: C.muted },
   ];
 
@@ -5174,16 +5174,16 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
         }, processingGong ? "\u23F3 Analysing..." : "\u2728 Extract Intelligence from Gong Call"),
       ),
     ), // end gong tab
-    // ── JAGGAER tab ──
+    // ── JAG tab ──
     activeIntelTab === "phenom" && /*#__PURE__*/ React.createElement("div", null,
-        /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10 } }, "Import spend & supplier intelligence from JAGGAER\u2019s platform to enrich Spend & Supplier, Problems, Use Cases, Challenges, and Hyper-Cell sections. Paste content from the JAGGAER platform, upload a report, or use a link."),
-        // JAGGAER link input
+        /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, color: C.muted, marginBottom: 10 } }, "Import spend & supplier intelligence from JAG\u2019s platform to enrich Spend & Supplier, Problems, Use Cases, Challenges, and Hyper-Cell sections. Paste content from the JAG platform, upload a report, or use a link."),
+        // JAG link input
         /*#__PURE__*/ React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8 } },
           /*#__PURE__*/ React.createElement("input", {
             value: phenomLink,
             onChange: (e) => setJAGGAERLink(e.target.value),
             onKeyDown: (e) => { if (e.key === "Enter" && phenomLink.trim() && !processingJAGGAER) processJAGGAERLink(); },
-            placeholder: "Paste JAGGAER platform URL or spend intelligence link...",
+            placeholder: "Paste JAG platform URL or spend intelligence link...",
             disabled: processingJAGGAER,
             style: { flex: 1, padding: "7px 10px", border: "1px solid " + C.border, borderRadius: 6, background: C.card, color: C.text, fontSize: 11, outline: "none" },
           }),
@@ -5204,30 +5204,30 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
             onClick: () => phenomFileRef.current && phenomFileRef.current.click(),
             disabled: processingJAGGAER,
             style: { flex: 1, padding: "8px 10px", borderRadius: 6, border: "1px dashed #0D9488", cursor: processingJAGGAER ? "not-allowed" : "pointer", background: "transparent", color: "#0D9488", fontSize: 11, fontWeight: 500 },
-          }, "\uD83D\uDCC1 Upload JAGGAER Report (PDF, TXT, DOCX, HTML)"),
+          }, "\uD83D\uDCC1 Upload JAG Report (PDF, TXT, DOCX, HTML)"),
         ),
         // Paste area
         /*#__PURE__*/ React.createElement("textarea", {
           value: phenomText,
           onChange: (e) => setJAGGAERText(e.target.value),
-          placeholder: "Or paste JAGGAER-relevant procurement intelligence here...\n\nTip: paste spend data, supplier lists, category breakdowns, contract coverage, ERP/P2P systems in use, or savings and sourcing notes.",
+          placeholder: "Or paste JAG-relevant procurement intelligence here...\n\nTip: paste spend data, supplier lists, category breakdowns, contract coverage, ERP/P2P systems in use, or savings and sourcing notes.",
           disabled: processingJAGGAER,
           rows: 5,
           style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, background: C.card, color: C.text, fontSize: 11, fontFamily: "inherit", resize: "vertical", outline: "none", boxSizing: "border-box", marginBottom: 8 },
         }),
         phenomText.trim().length > 20 && /*#__PURE__*/ React.createElement("button", {
-          onClick: () => processJAGGAERContent(phenomText, "Pasted JAGGAER data"),
+          onClick: () => processJAGGAERContent(phenomText, "Pasted JAG data"),
           disabled: processingJAGGAER,
           style: { width: "100%", padding: "8px 12px", borderRadius: 6, border: "none", cursor: processingJAGGAER ? "wait" : "pointer", background: processingJAGGAER ? C.muted : "#0D9488", color: "#fff", fontSize: 12, fontWeight: 600, fontFamily: "inherit" },
-        }, processingJAGGAER ? "\u23F3 Analysing JAGGAER Data..." : "\uD83E\uDDE0 Enrich 5 Sections with JAGGAER Intelligence"),
+        }, processingJAGGAER ? "\u23F3 Analysing JAG Data..." : "\uD83E\uDDE0 Enrich 5 Sections with JAG Intelligence"),
         // Quick-enrich without content (uses Claude general knowledge + account data)
         /*#__PURE__*/ React.createElement("div", { style: { marginTop: 8, paddingTop: 8, borderTop: "1px dashed " + C.border } },
-          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, color: C.muted, marginBottom: 6 } }, "No JAGGAER data to paste? Use AI to enrich sections with JAGGAER frameworks and benchmarks based on your existing account intelligence:"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 10, color: C.muted, marginBottom: 6 } }, "No JAG data to paste? Use AI to enrich sections with JAG frameworks and benchmarks based on your existing account intelligence:"),
           /*#__PURE__*/ React.createElement("button", {
-            onClick: () => processJAGGAERContent("Use JAGGAER\u2019s source-to-pay frameworks, benchmarks, and product capabilities to enrich the account intelligence for " + (account.companyName || "this company") + " in the " + (account.industry || "unknown") + " industry. Apply JAGGAER-specific angles: spend visibility and savings, off-contract/maverick spend reduction, faster competitive sourcing, supplier risk and performance, contract coverage, and Autonomous AP invoicing \u2014 plus JAGGAER proof points ($2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 85% faster invoicing). Use industry-specific JAGGAER deployment patterns.", "AI-enriched JAGGAER analysis"),
+            onClick: () => processJAGGAERContent("Use JAG\u2019s source-to-pay frameworks, benchmarks, and product capabilities to enrich the account intelligence for " + (account.companyName || "this company") + " in the " + (account.industry || "unknown") + " industry. Apply JAG-specific angles: spend visibility and savings, off-contract/maverick spend reduction, faster competitive sourcing, supplier risk and performance, contract coverage, and Autonomous AP invoicing \u2014 plus JAG proof points ($2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 85% faster invoicing). Use industry-specific JAG deployment patterns.", "AI-enriched JAG analysis"),
             disabled: processingJAGGAER,
             style: { width: "100%", padding: "8px 12px", borderRadius: 6, border: "1px solid #0D9488", cursor: processingJAGGAER ? "wait" : "pointer", background: "transparent", color: "#0D9488", fontSize: 11, fontWeight: 600, fontFamily: "inherit" },
-          }, processingJAGGAER ? "\u23F3 Enriching..." : "\u2728 Auto-Enrich with JAGGAER Frameworks (no paste needed)"),
+          }, processingJAGGAER ? "\u23F3 Enriching..." : "\u2728 Auto-Enrich with JAG Frameworks (no paste needed)"),
         ),
     ), // end phenom tab
     // ── History tab ──
@@ -5274,15 +5274,15 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
         transcriptNotes: safeStr(account.transcriptNotes).substring(0, 300),
         hyperCellTitle: account.hyperCellTitle || "",
       };
-      const prompt = "You are a senior sales intelligence analyst. For \"" + context.companyName + "\", create a comprehensive executive brief by synthesising ALL available intelligence. Use public data, JAGGAER procurement / source-to-pay frameworks, and any existing account data. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n" + JSON.stringify({
-        atAGlance: "2-3 sentence executive overview combining company fundamentals with procurement / spend positioning. Mention key JAGGAER-relevant signals.",
-        hypothesis: "Sharp sales hypothesis: why this company needs JAGGAER NOW. Reference specific pain + urgency + capability match.",
+      const prompt = "You are a senior sales intelligence analyst. For \"" + context.companyName + "\", create a comprehensive executive brief by synthesising ALL available intelligence. Use public data, JAG procurement / source-to-pay frameworks, and any existing account data. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n" + JSON.stringify({
+        atAGlance: "2-3 sentence executive overview combining company fundamentals with procurement / spend positioning. Mention key JAG-relevant signals.",
+        hypothesis: "Sharp sales hypothesis: why this company needs JAG NOW. Reference specific pain + urgency + capability match.",
         keySignals: ["signal 1 — [source]", "signal 2 — [source]", "signal 3 — [source]", "signal 4 — [source]"],
         primarySponsor: "Recommended primary sponsor (name + title if known, or role) with reasoning",
         leadNarrative: "Opening narrative for first executive conversation — compelling, specific, insight-led",
         discoveryAngle: "Proposed discovery framing that surfaces the deepest pain",
-        proofPoint: "Most relevant JAGGAER proof point for this account's industry and challenges"
-      }) + "\n\nRULES: Use JAGGAER customer proof points and ROI benchmarks. If existing data is present, ENHANCE it — don't replace. Prefix new signals with their source in brackets.";
+        proofPoint: "Most relevant JAG proof point for this account's industry and challenges"
+      }) + "\n\nRULES: Use JAG customer proof points and ROI benchmarks. If existing data is present, ENHANCE it — don't replace. Prefix new signals with their source in brackets.";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -5420,7 +5420,7 @@ function ExecutiveBriefSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement(TextArea, {
         value: account.proofPoint,
         onChange: (v) => update("proofPoint", v),
-        placeholder: "e.g. A global manufacturer moved $40M of indirect spend on-contract and cut sourcing cycle time 58% with JAGGAER\u2026",
+        placeholder: "e.g. A global manufacturer moved $40M of indirect spend on-contract and cut sourcing cycle time 58% with JAG\u2026",
       }),
     ),
   );
@@ -5710,7 +5710,7 @@ function SectionFileUpload({ label, icon, claudeApiKey, prompt, onResult }) {
 // ─── ERP / P2P Stack Section ─────────────────────────────────────────────────
 const HR_TECH_CATEGORIES = [
   { key: "ats", label: "ERP System", icon: "\uD83C\uDFE2", placeholder: "e.g. SAP S/4HANA, Oracle Fusion, Microsoft Dynamics 365, Infor, NetSuite..." },
-  { key: "hcm", label: "Existing Source-to-Pay / P2P Suite", icon: "\uD83D\uDD04", placeholder: "e.g. SAP Ariba, Coupa, Ivalua, GEP SMART, JAGGAER..." },
+  { key: "hcm", label: "Existing Source-to-Pay / P2P Suite", icon: "\uD83D\uDD04", placeholder: "e.g. SAP Ariba, Coupa, Ivalua, GEP SMART, JAG..." },
   { key: "lms", label: "Spend Analytics", icon: "\uD83D\uDCCA", placeholder: "e.g. SAP Ariba Spend Analysis, Coupa Spend Analytics, Sievo, Rosslyn..." },
   { key: "perf", label: "Contract Management (CLM)", icon: "\uD83D\uDCDC", placeholder: "e.g. Icertis, SAP Ariba Contracts, Coupa CLM, DocuSign CLM, Ironclad..." },
   { key: "payroll", label: "Supplier Management (SRM)", icon: "\uD83E\uDD1D", placeholder: "e.g. SAP Ariba SLP, Coupa Supplier Management, HICX, Ivalua SRM..." },
@@ -5880,10 +5880,10 @@ function WorkforceSection({ account, update, claudeApiKey }) {
   const [enrichStatus, setEnrichStatus] = useState("");
   const enrichWithJAGGAER = async () => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Enriching spend & supplier intelligence with JAGGAER frameworks...");
+    setEnriching(true); setEnrichStatus("Enriching spend & supplier intelligence with JAG frameworks...");
     try {
       const existing = { workforceScale: account.workforceScale || "", hiringShape: account.hiringShape || "", criticalRoles: account.criticalRoles || "", geoPatterns: account.geoPatterns || "", talentPressure: account.talentPressure || "" };
-      const prompt = "You are a JAGGAER procurement intelligence analyst. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), enrich these fields using JAGGAER's frameworks, benchmarks and public data. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with the SAME keys. For each field, APPEND new JAGGAER-sourced insights (prefixed with [JAGGAER Intel]) to the existing text. Use real JAGGAER angles: spend visibility and savings, off-contract/maverick spend, competitive sourcing and cycle time, supplier and supply-chain risk, contract coverage, AP automation \u2014 and JAGGAER proof points ($2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 85% faster invoicing). If existing data is empty, provide fresh JAGGAER-lens analysis.";
+      const prompt = "You are a JAG procurement intelligence analyst. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), enrich these fields using JAG's frameworks, benchmarks and public data. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with the SAME keys. For each field, APPEND new JAG-sourced insights (prefixed with [JAG Intel]) to the existing text. Use real JAG angles: spend visibility and savings, off-contract/maverick spend, competitive sourcing and cycle time, supplier and supply-chain risk, contract coverage, AP automation \u2014 and JAG proof points ($2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 85% faster invoicing). If existing data is empty, provide fresh JAG-lens analysis.";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -5899,7 +5899,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
       ["workforceScale", "hiringShape", "criticalRoles", "geoPatterns", "talentPressure"].forEach(f => {
         if (result[f] && typeof result[f] === "string" && result[f].length > 10) { update(f, result[f]); count++; }
       });
-      setEnrichStatus("\u2705 Enriched " + count + " spend & supplier fields with JAGGAER intel");
+      setEnrichStatus("\u2705 Enriched " + count + " spend & supplier fields with JAG intel");
       setTimeout(() => setEnrichStatus(""), 8000);
     } catch (err) { setEnrichStatus("\u274C " + err.message); }
     setEnriching(false);
@@ -5917,7 +5917,7 @@ function WorkforceSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement("button", {
         onClick: enrichWithJAGGAER, disabled: enriching,
         style: { padding: "6px 14px", borderRadius: 6, border: "1px solid #0D9488", background: enriching ? "#E5E7EB" : "#F0FDFA", color: "#0D9488", fontSize: 11, fontWeight: 600, cursor: enriching ? "wait" : "pointer" },
-      }, enriching ? "\u23F3 Enriching..." : "\uD83E\uDDE0 Enrich with JAGGAER Intel"),
+      }, enriching ? "\u23F3 Enriching..." : "\uD83E\uDDE0 Enrich with JAG Intel"),
       enrichStatus && /*#__PURE__*/ React.createElement("span", { style: { fontSize: 11, color: enrichStatus.startsWith("\u274C") ? "#DC2626" : "#0D9488", fontWeight: 500 } }, enrichStatus),
     ),
     [
@@ -6607,10 +6607,10 @@ function ProblemIdentificationSection({ account, update, claudeApiKey }) {
   const [enrichStatus, setEnrichStatus] = useState("");
   const enrichWithJAGGAER = async () => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Enriching problems with JAGGAER analysis...");
+    setEnriching(true); setEnrichStatus("Enriching problems with JAG analysis...");
     try {
       const existing = { cioProblems: account.cioProblems || "", chroProblems: account.chroProblems || "", businessPain: account.businessPain || "", whyNow: account.whyNow || "", problemHypothesis: account.problemHypothesis || "" };
-      const prompt = "You are a JAGGAER sales strategist. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), enrich problem identification using JAGGAER intelligence and public data. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with same keys. APPEND [JAGGAER Intel] insights. Use JAGGAER proof points: $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing. Surface IT/ERP problems (fragmented procurement tools, weak ERP integration, manual data), Procurement/CPO problems (poor spend visibility, off-contract spend, savings leakage, supplier risk, weak contract coverage), business pain (unrealised savings, manual PO/invoice cost, working capital in slow AP), and why-now triggers (cost pressure and savings mandates, supply-chain risk, ERP migration, e-invoicing and ESG regulation, competitors modernising source-to-pay).";
+      const prompt = "You are a JAG sales strategist. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), enrich problem identification using JAG intelligence and public data. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with same keys. APPEND [JAG Intel] insights. Use JAG proof points: $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing. Surface IT/ERP problems (fragmented procurement tools, weak ERP integration, manual data), Procurement/CPO problems (poor spend visibility, off-contract spend, savings leakage, supplier risk, weak contract coverage), business pain (unrealised savings, manual PO/invoice cost, working capital in slow AP), and why-now triggers (cost pressure and savings mandates, supply-chain risk, ERP migration, e-invoicing and ESG regulation, competitors modernising source-to-pay).";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -6644,7 +6644,7 @@ function ProblemIdentificationSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement("button", {
         onClick: enrichWithJAGGAER, disabled: enriching,
         style: { padding: "6px 14px", borderRadius: 6, border: "1px solid #0D9488", background: enriching ? "#E5E7EB" : "#F0FDFA", color: "#0D9488", fontSize: 11, fontWeight: 600, cursor: enriching ? "wait" : "pointer" },
-      }, enriching ? "\u23F3 Enriching..." : "\uD83E\uDDE0 Enrich with JAGGAER Intel"),
+      }, enriching ? "\u23F3 Enriching..." : "\uD83E\uDDE0 Enrich with JAG Intel"),
       enrichStatus && /*#__PURE__*/ React.createElement("span", { style: { fontSize: 11, color: enrichStatus.startsWith("\u274C") ? "#DC2626" : "#0D9488", fontWeight: 500 } }, enrichStatus),
     ),
     [
@@ -6707,10 +6707,10 @@ function UseCaseMappingSection({ account, update, claudeApiKey }) {
   const [enrichStatus, setEnrichStatus] = useState("");
   const enrichWithJAGGAER = async () => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Mapping JAGGAER use cases...");
+    setEnriching(true); setEnrichStatus("Mapping JAG use cases...");
     try {
       const existing = { workflowAssessment: account.workflowAssessment || "", highestOpportunity: account.highestOpportunity || "", capabilityMatch: account.capabilityMatch || "", proofPoints: account.proofPoints || "", personaValueMap: account.personaValueMap || "" };
-      const prompt = "You are a JAGGAER solution architect. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), map JAGGAER use cases. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with same keys. APPEND [JAGGAER Intel] insights. Map JAGGAER capabilities: Spend Analytics (spend visibility & savings tracking), Category Management (category strategy), Sourcing (RFx, e-auctions, optimisation), Contract Management (lifecycle & compliance), Supplier Management (onboarding, risk, performance), eProcurement (guided buying, catalogues), Procure-to-Pay & Invoicing (Autonomous AP, e-invoicing), Supply Chain Collaboration, Quality Management, JAGGAER AI (JAI). Use proof points: $2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 50% faster requisition-to-PO, 85% faster invoicing. Map persona value: CPO/Procurement (savings, spend visibility, digital transformation), CFO/Finance (working capital, cost control, AP automation, compliance), CIO/IT (ERP integration, platform consolidation), Head of Sourcing (competitive sourcing, cycle time), Category Manager (category strategy, tail-spend), Supplier Management (risk, performance).";
+      const prompt = "You are a JAG solution architect. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), map JAG use cases. EXISTING DATA:\n" + JSON.stringify(existing) + "\n\nReturn ONLY valid JSON with same keys. APPEND [JAG Intel] insights. Map JAG capabilities: Spend Analytics (spend visibility & savings tracking), Category Management (category strategy), Sourcing (RFx, e-auctions, optimisation), Contract Management (lifecycle & compliance), Supplier Management (onboarding, risk, performance), eProcurement (guided buying, catalogues), Procure-to-Pay & Invoicing (Autonomous AP, e-invoicing), Supply Chain Collaboration, Quality Management, JAG AI (JAI). Use proof points: $2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 50% faster requisition-to-PO, 85% faster invoicing. Map persona value: CPO/Procurement (savings, spend visibility, digital transformation), CFO/Finance (working capital, cost control, AP automation, compliance), CIO/IT (ERP integration, platform consolidation), Head of Sourcing (competitive sourcing, cycle time), Category Manager (category strategy, tail-spend), Supplier Management (risk, performance).";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -6744,7 +6744,7 @@ function UseCaseMappingSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement("button", {
         onClick: enrichWithJAGGAER, disabled: enriching,
         style: { padding: "6px 14px", borderRadius: 6, border: "1px solid #0D9488", background: enriching ? "#E5E7EB" : "#F0FDFA", color: "#0D9488", fontSize: 11, fontWeight: 600, cursor: enriching ? "wait" : "pointer" },
-      }, enriching ? "\u23F3 Mapping..." : "\uD83E\uDDE0 Enrich with JAGGAER Intel"),
+      }, enriching ? "\u23F3 Mapping..." : "\uD83E\uDDE0 Enrich with JAG Intel"),
       enrichStatus && /*#__PURE__*/ React.createElement("span", { style: { fontSize: 11, color: enrichStatus.startsWith("\u274C") ? "#DC2626" : "#0D9488", fontWeight: 500 } }, enrichStatus),
     ),
     [
@@ -6797,10 +6797,10 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
   const [enrichStatus, setEnrichStatus] = useState("");
   const enrichWithJAGGAER = async () => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Generating JAGGAER-mapped challenges...");
+    setEnriching(true); setEnrichStatus("Generating JAG-mapped challenges...");
     try {
       const existingTitles = (account.challenges || []).map(c => c.title || "").join(", ");
-      const prompt = "You are a JAGGAER sales strategist. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), generate 3-4 NEW business challenges with JAGGAER solutions. EXISTING CHALLENGE TITLES (do not duplicate): " + (existingTitles || "none") + "\n\nReturn ONLY valid JSON: { \"challenges\": [{ \"severity\": \"CRITICAL/HIGH/MEDIUM\", \"title\": \"Challenge title\", \"businessChallenge\": \"Specific challenge with data\", \"solution\": \"JAGGAER solution with expected metrics\", \"proofPoint\": \"JAGGAER customer proof point\" }] }\n\nUse JAGGAER proof points: $2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 50% faster requisition-to-PO, 85% faster invoicing. Map to JAGGAER modules: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Invoicing (Autonomous AP), Supply Chain Collaboration, Quality Management, JAGGAER AI (JAI).";
+      const prompt = "You are a JAG sales strategist. For \"" + (account.companyName || "this company") + "\" (industry: " + (account.industry || "unknown") + ", employees: " + (account.employees || "unknown") + "), generate 3-4 NEW business challenges with JAG solutions. EXISTING CHALLENGE TITLES (do not duplicate): " + (existingTitles || "none") + "\n\nReturn ONLY valid JSON: { \"challenges\": [{ \"severity\": \"CRITICAL/HIGH/MEDIUM\", \"title\": \"Challenge title\", \"businessChallenge\": \"Specific challenge with data\", \"solution\": \"JAG solution with expected metrics\", \"proofPoint\": \"JAG customer proof point\" }] }\n\nUse JAG proof points: $2.9T spend managed, 13M+ suppliers, 1,400+ customers, 58% faster sourcing, 50% faster requisition-to-PO, 85% faster invoicing. Map to JAG modules: Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Invoicing (Autonomous AP), Supply Chain Collaboration, Quality Management, JAG AI (JAI).";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -6818,11 +6818,11 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
         let added = 0;
         result.challenges.forEach(ch => {
           if (!ch.title || existTitlesLower.includes(ch.title.toLowerCase())) return;
-          merged.push({ severity: ch.severity || "HIGH", title: "[JAGGAER] " + ch.title, businessChallenge: ch.businessChallenge || "", solution: ch.solution || "", proofPoint: ch.proofPoint || "" });
+          merged.push({ severity: ch.severity || "HIGH", title: "[JAG] " + ch.title, businessChallenge: ch.businessChallenge || "", solution: ch.solution || "", proofPoint: ch.proofPoint || "" });
           added++;
         });
         update("challenges", dedupeByName(merged));
-        setEnrichStatus("\u2705 Added " + added + " JAGGAER-mapped challenges");
+        setEnrichStatus("\u2705 Added " + added + " JAG-mapped challenges");
       }
       setTimeout(() => setEnrichStatus(""), 8000);
     } catch (err) { setEnrichStatus("\u274C " + err.message); }
@@ -6858,7 +6858,7 @@ function BusinessChallengesSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement("button", {
         onClick: enrichWithJAGGAER, disabled: enriching,
         style: { padding: "6px 14px", borderRadius: 6, border: "1px solid #0D9488", background: enriching ? "#E5E7EB" : "#F0FDFA", color: "#0D9488", fontSize: 11, fontWeight: 600, cursor: enriching ? "wait" : "pointer" },
-      }, enriching ? "\u23F3 Generating..." : "\uD83E\uDDE0 Add JAGGAER-Mapped Challenges"),
+      }, enriching ? "\u23F3 Generating..." : "\uD83E\uDDE0 Add JAG-Mapped Challenges"),
       enrichStatus && /*#__PURE__*/ React.createElement("span", { style: { fontSize: 11, color: enrichStatus.startsWith("\u274C") ? "#DC2626" : "#0D9488", fontWeight: 500 } }, enrichStatus),
     ),
     account.challenges.map((ch, i) =>
@@ -7027,13 +7027,13 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
         sevenMustsScore: mustDone + "/35",
         sevenMustsBreakdown: mustBreak
       };
-      var prompt = "You are a senior JAGGAER source-to-pay sales strategist qualifying a procurement software opportunity. Based ONLY on the intelligence below, score the opportunity. Weigh: fit of JAGGAER's procurement / source-to-pay suite to their pains, urgency of the compelling event, budget and access to power, competitive position, and the 7 Musts qualification score (higher completion = better qualified, more likely to close sooner). A low 7 Musts score or a missing compelling event should push timing later and fit lower.\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON, no prose:\n" + JSON.stringify({
+      var prompt = "You are a senior JAG source-to-pay sales strategist qualifying a procurement software opportunity. Based ONLY on the intelligence below, score the opportunity. Weigh: fit of JAG's procurement / source-to-pay suite to their pains, urgency of the compelling event, budget and access to power, competitive position, and the 7 Musts qualification score (higher completion = better qualified, more likely to close sooner). A low 7 Musts score or a missing compelling event should push timing later and fit lower.\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON, no prose:\n" + JSON.stringify({
         oppScore: "integer from 0 to 100, the overall opportunity score. Higher means a stronger fit, nearer-term close and higher value. Must be consistent with oppFit and oppTiming (e.g. a Strong fit closing this quarter scores high; a Weak fit that is Unlikely scores low)",
         oppFit: "one of exactly: Strong fit | Possible fit | Weak fit | Not a fit",
         oppTiming: "one of exactly: This quarter | Next quarter | This year | Next year | Unlikely",
-        oppValue: "estimated deal value as a short string, e.g. '€400K ACV, about €1.2M TCV over 3 years' — base it on revenue, employee scale and typical JAGGAER deal sizes for this industry",
+        oppValue: "estimated deal value as a short string, e.g. '€400K ACV, about €1.2M TCV over 3 years' — base it on revenue, employee scale and typical JAG deal sizes for this industry",
         salesCycle: "integer number of months for a realistic sales cycle from now to signature for a deal of this type and size. Enterprise source-to-pay deals typically run 6 to 15 months; a large, multi-stakeholder procurement transformation runs longer. Return just the integer",
-        oppRationale: "3 to 5 sentences: fit to JAGGAER, urgency from the compelling event, budget and access to power, competition, and what the 7 Musts score tells us. Name the specific evidence you used. British English, no dashes.",
+        oppRationale: "3 to 5 sentences: fit to JAG, urgency from the compelling event, budget and access to power, competition, and what the 7 Musts score tells us. Name the specific evidence you used. British English, no dashes.",
         oppNextSteps: "A short, concrete close plan: the 3 to 6 specific actions needed to win and close this deal, in priority order. Target the biggest gaps in the 7 Musts (missing buyer, no compelling event confirmed, competition unknown, no decision date). Each action should be a clear next step a seller can act on this week, e.g. 'Confirm the economic buyer and budget with the CPO', 'Pin a decision date and mutual action plan', 'Run a spend-visibility value session'. British English, no dashes."
       }) + "\n\nRULES: oppFit and oppTiming MUST be exactly one of the listed values, nothing else. If evidence is thin, be conservative (Possible fit or lower, This year or later) and say so in the rationale.";
       var resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -7197,7 +7197,7 @@ function CompellingEventSection({ account, update }) {
 var MUSTS = [
   { key: "buyer", n: 1, title: "Who is the Buyer?",
     hint: "The economic buyer who owns the budget and signs off on the source to pay decision.",
-    ph: "Who holds the budget and the pen? Name, role (CPO, CFO, COO), what they own, and how sold they are on JAGGAER…",
+    ph: "Who holds the budget and the pen? Name, role (CPO, CFO, COO), what they own, and how sold they are on JAG…",
     checks: [
       "Buyer confirmed?",
       "Organisational needs and objectives confirmed?",
@@ -7403,7 +7403,7 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
         taught: { summary: "text", checks: [false, false, false, false, false], weight: 6 }
       };
       var checkList = MUSTS.map(function (m) { return m.n + ". " + m.title + " checks: " + m.checks.join(" | "); }).join("\n");
-      var prompt = "You are a senior JAGGAER source-to-pay sales strategist filling in a 7 Musts deal qualification for a procurement software opportunity. Use ONLY the intelligence below (plus public knowledge of this company and the JAGGAER competitive set: SAP Ariba, Coupa, Ivalua, GEP, Zip, Oro). For each of the 7 Musts write a 2 to 4 sentence quick summary grounded in the intel, set the 5 checks, and set a weight.\n\nCRITICAL on the checks: only set a check to true when the intel genuinely evidences it. These represent things the seller has actually confirmed through real conversations. Most checks should be false at an early stage. Setting a check true with no basis is worse than leaving it false. When you are not sure, leave it false and explain what still needs confirming in the summary.\n\nWEIGHTS: weight is an integer 0 to 100 for how much that Must drives the probability this specific deal closes. The 7 weights MUST add up to 100. Tune them to this deal: if access to the economic buyer is the make or break, weight buyer higher; if a hard decision date and procurement process dominate, weight decision higher. Do not just repeat the defaults.\n\nThe 5 checks per Must, in order:\n" + checkList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (checks are arrays of 5 booleans in the order listed above; weight is an integer, all seven summing to 100):\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Keep summaries specific to this account, not generic. Reference the compelling event, named people and competitors where known.";
+      var prompt = "You are a senior JAG source-to-pay sales strategist filling in a 7 Musts deal qualification for a procurement software opportunity. Use ONLY the intelligence below (plus public knowledge of this company and the JAG competitive set: SAP Ariba, Coupa, Ivalua, GEP, Zip, Oro). For each of the 7 Musts write a 2 to 4 sentence quick summary grounded in the intel, set the 5 checks, and set a weight.\n\nCRITICAL on the checks: only set a check to true when the intel genuinely evidences it. These represent things the seller has actually confirmed through real conversations. Most checks should be false at an early stage. Setting a check true with no basis is worse than leaving it false. When you are not sure, leave it false and explain what still needs confirming in the summary.\n\nWEIGHTS: weight is an integer 0 to 100 for how much that Must drives the probability this specific deal closes. The 7 weights MUST add up to 100. Tune them to this deal: if access to the economic buyer is the make or break, weight buyer higher; if a hard decision date and procurement process dominate, weight decision higher. Do not just repeat the defaults.\n\nThe 5 checks per Must, in order:\n" + checkList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (checks are arrays of 5 booleans in the order listed above; weight is an integer, all seven summing to 100):\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Keep summaries specific to this account, not generic. Reference the compelling event, named people and competitors where known.";
       var resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -7607,7 +7607,7 @@ function MutualPlanSection({ account, update, claudeApiKey, userName }) {
         salesCycle: account.salesCycle || "", dealStartDate: account.dealStartDate || ""
       };
       var schema = { whereToday: "text", whereWant: "text", whyNow: "text", stillNeed: "text", steps: [{ step: "text", who: "text", when: "text" }] };
-      var prompt = "You are a JAGGAER source-to-pay Strategic AE writing a mutual success plan and a value summary for a procurement software opportunity, in the style of a buyer-first sales professional. Use ONLY the intelligence below. Write four short narrative fields and a joint step plan.\n\nFIELDS:\n- whereToday: 2 to 4 sentences on the prospect's current situation and process, grounded in the intel.\n- whereWant: 2 to 3 sentences on where they want to be, phrased as if in the buyer's own words.\n- whyNow: 2 to 3 sentences on why this is on the agenda now and how the decision gets made (who signs, procurement, timing).\n- stillNeed: a short list, in prose, of the specific numbers and facts you still need to build the case on their figures.\n- steps: 4 to 6 joint steps to build the case together. Each step has step (what happens), who (who is involved), when (This week / Next week / Week after / To agree, or a rough timing).\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape:\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Be specific to this account, not generic. If a fact is unknown, say what still needs confirming rather than inventing it.";
+      var prompt = "You are a JAG source-to-pay Strategic AE writing a mutual success plan and a value summary for a procurement software opportunity, in the style of a buyer-first sales professional. Use ONLY the intelligence below. Write four short narrative fields and a joint step plan.\n\nFIELDS:\n- whereToday: 2 to 4 sentences on the prospect's current situation and process, grounded in the intel.\n- whereWant: 2 to 3 sentences on where they want to be, phrased as if in the buyer's own words.\n- whyNow: 2 to 3 sentences on why this is on the agenda now and how the decision gets made (who signs, procurement, timing).\n- stillNeed: a short list, in prose, of the specific numbers and facts you still need to build the case on their figures.\n- steps: 4 to 6 joint steps to build the case together. Each step has step (what happens), who (who is involved), when (This week / Next week / Week after / To agree, or a rough timing).\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape:\n" + JSON.stringify(schema) + "\n\nRULES: British English, no dashes. Be specific to this account, not generic. If a fact is unknown, say what still needs confirming rather than inventing it.";
       var resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -7784,7 +7784,7 @@ function DealObjectivesSection({ account, update, claudeApiKey }) {
       }).join("\n");
       var schema = {};
       DEAL_STAGES.forEach(function (s) { schema[s.key] = { seller: s.seller.map(function () { return false; }), buyer: s.buyer.map(function () { return false; }) }; });
-      var prompt = "You are a senior JAGGAER source-to-pay sales strategist marking off the deal progression for a procurement software opportunity. Based ONLY on the intelligence below, decide which Seller Actions and Buyer Reciprocations have genuinely happened, and set those to true.\n\nCRITICAL: only set an item true when the intel clearly evidences it has actually occurred. These track real, completed milestones. When in doubt, leave it false. Early-stage deals should have very few items ticked. Do not tick a later stage before the earlier ones are essentially complete.\n\nThe stages and their items, with array positions:\n" + stageList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (each array holds one boolean per item, in the position order shown above):\n" + JSON.stringify(schema) + "\n\nRULES: booleans only, correct array lengths per stage. No prose.";
+      var prompt = "You are a senior JAG source-to-pay sales strategist marking off the deal progression for a procurement software opportunity. Based ONLY on the intelligence below, decide which Seller Actions and Buyer Reciprocations have genuinely happened, and set those to true.\n\nCRITICAL: only set an item true when the intel clearly evidences it has actually occurred. These track real, completed milestones. When in doubt, leave it false. Early-stage deals should have very few items ticked. Do not tick a later stage before the earlier ones are essentially complete.\n\nThe stages and their items, with array positions:\n" + stageList + "\n\nINTELLIGENCE:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON in exactly this shape (each array holds one boolean per item, in the position order shown above):\n" + JSON.stringify(schema) + "\n\nRULES: booleans only, correct array lengths per stage. No prose.";
       var resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -7947,10 +7947,10 @@ function HyperCellSection({ account, update, claudeApiKey }) {
   const [enrichStatus, setEnrichStatus] = useState("");
   const enrichWithJAGGAER = async () => {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Identifying JAGGAER hyper-cell opportunity...");
+    setEnriching(true); setEnrichStatus("Identifying JAG hyper-cell opportunity...");
     try {
       const context = { companyName: account.companyName || "", industry: account.industry || "", employees: account.employees || "", workforceScale: safeStr(account.workforceScale).substring(0, 500), criticalRoles: safeStr(account.criticalRoles).substring(0, 300), businessPain: safeStr(account.businessPain).substring(0, 300), whyNow: safeStr(account.whyNow).substring(0, 300), existingTitle: account.hyperCellTitle || "", existingNarrative: safeStr(account.hyperCellNarrative).substring(0, 500) };
-      const prompt = "You are a JAGGAER strategic sales advisor. For \"" + context.companyName + "\", identify THE single highest-value JAGGAER opportunity — the executive-level entry point. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n{\"hyperCellTitle\": \"One-sentence JAGGAER opportunity title\", \"hyperCellNarrative\": \"3-4 paragraph executive narrative: business context, urgency driver, specific JAGGAER solution (name the module), quantified expected impact (use real JAGGAER proof points), competitive urgency, and the executive ask. This must be compelling enough for a C-suite conversation.\"}\n\nUse real JAGGAER proof points: $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing. Reference the specific JAGGAER module (Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Autonomous AP, or JAGGAER AI) that maps to their #1 pain.";
+      const prompt = "You are a JAG strategic sales advisor. For \"" + context.companyName + "\", identify THE single highest-value JAG opportunity — the executive-level entry point. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n{\"hyperCellTitle\": \"One-sentence JAG opportunity title\", \"hyperCellNarrative\": \"3-4 paragraph executive narrative: business context, urgency driver, specific JAG solution (name the module), quantified expected impact (use real JAG proof points), competitive urgency, and the executive ask. This must be compelling enough for a C-suite conversation.\"}\n\nUse real JAG proof points: $2.9T annual spend managed, 13M+ suppliers, 1,400+ enterprise customers, 58% faster sourcing cycles, 50% faster requisition-to-PO, 85% faster invoice processing. Reference the specific JAG module (Spend Analytics, Category Management, Sourcing, Contract Management, Supplier Management, eProcurement, Procure-to-Pay & Autonomous AP, or JAG AI) that maps to their #1 pain.";
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -7973,7 +7973,7 @@ function HyperCellSection({ account, update, claudeApiKey }) {
         update("hyperCellNarrative", result.hyperCellNarrative);
         count++;
       }
-      setEnrichStatus("\u2705 Hyper-cell enriched with JAGGAER opportunity");
+      setEnrichStatus("\u2705 Hyper-cell enriched with JAG opportunity");
       setTimeout(() => setEnrichStatus(""), 8000);
     } catch (err) { setEnrichStatus("\u274C " + err.message); }
     setEnriching(false);
@@ -7996,14 +7996,14 @@ function HyperCellSection({ account, update, claudeApiKey }) {
       /*#__PURE__*/ React.createElement("button", {
         onClick: enrichWithJAGGAER, disabled: enriching,
         style: { padding: "6px 14px", borderRadius: 6, border: "1px solid #0D9488", background: enriching ? "#E5E7EB" : "#F0FDFA", color: "#0D9488", fontSize: 11, fontWeight: 600, cursor: enriching ? "wait" : "pointer" },
-      }, enriching ? "\u23F3 Identifying..." : "\uD83E\uDDE0 Identify JAGGAER Hyper-Cell"),
+      }, enriching ? "\u23F3 Identifying..." : "\uD83E\uDDE0 Identify JAG Hyper-Cell"),
       enrichStatus && /*#__PURE__*/ React.createElement("span", { style: { fontSize: 11, color: enrichStatus.startsWith("\u274C") ? "#DC2626" : "#0D9488", fontWeight: 500 } }, enrichStatus),
     ),
     /*#__PURE__*/ React.createElement(FieldLabel, null, "Hyper-Cell Title (one sentence)"),
     /*#__PURE__*/ React.createElement(Input, {
       value: account.hyperCellTitle,
       onChange: (v) => update("hyperCellTitle", v),
-      placeholder: "e.g. Consolidate $40M of fragmented indirect spend onto JAGGAER Sourcing & eProcurement to unlock double-digit savings\u2026",
+      placeholder: "e.g. Consolidate $40M of fragmented indirect spend onto JAG Sourcing & eProcurement to unlock double-digit savings\u2026",
     }),
     /*#__PURE__*/ React.createElement(
       "div",
@@ -8084,7 +8084,7 @@ function GeoPoliSection({ account, update }) {
     /*#__PURE__*/ React.createElement(
       "p",
       { style: { fontSize: 12, color: C.muted, marginBottom: 16 } },
-      "How the Ukraine war, Middle East/Iran tensions, and shifting trade routes affect this account \u2014 and where JAGGAER creates measurable opportunity.",
+      "How the Ukraine war, Middle East/Iran tensions, and shifting trade routes affect this account \u2014 and where JAG creates measurable opportunity.",
     ),
     /*#__PURE__*/ React.createElement(
       "div",
@@ -8153,24 +8153,24 @@ function GeoPoliSection({ account, update }) {
         /*#__PURE__*/ React.createElement(
           "span",
           { style: { fontWeight: 700, fontSize: 14, color: "#00BFA5" } },
-          "JAGGAER Geo-Political Play \u2014 Measurable Business Outcome",
+          "JAG Geo-Political Play \u2014 Measurable Business Outcome",
         ),
       ),
       /*#__PURE__*/ React.createElement(
         "p",
         { style: { fontSize: 12, color: "#94A3B8", marginBottom: 12 } },
-        "How does JAGGAER specifically enable this company to win in geopolitically-driven growth areas? Define the outcome in metrics.",
+        "How does JAG specifically enable this company to win in geopolitically-driven growth areas? Define the outcome in metrics.",
       ),
       /*#__PURE__*/ React.createElement(TextArea, {
         value: account.phenomGeoPlay,
         onChange: (v) => update("phenomGeoPlay", v),
         placeholder:
-          "Specific JAGGAER capability \u2192 Geo-driven procurement need \u2192 Measurable outcome (e.g. 'Guided eSourcing and e-auctions cut sourcing cycle time 58% across a new region, unlocking double-digit savings on a high-spend category while reducing single-source risk...')",
+          "Specific JAG capability \u2192 Geo-driven procurement need \u2192 Measurable outcome (e.g. 'Guided eSourcing and e-auctions cut sourcing cycle time 58% across a new region, unlocking double-digit savings on a high-spend category while reducing single-source risk...')",
         rows: 5,
       }),
     ),
   );
-} // ─── JAGGAER Proof Points Database (Industry-Matched Customer Stories) ─────────
+} // ─── JAG Proof Points Database (Industry-Matched Customer Stories) ─────────
 const JAGGAER_PROOF_POINTS = [
   { company: "Procter & Gamble", industry: "Consumer Goods / CPG", headline: "Global source-to-pay across a vast direct and indirect supplier base", metrics: ["Global", "Direct + indirect spend", "Enterprise scale"], source: "jaggaer.com", tags: ["Consumer Goods", "CPG", "Retail", "Manufacturing", "All Industries"] },
   { company: "Continental", industry: "Automotive", headline: "Direct-materials sourcing and supplier management at automotive scale", metrics: ["Automotive", "Direct materials", "Global suppliers"], source: "jaggaer.com", tags: ["Automotive", "Manufacturing", "Industrial", "Mobility"] },
@@ -8214,13 +8214,13 @@ function ProofPointsSection({ account, update }) {
     null,
     /*#__PURE__*/ React.createElement(SectionHeader, {
       title: "Proof Points",
-      badge: "JAGGAER Customer Stories",
+      badge: "JAG Customer Stories",
       badgeColor: "#7C3AED",
     }),
     /*#__PURE__*/ React.createElement(
       "p",
       { style: { fontSize: 12, color: C.muted, marginBottom: 16 } },
-      "Industry-matched JAGGAER customer stories and results. Stories are auto-ranked by relevance to ",
+      "Industry-matched JAG customer stories and results. Stories are auto-ranked by relevance to ",
       /*#__PURE__*/ React.createElement("strong", null, account.industry || "this account's industry"),
       ".",
     ),
@@ -8237,7 +8237,7 @@ function ProofPointsSection({ account, update }) {
         value: account.proofPoint || "",
         onChange: (v) => update("proofPoint", v),
         placeholder:
-          "Add a custom proof point specific to this account \u2014 e.g. 'A global manufacturer moved $40M of indirect spend on-contract and cut sourcing cycle time 58% with JAGGAER\u2026'",
+          "Add a custom proof point specific to this account \u2014 e.g. 'A global manufacturer moved $40M of indirect spend on-contract and cut sourcing cycle time 58% with JAG\u2026'",
         rows: 3,
       }),
     ),
@@ -8391,7 +8391,7 @@ function ProofPointsSection({ account, update }) {
         /*#__PURE__*/ React.createElement(
           "span",
           { style: { fontWeight: 700, fontSize: 14, color: "#00BFA5" } },
-          "JAGGAER \u2014 Source-to-Pay at Scale",
+          "JAG \u2014 Source-to-Pay at Scale",
         ),
       ),
       /*#__PURE__*/ React.createElement(
@@ -8705,9 +8705,9 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
       steps: 5,
       description: "Initial outreach to new prospect: intro → value prop → case study → follow-up → break-up",
       prompts: [
-        "Write a cold introduction email (80-120 words) from a JAGGAER sales rep to {exec_name}, {exec_title} at {company}. Reference their specific challenge: {challenge}. Mention a relevant insight about their company. Be concise, professional, end with a soft CTA (asking for 15 min). No fluff.",
-        "Write a value proposition follow-up email (80-120 words) to {exec_name} at {company}. Reference the first email. Present how JAGGAER specifically solves: {pain_point}. Include one quantified outcome. End with CTA for a brief call.",
-        "Write a case study email (80-120 words) to {exec_name} at {company}. Reference a proof point: {proof_point}. Show how a similar company achieved results with JAGGAER. Connect it to {company}'s specific situation. End with soft CTA.",
+        "Write a cold introduction email (80-120 words) from a JAG sales rep to {exec_name}, {exec_title} at {company}. Reference their specific challenge: {challenge}. Mention a relevant insight about their company. Be concise, professional, end with a soft CTA (asking for 15 min). No fluff.",
+        "Write a value proposition follow-up email (80-120 words) to {exec_name} at {company}. Reference the first email. Present how JAG specifically solves: {pain_point}. Include one quantified outcome. End with CTA for a brief call.",
+        "Write a case study email (80-120 words) to {exec_name} at {company}. Reference a proof point: {proof_point}. Show how a similar company achieved results with JAG. Connect it to {company}'s specific situation. End with soft CTA.",
         "Write a gentle follow-up email (60-80 words) to {exec_name} at {company}. Reference previous emails without being pushy. Add one new insight about their industry. Ask if timing is better next quarter.",
         "Write a professional break-up email (60-80 words) to {exec_name} at {company}. Acknowledge they're busy. Leave the door open. Mention you'll share relevant industry insights periodically. Keep it classy.",
       ],
@@ -9750,19 +9750,19 @@ Return ONLY valid JSON array (no markdown):
 }
 
 // ─── Dashboard Home Screen ─────────────────────────────────────────────────────
-// ─── BU Growth & JAGGAER Product Match Section ────────────────────────────────
+// ─── BU Growth & JAG Product Match Section ────────────────────────────────
 function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
   var _st1 = useState(false), enriching = _st1[0], setEnriching = _st1[1];
   var _st2 = useState(""), enrichStatus = _st2[0], setEnrichStatus = _st2[1];
 
   var enrichBUData = async function() {
     if (!claudeApiKey) { alert("Set your API key first"); return; }
-    setEnriching(true); setEnrichStatus("Analysing fastest-growing BU and JAGGAER product fit...");
+    setEnriching(true); setEnrichStatus("Analysing fastest-growing BU and JAG product fit...");
     try {
       var resp = await fetchWithRetry("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint. You ONLY output valid JSON objects. Never include any text, explanation, or commentary outside the JSON.", messages: [{ role: "user", content: "Research \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ". Use ONLY current-year data and publicly available information.\n\nDEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:\n- At a Glance: " + safeStr(account.atAGlance).substring(0, 400) + "\n- Business Segments: " + safeStr(account.businessSegments).substring(0, 400) + "\n- CEO Priorities: " + safeStr(account.ceoPriorities).substring(0, 300) + "\n- Revenue & Growth: " + safeStr(account.revenueGrowth).substring(0, 300) + "\n- Strategy: " + safeStr(account.strategy).substring(0, 300) + "\n- Key Signals: " + safeStr(account.keySignals).substring(0, 400) + "\n- Challenges: " + safeStr(account.challenges).substring(0, 400) + "\n- Spend & Sourcing Strategy: " + safeStr(account.workforceStrategy).substring(0, 300) + "\n- Sourcing Trends: " + safeStr(account.hiringTrends).substring(0, 300) + "\n- Employees: " + safeStr(account.employees) + "\n- Open Roles: " + safeStr(account.openRoles) + "\n- Problems: " + safeStr(account.problems).substring(0, 300) + "\n- Use Cases: " + safeStr(account.useCases).substring(0, 300) + "\n\nIMPORTANT: Cross-reference ALL the above intelligence. Your BU analysis must be CONSISTENT with the challenges, strategy, and signals already identified. Reference specific facts from this intelligence to ground your analysis.\n\nJAGGAER's products: eProcurement (guided buying, catalogues, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.\n\nReturn this exact JSON structure:\n{\n  \"fastestGrowingBU\": \"Name the SPECIFIC fastest-growing BU at " + account.companyName + " with growth rate, revenue, and strategic importance. Must be grounded in their actual publicly reported segments and strategy.\",\n  \"buGrowthDrivers\": \"What drives this BU's growth — cite specific recent acquisitions, product launches, or market moves from " + new Date().getFullYear() + ". Connect to the key signals and strategy above.\",\n  \"buTalentNeeds\": \"What procurement, sourcing and supplier pressures this BU faces — spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.\",\n  \"phenomProductMatch\": \"Map 4-5 SPECIFIC JAGGAER products to THIS company's SPECIFIC challenges listed above: '[Product] → [Their specific challenge/use case] → [Expected impact with numbers]'\",\n  \"phenomQuickWins\": \"3 concrete things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above. Include timelines and metrics.\",\n  \"phenomROIStory\": \"12-month ROI narrative using their actual scale — addressable spend, active supplier count, and sourcing/invoice volumes. Be specific with $ amounts (realised savings, cycle-time reduction, working capital freed).\",\n  \"wowInsights\": \"5 jaw-drop insights that connect dots across the intelligence above in ways the CPO wouldn't expect — each 2-3 sentences with specific data from their public filings, earnings calls, or news. Include: (1) recent event most missed, (2) supply-chain or supplier risk threatening their business, (3) hidden off-contract cost they're not tracking, (4) connection between two of their initiatives creating urgency, (5) prediction for next 6-12 months\"\n}" }] }),
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint. You ONLY output valid JSON objects. Never include any text, explanation, or commentary outside the JSON.", messages: [{ role: "user", content: "Research \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ". Use ONLY current-year data and publicly available information.\n\nDEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:\n- At a Glance: " + safeStr(account.atAGlance).substring(0, 400) + "\n- Business Segments: " + safeStr(account.businessSegments).substring(0, 400) + "\n- CEO Priorities: " + safeStr(account.ceoPriorities).substring(0, 300) + "\n- Revenue & Growth: " + safeStr(account.revenueGrowth).substring(0, 300) + "\n- Strategy: " + safeStr(account.strategy).substring(0, 300) + "\n- Key Signals: " + safeStr(account.keySignals).substring(0, 400) + "\n- Challenges: " + safeStr(account.challenges).substring(0, 400) + "\n- Spend & Sourcing Strategy: " + safeStr(account.workforceStrategy).substring(0, 300) + "\n- Sourcing Trends: " + safeStr(account.hiringTrends).substring(0, 300) + "\n- Employees: " + safeStr(account.employees) + "\n- Open Roles: " + safeStr(account.openRoles) + "\n- Problems: " + safeStr(account.problems).substring(0, 300) + "\n- Use Cases: " + safeStr(account.useCases).substring(0, 300) + "\n\nIMPORTANT: Cross-reference ALL the above intelligence. Your BU analysis must be CONSISTENT with the challenges, strategy, and signals already identified. Reference specific facts from this intelligence to ground your analysis.\n\nJAGGAER's products: eProcurement (guided buying, catalogues, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.\n\nReturn this exact JSON structure:\n{\n  \"fastestGrowingBU\": \"Name the SPECIFIC fastest-growing BU at " + account.companyName + " with growth rate, revenue, and strategic importance. Must be grounded in their actual publicly reported segments and strategy.\",\n  \"buGrowthDrivers\": \"What drives this BU's growth — cite specific recent acquisitions, product launches, or market moves from " + new Date().getFullYear() + ". Connect to the key signals and strategy above.\",\n  \"buTalentNeeds\": \"What procurement, sourcing and supplier pressures this BU faces — spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.\",\n  \"phenomProductMatch\": \"Map 4-5 SPECIFIC JAG products to THIS company's SPECIFIC challenges listed above: '[Product] → [Their specific challenge/use case] → [Expected impact with numbers]'\",\n  \"phenomQuickWins\": \"3 concrete things JAG delivers in FIRST 90 DAYS that directly address the challenges identified above. Include timelines and metrics.\",\n  \"phenomROIStory\": \"12-month ROI narrative using their actual scale — addressable spend, active supplier count, and sourcing/invoice volumes. Be specific with $ amounts (realised savings, cycle-time reduction, working capital freed).\",\n  \"wowInsights\": \"5 jaw-drop insights that connect dots across the intelligence above in ways the CPO wouldn't expect — each 2-3 sentences with specific data from their public filings, earnings calls, or news. Include: (1) recent event most missed, (2) supply-chain or supplier risk threatening their business, (3) hidden off-contract cost they're not tracking, (4) connection between two of their initiatives creating urgency, (5) prediction for next 6-12 months\"\n}" }] }),
       }, 3, function(msg) { setEnrichStatus(msg); });
       var data = await resp.json();
       var rawText = (apiText(data) || "");
@@ -9775,7 +9775,7 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
           else { update(f, parsed[f]); }
         }
       });
-      setEnrichStatus("Done! BU growth intel and JAGGAER match updated.");
+      setEnrichStatus("Done! BU growth intel and JAG match updated.");
     } catch(e) { setEnrichStatus("Error: " + e.message); }
     setEnriching(false);
   };
@@ -9793,14 +9793,14 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
   };
 
   return React.createElement("div", null,
-    React.createElement(SectionHeader, { title: "BU Growth & JAGGAER Match", badge: "Sales Weapon" }),
+    React.createElement(SectionHeader, { title: "BU Growth & JAG Match", badge: "Sales Weapon" }),
 
     // Enrich button
     React.createElement("div", { style: { display: "flex", gap: 10, marginBottom: 16, alignItems: "center", flexWrap: "wrap" } },
       React.createElement("button", {
         onClick: enrichBUData, disabled: enriching,
         style: { padding: "8px 16px", borderRadius: 8, border: "none", background: enriching ? "#9CA3AF" : "linear-gradient(135deg, #7C3AED, #3B82F6)", color: "#fff", fontWeight: 700, fontSize: 12, cursor: enriching ? "not-allowed" : "pointer" },
-      }, enriching ? "\u23F3 Analysing..." : "\uD83D\uDE80 AI-Generate BU Intel & JAGGAER Match"),
+      }, enriching ? "\u23F3 Analysing..." : "\uD83D\uDE80 AI-Generate BU Intel & JAG Match"),
       enrichStatus && React.createElement("span", { style: { fontSize: 11, color: enrichStatus.includes("Error") ? "#DC2626" : "#0D9488" } }, enrichStatus),
     ),
 
@@ -9809,11 +9809,11 @@ function BUGrowthJAGGAERSection({ account, update, claudeApiKey }) {
     React.createElement(Card, { icon: "\u26A1", title: "BU Growth Drivers", color: "#3B82F6", field: "buGrowthDrivers", tag: "Market Intel", placeholder: "What's driving this growth? Acquisitions, product launches, market expansion...", rows: 3 }),
     React.createElement(Card, { icon: "\uD83D\uDCE6", title: "BU Procurement Needs", color: "#0D9488", field: "buTalentNeeds", tag: "Spend Signal", placeholder: "What procurement pressures does this BU face? Spend growth, supplier risk, sourcing cycle time, savings targets...", rows: 3 }),
 
-    // JAGGAER Product Match
-    React.createElement("div", { style: { margin: "20px 0 10px", fontSize: 14, fontWeight: 700, color: "#1E293B" } }, "\uD83C\uDFAF JAGGAER Product \u2192 Company Match"),
-    React.createElement(Card, { icon: "\uD83E\uDDE9", title: "Product-to-Need Mapping", color: "#DC2626", field: "phenomProductMatch", tag: "Kill Sheet", placeholder: "[JAGGAER Product] \u2192 [Their specific use case] \u2192 [Expected impact]\nExample: JAGGAER Sourcing \u2192 Competitively re-source a $40M indirect category \u2192 realise 12% savings and cut cycle time 58%", rows: 6 }),
+    // JAG Product Match
+    React.createElement("div", { style: { margin: "20px 0 10px", fontSize: 14, fontWeight: 700, color: "#1E293B" } }, "\uD83C\uDFAF JAG Product \u2192 Company Match"),
+    React.createElement(Card, { icon: "\uD83E\uDDE9", title: "Product-to-Need Mapping", color: "#DC2626", field: "phenomProductMatch", tag: "Kill Sheet", placeholder: "[JAG Product] \u2192 [Their specific use case] \u2192 [Expected impact]\nExample: JAG Sourcing \u2192 Competitively re-source a $40M indirect category \u2192 realise 12% savings and cut cycle time 58%", rows: 6 }),
     React.createElement(Card, { icon: "\u23F1\uFE0F", title: "90-Day Quick Wins", color: "#F59E0B", field: "phenomQuickWins", tag: "First Impact", placeholder: "3 concrete deliverables in the first 90 days with specific timelines and metrics...", rows: 4 }),
-    React.createElement(Card, { icon: "\uD83D\uDCB0", title: "12-Month ROI Story", color: "#10B981", field: "phenomROIStory", tag: "Business Case", placeholder: "With [X spend] across [N categories], JAGGAER projects: X% realised savings, faster sourcing & invoice cycles ($Y freed)...", rows: 4 }),
+    React.createElement(Card, { icon: "\uD83D\uDCB0", title: "12-Month ROI Story", color: "#10B981", field: "phenomROIStory", tag: "Business Case", placeholder: "With [X spend] across [N categories], JAG projects: X% realised savings, faster sourcing & invoice cycles ($Y freed)...", rows: 4 }),
 
     // Wow Insights
     React.createElement("div", { style: { margin: "20px 0 10px", fontSize: 14, fontWeight: 700, color: "#1E293B" } }, "\uD83E\uDD2F \"How Do You Know That?\" Insights"),
@@ -9838,7 +9838,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
       var resp = await fetchWithRetry("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint with a 90% ACCURACY MANDATE. You ONLY output valid JSON objects. Never include any text outside the JSON. For EVERY person you include, you must have verified them against at least 2 public sources (LinkedIn, Xing, company website, press). Never guess or fabricate names.", messages: [{ role: "user", content: "Research current Business Unit leaders at \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ".\n\nInclude: division/BU heads, SVPs running business lines, procurement/vendor management leaders, and anyone with P&L responsibility.\n\n90% ACCURACY VERIFICATION PROTOCOL:\n1. For EACH person, verify via: (a) LinkedIn: \"{name}\" site:linkedin.com \"" + account.companyName + "\" (b) Xing: \"{name}\" site:xing.com \"" + account.companyName + "\" (c) Company website: \"" + account.companyName + "\" Vorstand OR management board (d) Departure check: \"{name}\" leaves OR verlässt \"" + account.companyName + "\"\n2. ONLY include if confirmed via AT LEAST 2 sources. State sources in mandate field: 'VERIFIED: [source1] + [source2]'\n3. If only 1 source, prefix name with '⚠️ ' and note 'SINGLE SOURCE'\n4. If ZERO sources confirm → DO NOT INCLUDE. Never guess names.\n5. Search for departures explicitly — anyone who left in 24 months must NOT be included.\n6. Better to return 2-3 verified leaders than 6 guessed names.\n\nReturn this exact JSON structure:\n{\"buLeaders\": [{\"name\": \"Full name (VERIFIED)\", \"title\": \"Current title\", \"bu\": \"Business Unit name\", \"mandate\": \"VERIFIED: [LinkedIn + company website]. Their strategic mandate\", \"talentChallenge\": \"Their procurement / sourcing challenge\", \"phenomAngle\": \"How to position JAGGAER\", \"linkedinUrl\": \"Actual LinkedIn URL or empty string\"}]}" }] }),
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 9000, system: "You are a JSON API endpoint with a 90% ACCURACY MANDATE. You ONLY output valid JSON objects. Never include any text outside the JSON. For EVERY person you include, you must have verified them against at least 2 public sources (LinkedIn, Xing, company website, press). Never guess or fabricate names.", messages: [{ role: "user", content: "Research current Business Unit leaders at \"" + account.companyName + "\" (" + (account.industry || "unknown") + "). Today is " + new Date().toISOString().split("T")[0] + ".\n\nInclude: division/BU heads, SVPs running business lines, procurement/vendor management leaders, and anyone with P&L responsibility.\n\n90% ACCURACY VERIFICATION PROTOCOL:\n1. For EACH person, verify via: (a) LinkedIn: \"{name}\" site:linkedin.com \"" + account.companyName + "\" (b) Xing: \"{name}\" site:xing.com \"" + account.companyName + "\" (c) Company website: \"" + account.companyName + "\" Vorstand OR management board (d) Departure check: \"{name}\" leaves OR verlässt \"" + account.companyName + "\"\n2. ONLY include if confirmed via AT LEAST 2 sources. State sources in mandate field: 'VERIFIED: [source1] + [source2]'\n3. If only 1 source, prefix name with '⚠️ ' and note 'SINGLE SOURCE'\n4. If ZERO sources confirm → DO NOT INCLUDE. Never guess names.\n5. Search for departures explicitly — anyone who left in 24 months must NOT be included.\n6. Better to return 2-3 verified leaders than 6 guessed names.\n\nReturn this exact JSON structure:\n{\"buLeaders\": [{\"name\": \"Full name (VERIFIED)\", \"title\": \"Current title\", \"bu\": \"Business Unit name\", \"mandate\": \"VERIFIED: [LinkedIn + company website]. Their strategic mandate\", \"talentChallenge\": \"Their procurement / sourcing challenge\", \"phenomAngle\": \"How to position JAG\", \"linkedinUrl\": \"Actual LinkedIn URL or empty string\"}]}" }] }),
       }, 3, function(msg) { setEnrichStatus(msg); });
       var data = await resp.json();
       var rawText = (apiText(data) || "");
@@ -9912,7 +9912,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
         style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", marginTop: 8, boxSizing: "border-box", resize: "vertical" } }),
       React.createElement("textarea", { value: newLeader.talentChallenge, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, talentChallenge: e.target.value }; }); }, placeholder: "Their procurement / sourcing challenge...", rows: 2,
         style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", marginTop: 8, boxSizing: "border-box", resize: "vertical" } }),
-      React.createElement("textarea", { value: newLeader.phenomAngle, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, phenomAngle: e.target.value }; }); }, placeholder: "How to position JAGGAER to this person...", rows: 2,
+      React.createElement("textarea", { value: newLeader.phenomAngle, onChange: function(e) { setNewLeader(function(prev) { return { ...prev, phenomAngle: e.target.value }; }); }, placeholder: "How to position JAG to this person...", rows: 2,
         style: { width: "100%", padding: "8px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", marginTop: 8, boxSizing: "border-box", resize: "vertical" } }),
       React.createElement("button", { onClick: addNewLeader, style: { marginTop: 10, padding: "8px 20px", borderRadius: 6, border: "none", background: C.teal, color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" } }, "\u2713 Add Leader"),
     ),
@@ -9948,7 +9948,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
             [
               { label: "\uD83C\uDFAF Mandate & KPIs", field: "mandate", ph: "Strategic mandate..." },
               { label: "\uD83D\uDCE6 Procurement Challenge", field: "talentChallenge", ph: "Their procurement / sourcing challenge \u2014 savings targets, supplier risk, off-contract spend, cycle time..." },
-              { label: "\uD83E\uDDE9 JAGGAER Angle", field: "phenomAngle", ph: "How to position JAGGAER to this person..." },
+              { label: "\uD83E\uDDE9 JAG Angle", field: "phenomAngle", ph: "How to position JAG to this person..." },
             ].map(function(f) {
               return React.createElement("div", { key: f.field },
                 React.createElement("div", { style: { fontSize: 10, fontWeight: 600, color: "#6B7280", marginBottom: 3, textTransform: "uppercase", letterSpacing: 0.5 } }, f.label),
@@ -10370,7 +10370,7 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
       ".sec p{margin:0 0 8px;font-size:13px;white-space:pre-wrap}.pill{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;background:#F1F5F9;margin-right:8px}" +
       ".foot{margin-top:26px;border-top:1px solid #E5E7EB;padding-top:10px;color:#6B7280;font-size:10px;text-align:center}</style></head><body>" +
       "<h1>" + esc(account.companyName || "Account") + "</h1>" +
-      "<div class='sub'>" + esc(account.industry || "") + (account.priority ? " · " + esc(account.priority) + " priority" : "") + " · JAGGAER Source-to-Pay</div>" +
+      "<div class='sub'>" + esc(account.industry || "") + (account.priority ? " · " + esc(account.priority) + " priority" : "") + " · JAG Source-to-Pay</div>" +
       "<div>" + (account.oppFit ? "<span class='pill'>" + esc(account.oppFit) + "</span>" : "") + (account.oppTiming ? "<span class='pill'>" + esc(account.oppTiming) + "</span>" : "") + (account.salesCycle ? "<span class='pill'>" + esc(account.salesCycle) + " month cycle</span>" : "") + "</div>" +
       "<div class='band'>" +
       "<div class='kpi'><div class='l'>Opportunity score</div><div class='v'>" + (score != null ? score + " / 100" : "—") + "</div></div>" +
@@ -10416,7 +10416,7 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
     React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 14 } },
       React.createElement("div", null,
         React.createElement("div", { style: { fontSize: 24, fontWeight: 800, color: C.text, lineHeight: 1.1 } }, account.companyName || "Account"),
-        React.createElement("div", { style: { fontSize: 13, color: C.muted, marginTop: 3 } }, (account.industry || "No industry") + (account.priority ? " · " + account.priority + " priority" : "") + " · JAGGAER Source-to-Pay")
+        React.createElement("div", { style: { fontSize: 13, color: C.muted, marginTop: 3 } }, (account.industry || "No industry") + (account.priority ? " · " + account.priority + " priority" : "") + " · JAG Source-to-Pay")
       ),
       React.createElement("button", { onClick: printPage, style: { padding: "9px 16px", borderRadius: 8, border: "1px solid " + C.border, background: C.card, color: C.text, fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" } }, "🖨 Print / Save as PDF")
     ),
@@ -10676,7 +10676,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
 
     expandedCard === "attention" && React.createElement("div", { style: { background: "#fff", border: "1px solid #E5E7EB", borderRadius: 12, padding: 16, marginBottom: 16, maxHeight: 300, overflowY: "auto" } },
       React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: "#1E293B", marginBottom: 10 } }, "\u26A0\uFE0F Needs Attention \u2014 Readiness Below 30%"),
-      React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 10 } }, "These accounts lack core intelligence. Run Intel Refresh or upload JAGGAER/Gong data to fill gaps."),
+      React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 10 } }, "These accounts lack core intelligence. Run Intel Refresh or upload JAG/Gong data to fill gaps."),
       needsAttention.length === 0
         ? React.createElement("div", { style: { textAlign: "center", padding: 20, color: "#10B981", fontSize: 13 } }, "\u2705 All accounts above 30%!")
         : needsAttention.map(function(a) { return accRow(a, "att"); })
@@ -10911,7 +10911,7 @@ const SUPER_SECTIONS = [
     { id: "mutualplan", label: "Mutual Success Plan" },
   ]},
   { id: "opportunity", label: "Pain & Opportunity", icon: "\uD83D\uDD0D", children: [
-    { id: "bugrowth", label: "BU Growth & JAGGAER" },
+    { id: "bugrowth", label: "BU Growth & JAG" },
     { id: "buleaders", label: "BU Leaders" },
     { id: "problems", label: "Problems" },
     { id: "usecases", label: "Use Cases" },
@@ -11232,7 +11232,7 @@ function ProspectDashboard() {
           body: JSON.stringify({
             model: "claude-sonnet-4-6",
             max_tokens: Math.max(maxTokens || 2000, 12000),
-            system: "You are a sales-intelligence researcher for JAGGAER, which sells an AI-powered source-to-pay procurement platform, and you have live web search. Follow these rules strictly. (1) COMPANY FOCUS: every field must describe how JAGGAER's own product (an AI-powered source-to-pay procurement platform) helps THIS specific prospect. Frame all value strictly in terms of JAGGAER's real capabilities. Do not borrow terminology, use cases, or metrics from other vendor categories, and do not invent capabilities JAGGAER does not offer. (2) VERIFY: use web_search to confirm every person, job title, leadership change, news item and figure before you write it, and exclude anyone you cannot confirm is currently in that exact role this year. (3) STYLE: write each description as clear, well-structured prose in full sentences and short paragraphs, using a blank line between separate ideas. Never use the em dash character anywhere in your output; use commas, colons, or full stops instead. (4) COMPLETE: fill EVERY field in the requested JSON with specific, substantive content grounded in this prospect, and never leave brackets, template markers, or values like X percent. Output ONLY the final JSON object.",
+            system: "You are a sales-intelligence researcher for JAG, which sells an AI-powered source-to-pay procurement platform, and you have live web search. Follow these rules strictly. (1) COMPANY FOCUS: every field must describe how JAG's own product (an AI-powered source-to-pay procurement platform) helps THIS specific prospect. Frame all value strictly in terms of JAG's real capabilities. Do not borrow terminology, use cases, or metrics from other vendor categories, and do not invent capabilities JAG does not offer. (2) VERIFY: use web_search to confirm every person, job title, leadership change, news item and figure before you write it, and exclude anyone you cannot confirm is currently in that exact role this year. (3) STYLE: write each description as clear, well-structured prose in full sentences and short paragraphs, using a blank line between separate ideas. Never use the em dash character anywhere in your output; use commas, colons, or full stops instead. (4) COMPLETE: fill EVERY field in the requested JSON with specific, substantive content grounded in this prospect, and never leave brackets, template markers, or values like X percent. Output ONLY the final JSON object.",
             messages: [{ role: "user", content: prompt }],
             tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }]
           })
@@ -11336,7 +11336,7 @@ function ProspectDashboard() {
   "whyNow": "Why is now the right time to engage: trigger events, leadership changes, strategic shifts",
   "problemHypothesis": "Problem hypothesis connecting company challenges to procurement platform solution",
   "workflowAssessment": "Current ERP / source-to-pay stack (ERP, sourcing, contracts, eProcurement, AP) and gaps",
-  "hrTechStack": "Actively research and list this company's ERP and procurement / source-to-pay systems from PUBLIC sources (annual reports, vendor case studies, press releases, official partner pages, job postings). Include every system you can verify. A large enterprise's core ERP (SAP S/4HANA, Oracle, Microsoft Dynamics, Infor) is almost always publicly documented — determine and include it. Do not fabricate: omit only when there is genuinely no public evidence, and put the source in notes. Format: [{category: KEY, name: Exact vendor/product name, notes: source and evidence}] where KEY is exactly one of: 'ats' for the ERP system (e.g. SAP S/4HANA, Oracle Fusion), 'hcm' for a source-to-pay or P2P suite (e.g. SAP Ariba, Coupa, Ivalua, GEP, JAGGAER, Basware), 'lms' for spend analytics, 'perf' for contract management (CLM), 'payroll' for supplier management (SRM), 'wfm' for AP / invoicing automation.",
+  "hrTechStack": "Actively research and list this company's ERP and procurement / source-to-pay systems from PUBLIC sources (annual reports, vendor case studies, press releases, official partner pages, job postings). Include every system you can verify. A large enterprise's core ERP (SAP S/4HANA, Oracle, Microsoft Dynamics, Infor) is almost always publicly documented — determine and include it. Do not fabricate: omit only when there is genuinely no public evidence, and put the source in notes. Format: [{category: KEY, name: Exact vendor/product name, notes: source and evidence}] where KEY is exactly one of: 'ats' for the ERP system (e.g. SAP S/4HANA, Oracle Fusion), 'hcm' for a source-to-pay or P2P suite (e.g. SAP Ariba, Coupa, Ivalua, GEP, JAG, Basware), 'lms' for spend analytics, 'perf' for contract management (CLM), 'payroll' for supplier management (SRM), 'wfm' for AP / invoicing automation.",
   "highestOpportunity": "Highest-impact wedge: strategic sourcing, spend analytics, supplier risk management, or procure-to-pay automation",
   "capabilityMatch": "Which platform capabilities map to which business needs",
   "proofPoints": "Relevant proof points or similar company case studies",
@@ -11410,7 +11410,7 @@ For EVERY executive set "department" to exactly one of: Procurement / CPO, Strat
         // Calls 1-3 are independent — run them concurrently to cut new-account time ~3x
         const [d1, d2, d3] = await Promise.all([d1p, d2p, d3p]);
 
-        // --- CALL 4: Fastest Growing BU, JAGGAER Product Match, BU Leaders, Wow Insights ---
+        // --- CALL 4: Fastest Growing BU, JAG Product Match, BU Leaders, Wow Insights ---
         // Build context from Calls 1-3 results + existing account data for maximum accuracy
         const c4ctx = {
           atAGlance: safeStr(d1.atAGlance || acc.atAGlance).substring(0, 300),
@@ -11443,19 +11443,19 @@ DEEP ACCOUNT INTELLIGENCE ALREADY GATHERED:
 
 CRITICAL: Cross-reference ALL the above intelligence. Your analysis must be CONSISTENT with the challenges, strategy, signals, and segments above. Reference specific facts to ground every claim.
 
-JAGGAER's products: eProcurement (guided buying, catalogues, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.
+JAG's products: eProcurement (guided buying, catalogues, requisitions), Sourcing and Source-to-Contract (RFx, e-auctions, contract lifecycle), Supplier Management (onboarding, risk, performance), Spend Analytics (spend visibility and savings tracking), Procure-to-Pay (invoicing and AP automation), and Category Management — an AI-powered autonomous source-to-pay suite.
 
 Return this exact JSON structure:
 {
   "fastestGrowingBU": "Name the SPECIFIC fastest-growing BU at ${acc.companyName} with growth rate, revenue contribution. Must match their actual reported segments above.",
   "buGrowthDrivers": "What drives this BU's growth — cite specific ${new Date().getFullYear()} events, acquisitions, or launches. Connect to the key signals above.",
   "buTalentNeeds": "Procurement, sourcing and supplier pressures on this BU \u2014 spend growth, supplier and supply-chain risk, sourcing cycle time, savings targets, and off-contract/maverick spend a source-to-pay platform could address. Reference their actual segments and scale above.",
-  "phenomProductMatch": "Map 4-5 JAGGAER products to their SPECIFIC challenges listed above: '[Product] → [Their challenge] → [Expected impact with numbers]'",
-  "phenomQuickWins": "3 things JAGGAER delivers in FIRST 90 DAYS that directly address the challenges identified above.",
+  "phenomProductMatch": "Map 4-5 JAG products to their SPECIFIC challenges listed above: '[Product] → [Their challenge] → [Expected impact with numbers]'",
+  "phenomQuickWins": "3 things JAG delivers in FIRST 90 DAYS that directly address the challenges identified above.",
   "phenomROIStory": "12-month ROI using actual numbers: addressable spend, active supplier count, sourcing and invoice volumes. Specific $ amounts (realised savings, cycle-time reduction, working capital freed).",
   "wowInsights": "5 insights connecting dots across the intelligence above that the CPO wouldn't expect: (1) recent event most missed, (2) supply-chain / supplier risk threat, (3) hidden off-contract cost, (4) urgency connection between initiatives, (5) 6-12 month prediction. Each 2-3 sentences with data.",
   "buLeaders": [
-    {"name": "Full name", "title": "Exact current title", "bu": "Business Unit name", "mandate": "Strategic mandate", "talentChallenge": "Procurement / sourcing challenge", "phenomAngle": "How to position JAGGAER", "linkedinUrl": ""},
+    {"name": "Full name", "title": "Exact current title", "bu": "Business Unit name", "mandate": "Strategic mandate", "talentChallenge": "Procurement / sourcing challenge", "phenomAngle": "How to position JAG", "linkedinUrl": ""},
     {"name": "Second BU leader", "title": "Title", "bu": "BU", "mandate": "Mandate", "talentChallenge": "Challenge", "phenomAngle": "Angle", "linkedinUrl": ""},
     {"name": "Third leader", "title": "Title", "bu": "BU", "mandate": "Mandate", "talentChallenge": "Challenge", "phenomAngle": "Angle", "linkedinUrl": ""},
     {"name": "Procurement/Vendor leader", "title": "Title", "bu": "Procurement", "mandate": "Mandate", "talentChallenge": "How they evaluate procurement / source-to-pay tech", "phenomAngle": "Angle", "linkedinUrl": ""}
@@ -11592,7 +11592,7 @@ Return this exact JSON structure:
       // Company Intel (weight: 1 each)
       { f: "atAGlance", w: 1 }, { f: "coreBusiness", w: 1 }, { f: "revenue", w: 0.5 },
       { f: "ceoPriorities", w: 1 }, { f: "recentNews", w: 0.5 },
-      // Workforce (weight: 1.5 — core to JAGGAER)
+      // Workforce (weight: 1.5 — core to JAG)
       { f: "workforceScale", w: 1.5 }, { f: "hiringShape", w: 1 }, { f: "criticalRoles", w: 1 },
       // People (weight: 2 — execs are critical)
       { f: "executives", w: 2, isArray: true, min: 2 },
@@ -11601,7 +11601,7 @@ Return this exact JSON structure:
       { f: "cioProblems", w: 1 }, { f: "chroProblems", w: 1 },
       { f: "whyNow", w: 1.5 }, { f: "highestOpportunity", w: 1 },
       { f: "outcomeStatement", w: 1.5 }, { f: "hyperCellTitle", w: 1 },
-      // BU Growth & JAGGAER Match (weight: 1.5 — sales weapon)
+      // BU Growth & JAG Match (weight: 1.5 — sales weapon)
       { f: "fastestGrowingBU", w: 1.5 }, { f: "phenomProductMatch", w: 1.5 },
       { f: "wowInsights", w: 1 }, { f: "phenomQuickWins", w: 1 },
       { f: "buLeaders", w: 1.5, isArray: true, min: 2 },
@@ -12001,7 +12001,7 @@ Return this exact JSON structure:
                   textOverflow: "ellipsis",
                 },
               },
-              activeSection === "dashboard" ? "Dashboard" : activeSection === "help" ? "Help" : activeSection === "analysis" ? "How I Would Help Build Northern Europe for JAGGAER" : (account.companyName || "Select Account"),
+              activeSection === "dashboard" ? "Dashboard" : activeSection === "help" ? "Help" : activeSection === "analysis" ? "How I Would Help Build Northern Europe for JAG" : (account.companyName || "Select Account"),
             ),
             activeSection !== "dashboard" && activeSection !== "help" && activeSection !== "analysis" && account.companyName && /*#__PURE__*/ React.createElement(
               "button",
@@ -12466,7 +12466,7 @@ Return this exact JSON structure:
           [
             ["name", "Full name", "e.g. Pascal Schumachers"],
             ["title", "Job title", "e.g. Strategic Account Executive"],
-            ["company", "Company", "e.g. JAGGAER"],
+            ["company", "Company", "e.g. JAG"],
             ["phone", "Phone", "e.g. +49 …"],
             ["region", "Region / Territory", "e.g. Northern Europe"]
           ].map(function (fld) {
