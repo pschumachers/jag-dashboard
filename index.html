@@ -204,7 +204,7 @@ const extractJSON = (raw) => {
   }
   throw new Error("No valid JSON found in API response");
 };
-const apiText = (data) => (data && data.content || []).filter(function(b){ return b && b.type === "text" && b.text; }).map(function(b){ return b.text; }).join("\n").replace(/\u2014/g, ", ").replace(/\u2013/g, "-");
+const apiText = (data) => (data && data.content || []).filter(function(b){ return b && b.type === "text" && b.text; }).map(function(b){ return b.text; }).join("\n").replace(/\s*\u2014\s*/g, ", ").replace(/\s*\u2013\s*/g, "-");
 const fetchWithRetry = async (url, options, maxRetries, statusCb) => {
   for (var attempt = 0; attempt <= maxRetries; attempt++) {
     var resp = null;
@@ -8058,9 +8058,10 @@ function HyperCellSection({ account, update, claudeApiKey }) {
       enrichStatus && /*#__PURE__*/ React.createElement("span", { style: { fontSize: 11, color: enrichStatus.startsWith("\u274C") ? "#DC2626" : "#0D9488", fontWeight: 500 } }, enrichStatus),
     ),
     /*#__PURE__*/ React.createElement(FieldLabel, null, "Hyper-Cell Title (one sentence)"),
-    /*#__PURE__*/ React.createElement(Input, {
+    /*#__PURE__*/ React.createElement(TextArea, {
       value: account.hyperCellTitle,
       onChange: (v) => update("hyperCellTitle", v),
+      rows: 2,
       placeholder: "e.g. Consolidate $40M of fragmented indirect spend onto JAG Sourcing & eProcurement to unlock double-digit savings\u2026",
     }),
     /*#__PURE__*/ React.createElement(
