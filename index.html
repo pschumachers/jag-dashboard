@@ -3422,6 +3422,10 @@ function paragraphize(text) {
   if (!t) return "";
   if (t.indexOf("\n\n") !== -1) return t;
   t = t.replace(/\s*\n\s*/g, " ").replace(/[ \t]{2,}/g, " ");
+  var listSplit = t.replace(/\s*[;.:]\s+(?=(?:\(\d{1,2}\)|\d{1,2}[.\)])\s)/g, "\n\n");
+  if (listSplit.indexOf("\n\n") !== -1) {
+    return listSplit.split(/\n\n+/).map(function (s) { return s.trim(); }).filter(Boolean).join("\n\n");
+  }
   var marked = t.replace(/([.!?]["'\)\]]*)\s+(?=[A-Z(])/g, "$1\u0001");
   var parts = marked.split("\u0001").map(function (s) { return s.trim(); }).filter(Boolean);
   if (parts.length <= 2) return parts.join(" ");
@@ -7167,7 +7171,45 @@ function OpportunityScoreSection({ account, update, claudeApiKey }) {
   );
 }
 
-function CompellingEventSection({ account, update }) {
+function CompellingEventSection({ account, update, claudeApiKey }) {
+  const [building, setBuilding] = useState(false);
+  const [buildStatus, setBuildStatus] = useState("");
+  const buildCompellingEvent = async () => {
+    if (!claudeApiKey) { alert("Set your API key first"); return; }
+    setBuilding(true); setBuildStatus("Scanning the account and building a compelling event...");
+    try {
+      const context = {
+        companyName: account.companyName || "", industry: account.industry || "",
+        atAGlance: safeStr(account.atAGlance).substring(0, 400),
+        keySignals: (account.keySignals || []).slice(0, 10),
+        strategy: safeStr(account.strategy).substring(0, 400),
+        revenueGrowth: safeStr(account.revenueGrowth).substring(0, 200),
+        challenges: safeStr(account.challenges).substring(0, 400),
+        problems: safeStr(account.problems).substring(0, 300),
+        whyNow: safeStr(account.whyNow).substring(0, 300),
+        executives: (account.executives || []).slice(0, 8).map(function(e){ return e ? ((e.name || "") + " " + (e.title || "")).trim() : ""; }).filter(Boolean),
+      };
+      const prompt = "You are a JAG source to pay and procurement strategic sales advisor. A compelling event is a specific, dated, external trigger that forces \"" + context.companyName + "\" to act by a deadline, with a real cost of waiting; it is different from general pain because it has a clock. Using ALL the account intelligence below plus current public information, synthesise the single strongest compelling event for a source to pay or procurement transformation deal. Ground it in real, verifiable triggers: a new CPO, COO or CFO with a mandate; an SAP Ariba or legacy P2P end of life or migration; a merger, acquisition or carve out integration; a regulatory deadline such as EU CSDDD, the German LkSG, or mandatory e invoicing; a cost savings or working capital mandate; a fiscal year or budget cycle; or a board or activist mandate with a date. CONTEXT:\n" + JSON.stringify(context) + "\n\nReturn ONLY valid JSON:\n{\"compellingEvent\": \"2 to 4 sentences naming the specific dated trigger and why it forces action now, tied to this company's real situation\", \"compellingDeadline\": \"the specific date or window that forces the decision, e.g. SAP Ariba end of life 2027, or new CPO first 12 months through mid 2027\", \"compellingCost\": \"the concrete cost of waiting 6 to 12 months for this company, quantified where possible using their scale: continued spend leakage, missed savings, maverick spend, supplier and compliance risk, another cycle on legacy systems\"}\n\nUse only real, current information. If you cannot verify a hard external trigger, build the strongest defensible event from the leadership, strategy and spend signals above rather than inventing a date.";
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": claudeApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 4000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!resp.ok) throw new Error("API " + resp.status);
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      let raw = apiText(data).trim();
+      if (raw.startsWith("```")) raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+      const result = extractJSON(raw);
+      let count = 0;
+      if (result.compellingEvent) { update("compellingEvent", result.compellingEvent); count++; }
+      if (result.compellingDeadline) { update("compellingDeadline", result.compellingDeadline); count++; }
+      if (result.compellingCost) { update("compellingCost", result.compellingCost); count++; }
+      setBuildStatus(count ? "✅ Compelling event built (" + count + " fields)" : "✅ Done");
+      setTimeout(() => setBuildStatus(""), 8000);
+    } catch (err) { setBuildStatus("❌ " + err.message); }
+    setBuilding(false);
+  };
   var extras = [
     ["📅", "Deadline / Timeline", "compellingDeadline", "When does the clock run out? The specific date or window that forces a decision…"],
     ["⚠️", "Cost of Waiting", "compellingCost", "What happens if they wait 6 to 12 months? Missed savings, compliance exposure, integration risk, continued spend leakage…"],
@@ -7176,6 +7218,12 @@ function CompellingEventSection({ account, update }) {
     "div",
     null,
     React.createElement(SectionHeader, { title: "Compelling Event", badge: "Why Now", badgeColor: "#DC2626" }),
+    React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap", alignItems: "center" } },
+      React.createElement("button", { onClick: buildCompellingEvent, disabled: building,
+        style: { padding: "6px 14px", borderRadius: 6, border: "1px solid #DC2626", background: building ? "#E5E7EB" : "#FEF2F2", color: "#DC2626", fontSize: 11, fontWeight: 600, cursor: building ? "wait" : "pointer" } },
+        building ? "⏳ Building..." : "⚡ Build Compelling Event from account"),
+      buildStatus && React.createElement("span", { style: { fontSize: 11, color: buildStatus.startsWith("❌") ? "#DC2626" : "#059669", fontWeight: 500 } }, buildStatus)
+    ),
     React.createElement(
       Card,
       { style: { borderLeft: "4px solid #DC2626", background: "#FEF2F2" } },
@@ -7531,6 +7579,16 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
           ),
           React.createElement(FieldLabel, null, "Quick summary"),
           React.createElement(TextArea, { value: e.summary, onChange: function (v) { setMust(m.key, "summary", v); }, placeholder: m.ph, rows: 3 }),
+          (m.key === "buyer" || m.key === "influencers") ? React.createElement("div", { style: { marginTop: 8, padding: "8px 10px", borderRadius: 8, background: "#F8FAFC", border: "1px solid " + C.border } },
+            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: C.muted, marginBottom: 5 } }, (m.key === "buyer" ? "Buyers" : "Influencers") + " mapped from the org chart"),
+            (function () {
+              var roles = m.key === "buyer" ? ["Primary Sponsor", "Budget Authority", "Economic Buyer"] : ["Key Influencer", "Champion", "Technical Buyer"];
+              var people = (account.executives || []).filter(function (pp) { return pp && roles.indexOf(pp.roleType) !== -1; });
+              return people.length ? React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
+                people.map(function (pp, pi) { return React.createElement("span", { key: pi, style: { fontSize: 11, padding: "3px 9px", borderRadius: 12, background: C.tealLight, color: C.teal, fontWeight: 600 } }, (pp.name || "Unnamed") + (pp.title ? " · " + pp.title : "")); })
+              ) : React.createElement("div", { style: { fontSize: 11, color: C.muted, fontStyle: "italic" } }, "Set a person\u2019s role to " + (m.key === "buyer" ? "Primary Sponsor or Budget Authority" : "Key Influencer") + " in the People tab and they appear here automatically.");
+            })()
+          ) : null,
           React.createElement("div", { style: { height: 6 } }),
           m.checks.map(function (lbl, idx) {
             return React.createElement(MustCheckRow, { key: idx, label: lbl, checked: !!e.checks[idx], onToggle: function () { toggleCheck(m.key, idx); } });
@@ -9952,11 +10010,10 @@ function BULeadersSection({ account, update, claudeApiKey }) {
             ].map(function(f) {
               return React.createElement("div", { key: f.field },
                 React.createElement("div", { style: { fontSize: 10, fontWeight: 600, color: "#6B7280", marginBottom: 3, textTransform: "uppercase", letterSpacing: 0.5 } }, f.label),
-                React.createElement("textarea", {
+                React.createElement(TextArea, {
                   value: leader[f.field] || "",
-                  onChange: function(e) { updateLeaderField(idx, f.field, e.target.value); },
+                  onChange: function(v) { updateLeaderField(idx, f.field, v); },
                   placeholder: f.ph, rows: 2,
-                  style: { width: "100%", padding: "6px 10px", border: "1px solid " + C.border, borderRadius: 6, fontSize: 12, fontFamily: "inherit", boxSizing: "border-box", resize: "vertical", background: "#FAFBFF" },
                 }),
               );
             }),
@@ -10806,53 +10863,6 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
     ),
 
     // ══════════════════════════════════════════════════════════
-    // ── ORG CHART — Project Teams by Department ──
-    // ══════════════════════════════════════════════════════════
-    false && React.createElement("div", { style: { background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: 20, marginBottom: 16 } },
-      React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 } }, "\uD83C\uDFD7\uFE0F Project Teams \u2014 Org Chart"),
-      React.createElement("div", { style: { fontSize: 11, color: "#6B7280", marginBottom: 14 } }, "All mapped executives across accounts, grouped by department. Includes Procurement."),
-      // Department cards grid
-      React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 } },
-        DEPT_ORDER.map(function(dept) {
-          var members = deptGroups[dept] || [];
-          var col = deptColor[dept] || "#6B7280";
-          return React.createElement("div", {
-            key: dept,
-            style: { border: "1px solid " + col + "30", borderRadius: 10, padding: 14, borderTop: "3px solid " + col, background: col + "05", minHeight: 80 },
-          },
-            React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
-              React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: col } }, dept),
-              React.createElement("div", { style: { fontSize: 11, fontWeight: 700, background: col + "20", color: col, padding: "2px 8px", borderRadius: 10 } }, members.length),
-            ),
-            members.length === 0
-              ? React.createElement("div", { style: { fontSize: 11, color: "#9CA3AF", fontStyle: "italic", padding: "8px 0" } }, "No members mapped yet")
-              : members.slice(0, 6).map(function(m, mi) {
-                return React.createElement("div", {
-                  key: mi,
-                  style: { display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: mi < Math.min(members.length, 6) - 1 ? "1px solid " + col + "15" : "none" },
-                },
-                  React.createElement("div", { style: { width: 24, height: 24, borderRadius: "50%", background: col + "20", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: col, flexShrink: 0 } },
-                    (m.name || "?").substring(0, 2).toUpperCase()
-                  ),
-                  React.createElement("div", { style: { flex: 1, minWidth: 0 } },
-                    React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: "#1E293B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, m.name),
-                    React.createElement("div", { style: { fontSize: 10, color: "#6B7280", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } },
-                      (m.title || "") + " \u2022 " + m.companyName
-                    ),
-                  ),
-                  React.createElement("button", {
-                    onClick: function() { goToAccount(m.accountId, "executives", "talent"); },
-                    style: { fontSize: 9, padding: "2px 6px", border: "1px solid " + col + "40", borderRadius: 4, background: "#fff", cursor: "pointer", color: col, fontWeight: 600, flexShrink: 0 },
-                  }, "\u2192"),
-                );
-              }),
-            members.length > 6 && React.createElement("div", { style: { fontSize: 10, color: col, marginTop: 6, fontWeight: 600 } }, "+" + (members.length - 6) + " more"),
-          );
-        })
-      ),
-    ),
-
-    // ══════════════════════════════════════════════════════════
     // ── TWO-COLUMN: Needs Attention + Recently Updated ──
     // ══════════════════════════════════════════════════════════
     React.createElement("div", { style: { display: "flex", gap: 16, flexWrap: "wrap" } },
@@ -10953,6 +10963,9 @@ function ProspectDashboard() {
   });
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showConnectors, setShowConnectors] = useState(function(){ try { return localStorage.getItem("jag_showConnectors") === "1"; } catch(e){ return false; } });
+  var visibleChildren = function(ss){ if (ss && ss.id === "action" && !showConnectors) return ss.children.filter(function(c){ return c.id !== "sfhistory" && c.id !== "transcripts"; }); return ss ? ss.children : []; };
+  var toggleConnectors = function(){ var nv = !showConnectors; try { localStorage.setItem("jag_showConnectors", nv ? "1" : "0"); } catch(e){} setShowConnectors(nv); if (!nv && (activeSection === "sfhistory" || activeSection === "transcripts")) setActiveSection("outreach"); };
   const [profileForm, setProfileForm] = useState({ name: "", title: "", company: "", phone: "", region: "" });
   const [profileNewPw, setProfileNewPw] = useState("");
   const [profileMsg, setProfileMsg] = useState("");
@@ -12278,8 +12291,9 @@ Return this exact JSON structure:
               key: ss.id,
               onClick: () => {
                 setActiveSuperSection(ss.id);
-                if (ss.children.length > 0) {
-                  setActiveSection(ss.children[0].id);
+                var vc = visibleChildren(ss);
+                if (vc.length > 0) {
+                  setActiveSection(vc[0].id);
                 } else {
                   setActiveSection(ss.id);
                 }
@@ -12309,7 +12323,7 @@ Return this exact JSON structure:
     // ── Sub-section pills (second level, only if super-section has children) ──
     (function() {
       var currentSuper = SUPER_SECTIONS.find(function(ss) { return ss.id === activeSuperSection; });
-      if (!currentSuper || currentSuper.children.length === 0) return null;
+      if (!currentSuper || visibleChildren(currentSuper).length === 0) return null;
       return /*#__PURE__*/ React.createElement(
         "div",
         {
@@ -12326,7 +12340,7 @@ Return this exact JSON structure:
             scrollbarWidth: "none",
           },
         },
-        currentSuper.children.map(function(sub) {
+        visibleChildren(currentSuper).map(function(sub) {
           return /*#__PURE__*/ React.createElement(
             "button",
             {
@@ -12411,7 +12425,7 @@ Return this exact JSON structure:
           activeSection === "outcomes" &&
             /*#__PURE__*/ React.createElement(OutcomeFramingSection, { account: account, update: update }),
           activeSection === "compelling" &&
-            /*#__PURE__*/ React.createElement(CompellingEventSection, { account: account, update: update }),
+            /*#__PURE__*/ React.createElement(CompellingEventSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "hypercell" &&
             /*#__PURE__*/ React.createElement(HyperCellSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "geopolitics" &&
@@ -12499,6 +12513,14 @@ Return this exact JSON structure:
           ),
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: profileMsg ? 8 : 0 } }, "You type your own new password; it is sent straight to the secure auth service and never stored in the dashboard."),
           profileMsg && /*#__PURE__*/ React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: profileMsg.indexOf("✅") === 0 ? "#059669" : C.text, marginTop: 4 } }, profileMsg),
+          /*#__PURE__*/ React.createElement("div", { style: { borderTop: `1px solid ${C.border}`, marginTop: 16, paddingTop: 14 } },
+            /*#__PURE__*/ React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 } }, "Connectors"),
+            /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 } }, "SF History and Transcripts are hidden by default. Enable them when you want to connect and use them; keep them off for a clean demo."),
+            /*#__PURE__*/ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 10, cursor: "pointer", fontSize: 13, color: C.text } },
+              /*#__PURE__*/ React.createElement("input", { type: "checkbox", checked: showConnectors, onChange: toggleConnectors, style: { width: 16, height: 16, cursor: "pointer" } }),
+              "Show SF History and Transcripts tabs"
+            )
+          ),
           /*#__PURE__*/ React.createElement(TwoFactorSection, null),
           /*#__PURE__*/ React.createElement("button", {
             onClick: () => setShowProfileModal(false),
