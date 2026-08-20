@@ -10652,9 +10652,11 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
   var qList = Object.keys(qMap).map(function(k) { return qMap[k]; }).sort(function(a, b) { return a.sort - b.sort; });
   var pipeSorted = inPlay.slice().sort(function(a, b) { return b.lik - a.lik; });
   var likColOf = function(l) { return l >= 70 ? "#059669" : l >= 40 ? "#D97706" : "#94A3B8"; };
-  var pipeTile = function(label, value, color) {
+  var pipeTile = function(label, value, color, info) {
     return React.createElement("div", { style: { flex: "1 1 150px", minWidth: 140, background: C.card, border: "1px solid " + C.border, borderRadius: 10, padding: "12px 14px" } },
-      React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
+      React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5, display: "flex", alignItems: "center", gap: 4 } }, label,
+        info ? React.createElement("span", { title: info, style: { cursor: "help", color: C.muted, border: "1px solid " + C.border, borderRadius: "50%", width: 13, height: 13, minWidth: 13, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, lineHeight: 1 } }, "?") : null
+      ),
       React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: color || C.text, lineHeight: 1.1 } }, value)
     );
   };
@@ -10668,10 +10670,10 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
         React.createElement("div", { style: { fontSize: 12, color: C.muted } }, inPlay.length + " deal" + (inPlay.length === 1 ? "" : "s") + " in play")
       ),
       React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 } },
-        pipeTile("Weighted pipeline", fmtMoney(pipeTotalVal), "#0F766E"),
-        pipeTile("Expected value", fmtMoney(pipeExpVal), "#059669"),
-        pipeTile("Qualified (60%+)", String(pipeQualified), "#0D9488"),
-        pipeTile("Avg likelihood", pipeAvgLik + "%", likColOf(pipeAvgLik))
+        pipeTile("Open pipeline", fmtMoney(pipeTotalVal), "#0F766E", "The straight sum of the Est. value of every deal in play that has a value set. It is NOT adjusted for likelihood. Deals marked TBC or with no value are excluded. This is a portfolio total across all accounts, not a single deal."),
+        pipeTile("Expected value", fmtMoney(pipeExpVal), "#059669", "The likelihood-weighted pipeline: each deal's Est. value multiplied by its deal likelihood, then added up. For example a 3.5M deal at 2% contributes 70k. This is your risk-adjusted pipeline across all accounts."),
+        pipeTile("Qualified (60%+)", String(pipeQualified), "#0D9488", "How many deals in play have a deal likelihood of 60% or higher. A portfolio count across all accounts, not a per-deal figure."),
+        pipeTile("Avg likelihood", pipeAvgLik + "%", likColOf(pipeAvgLik), "The average deal likelihood across every deal in play. A portfolio average across all accounts, so it does not change when you open a single account.")
       ),
       pipeValCount < inPlay.length ? React.createElement("div", { style: { fontSize: 11, color: C.muted, marginBottom: 12, fontStyle: "italic" } }, "Value shown for " + pipeValCount + " of " + inPlay.length + " deals; add a value in Opportunity Rating to include the rest.") : null,
       qList.length ? React.createElement("div", { style: { marginBottom: 14 } },
