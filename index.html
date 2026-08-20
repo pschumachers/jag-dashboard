@@ -10274,12 +10274,28 @@ function parseMoney(s) {
 }
 function fmtMoney(n) { if (n == null || isNaN(n)) return "—"; if (n >= 1e9) return "€" + (n / 1e9).toFixed(2) + "bn"; if (n >= 1e6) return "€" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "€" + Math.round(n / 1e3) + "K"; return "€" + Math.round(n); }
 function dealLikelihood(a) {
+  if (a.oppLikelihoodOverride != null && String(a.oppLikelihoodOverride).trim() !== "") {
+    var ov = parseInt(a.oppLikelihoodOverride, 10);
+    if (!isNaN(ov)) return Math.max(0, Math.min(100, ov));
+  }
   var musts = normMusts(a.sevenMusts), weights = normWeights(a.mustWeights);
   var keys = ["buyer", "influencers", "competition", "win", "lose", "decision", "taught"];
   var wt = 0, acc = 0; keys.forEach(function (k) { wt += weights[k]; acc += weights[k] * (musts[k].checks.filter(Boolean).length / 5); });
   return wt > 0 ? Math.round(acc / wt * 100) : 0;
 }
+function parseCloseOverride(s) {
+  if (!s) return null;
+  var q = s.match(/^Q\s*([1-4])\s*'?\s*(\d{4})$/i);
+  if (q) { return new Date(parseInt(q[2], 10), (parseInt(q[1], 10) - 1) * 3 + 1, 15); }
+  var d = new Date(s);
+  if (!isNaN(d.getTime())) return d;
+  return null;
+}
 function projectedCloseDate(a) {
+  if (a.oppCloseOverride != null && String(a.oppCloseOverride).trim() !== "") {
+    var ov = parseCloseOverride(String(a.oppCloseOverride).trim());
+    if (ov) return ov;
+  }
   var c = parseInt(a.salesCycle, 10);
   if (isNaN(c) || c < 0) return null;
   var base = a.dealStartDate ? new Date(a.dealStartDate) : new Date();
@@ -10388,11 +10404,31 @@ function HelpSection() {
   );
 }
 
-function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
+function OPMetric(props) {
+  var label = props.label, display = props.display, color = props.color, info = props.info,
+      rawValue = props.rawValue, placeholder = props.placeholder, onSave = props.onSave, editable = !!onSave;
+  var _e = useState(false), editing = _e[0], setEditing = _e[1];
+  var _v = useState(""), val = _v[0], setVal = _v[1];
+  function begin() { if (!editable) return; setVal(rawValue == null ? "" : String(rawValue)); setEditing(true); }
+  function commit() { setEditing(false); onSave(val.trim()); }
+  return React.createElement("div", { style: { flex: "1 1 150px", minWidth: 150, background: C.card, border: "1px solid " + C.border, borderRadius: 10, padding: "12px 14px" } },
+    React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5, display: "flex", alignItems: "center", gap: 4 } },
+      label,
+      info ? React.createElement("span", { title: info, style: { cursor: "help", color: C.muted, border: "1px solid " + C.border, borderRadius: "50%", width: 13, height: 13, minWidth: 13, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, lineHeight: 1 } }, "?") : null,
+      editable ? React.createElement("span", { title: "Click to edit", onClick: begin, style: { marginLeft: "auto", color: C.muted, fontSize: 11, cursor: "pointer" } }, "✎") : null
+    ),
+    editing
+      ? React.createElement("input", { autoFocus: true, value: val, placeholder: placeholder || "", onChange: function (e) { setVal(e.target.value); }, onBlur: commit, onKeyDown: function (e) { if (e.key === "Enter") { e.preventDefault(); e.target.blur(); } else if (e.key === "Escape") { setEditing(false); } }, style: { width: "100%", boxSizing: "border-box", fontSize: 20, fontWeight: 800, color: color || C.text, border: "1px solid " + C.teal, borderRadius: 6, padding: "2px 6px", fontFamily: "inherit", outline: "none" } })
+      : React.createElement("div", { onClick: begin, title: editable ? "Click to edit" : undefined, style: { fontSize: 22, fontWeight: 800, color: color || C.text, lineHeight: 1.1, cursor: editable ? "text" : "default" } }, display)
+  );
+}
+function OnePagerSection({ account, setActiveSection, setActiveSuperSection, update }) {
+  function saveInt100(field, v) { if (v === "") { update(field, ""); return; } var n = parseInt(String(v).replace(/[^0-9]/g, ""), 10); if (isNaN(n)) return; update(field, String(Math.max(0, Math.min(100, n)))); }
   var score = parseInt(account.oppScore, 10); if (isNaN(score)) score = null;
   var lik = dealLikelihood(account);
   var pd = projectedCloseDate(account);
-  var projStr = pd ? fmtMonthYear(pd) : "";
+  var projRaw = (account.oppCloseOverride && account.oppCloseOverride.trim()) ? account.oppCloseOverride.trim() : "";
+  var projStr = projRaw || (pd ? fmtMonthYear(pd) : "");
   var parsed = parseMoney(account.oppValue);
   var valStr = parsed != null ? fmtMoney(parsed) : (account.oppValue && account.oppValue.trim() ? account.oppValue.trim() : "—");
   var compMust = normMusts(account.sevenMusts).competition.summary;
@@ -10447,12 +10483,6 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
     w.document.write(html); w.document.close(); w.focus(); setTimeout(function () { try { w.print(); } catch (e) {} }, 400);
   }
 
-  function tile(label, value, color) {
-    return React.createElement("div", { style: { flex: "1 1 150px", minWidth: 150, background: C.card, border: "1px solid " + C.border, borderRadius: 10, padding: "12px 14px" } },
-      React.createElement("div", { style: { fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
-      React.createElement("div", { style: { fontSize: 22, fontWeight: 800, color: color || C.text, lineHeight: 1.1 } }, value)
-    );
-  }
   function pill(text, col) {
     if (!text) return null;
     return React.createElement("span", { style: { display: "inline-block", fontSize: 12, fontWeight: 700, padding: "5px 12px", borderRadius: 20, background: (col || C.muted) + "22", color: col || C.muted, marginRight: 8, marginBottom: 6 } }, text);
@@ -10483,10 +10513,10 @@ function OnePagerSection({ account, setActiveSection, setActiveSuperSection }) {
       pill(account.oppFit, "#059669"), pill(account.oppTiming, "#0D9488"), pill(account.salesCycle ? account.salesCycle + " month cycle" : "", "#6366F1")
     ),
     React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 } },
-      tile("Opportunity score", score != null ? score + " / 100" : "—", scoreCol),
-      tile("Deal likelihood", lik + "%", likCol),
-      tile("Projected close", projStr || "—", projStr ? "#059669" : C.muted),
-      tile("Est. value", valStr, "#0F766E")
+      React.createElement(OPMetric, { key: "score", label: "Opportunity score", display: score != null ? score + " / 100" : "—", color: scoreCol, rawValue: account.oppScore, placeholder: "0–100", onSave: function (v) { saveInt100("oppScore", v); }, info: "Your Opportunity Rating out of 100 across fit, timing, value, access to power and competition. You set it in Deal Qualification, Opportunity Rating, or edit it here." }),
+      React.createElement(OPMetric, { key: "lik", label: "Deal likelihood", display: lik + "%", color: likCol, rawValue: account.oppLikelihoodOverride, placeholder: "auto", onSave: function (v) { saveInt100("oppLikelihoodOverride", v); }, info: "By default this is calculated from the 7 Musts: the weighted share of the seven qualification musts you have completed. Type a number here to override it manually, or clear it to return to the calculated value." }),
+      React.createElement(OPMetric, { key: "proj", label: "Projected close", display: projStr || "—", color: projStr ? "#059669" : C.muted, rawValue: projRaw, placeholder: "e.g. Q3 2027", onSave: function (v) { update("oppCloseOverride", v.trim()); }, info: "By default this is the deal start date plus the sales-cycle length you set in Opportunity Rating. Type a value here to override it, for example Q3 2027 or Aug 2027." }),
+      React.createElement(OPMetric, { key: "val", label: "Est. value", display: valStr, color: "#0F766E", rawValue: account.oppValue, placeholder: "e.g. €500K", onSave: function (v) { update("oppValue", v.trim()); }, info: "An estimate, not a hard number. When you run AI enrichment the model estimates the deal value from the company's revenue, employee scale and typical deal sizes for the industry. Type your own figure here to overwrite it. Always verify before quoting." })
     ),
     card("Why now — compelling event", account.compellingEvent, "compelling"),
     card("Why we win — hypothesis", account.hypothesis || account.leadNarrative, "oppscore"),
@@ -12392,7 +12422,7 @@ Return this exact JSON structure:
           React.Fragment,
           null,
           activeSection === "onepager" &&
-            /*#__PURE__*/ React.createElement(OnePagerSection, { account: account, setActiveSection: setActiveSection, setActiveSuperSection: setActiveSuperSection }),
+            /*#__PURE__*/ React.createElement(OnePagerSection, { account: account, setActiveSection: setActiveSection, setActiveSuperSection: setActiveSuperSection, update: update }),
           activeSection === "brief" &&
             /*#__PURE__*/ React.createElement(ExecutiveBriefSection, { account: account, update: update, claudeApiKey: claudeApiKey }),
           activeSection === "fundamentals" &&
