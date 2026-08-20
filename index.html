@@ -93,6 +93,7 @@ const firebaseAvailable = __fb_available;
 // Safe string coerce — handles arrays, objects, null, undefined
 const safeStr = (v) => { if (v == null) return ""; if (typeof v === "string") return v; if (Array.isArray(v)) return v.join(", "); if (typeof v === "object") return JSON.stringify(v); return String(v); };
 // Normalise a person name for de-duplication: strip warning flags, titles, punctuation, extra spaces
+function flaggedName(name, onClear){ var s = String(name == null ? "" : name); var m = s.match(/^\s*[\u26A0\uFE0F\u2757\u2755]+\s*/); if (!m) return s || "Unnamed"; var clean = s.slice(m[0].length).trim() || "Unnamed"; var flag = React.createElement("span", { title: onClear ? "Single source. Verify the name, current title and that they still hold the role, and open the profile to read the background. Once you have confirmed them, click here to clear this flag." : "Single source: confirmed through only one public source, not the two the tool requires. Verify the person and read the profile background before relying on them.", onClick: onClear ? function(ev){ ev.stopPropagation(); onClear(clean); } : undefined, style: { cursor: onClear ? "pointer" : "help", marginRight: 3 } }, "\u26A0\uFE0F"); return React.createElement("span", null, flag, clean); }
 function normName(s){ return String(s == null ? "" : s).replace(/[⚠️❗❕]/g, "").replace(/^\s*(dr|prof|dipl|ing|mr|mrs|ms|mx|herr|frau)\.?\s+/i, "").replace(/[.,]/g, "").replace(/\s+/g, " ").trim().toLowerCase(); }
 // Remove duplicate people by normalised name, keeping the first occurrence
 function dedupeByName(arr){ if (!Array.isArray(arr)) return arr; var seen = {}, out = []; for (var i = 0; i < arr.length; i++) { var it = arr[i]; var k = normName(it && (it.name || it.title)); if (!k) { out.push(it); continue; } if (!seen[k]) { seen[k] = 1; out.push(it); } } return out; }
@@ -6352,7 +6353,7 @@ INCLUSION RULES:
           style: { width: 44, height: 44, borderRadius: 10, background: deptStyle.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700, color: deptStyle.text, flexShrink: 0 },
         }, initials(exec.name)),
         /*#__PURE__*/ React.createElement("div", { style: { flex: 1, minWidth: 0 } },
-          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, exec.name || "Unnamed"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, flaggedName(exec.name, function(cn){ updateExec(i, "name", cn); })),
           /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11, color: C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, exec.title || "No title"),
           /*#__PURE__*/ React.createElement("div", { style: { display: "flex", gap: 4, marginTop: 4, flexWrap: "wrap" } },
             /*#__PURE__*/ React.createElement("span", { style: { fontSize: 9, padding: "1px 6px", borderRadius: 4, fontWeight: 600, background: deptStyle.bg, color: deptStyle.text } }, deptStyle.icon + " " + dept),
@@ -9996,7 +9997,7 @@ function BULeadersSection({ account, update, claudeApiKey }) {
               (leader.name || "?").substring(0, 2).toUpperCase()
             ),
             React.createElement("div", { style: { flex: 1, minWidth: 0 } },
-              React.createElement("div", { style: { fontSize: 14, fontWeight: 700, color: "#1E293B" } }, leader.name || "Unnamed"),
+              React.createElement("div", { style: { fontSize: 14, fontWeight: 700, color: "#1E293B" } }, flaggedName(leader.name)),
               React.createElement("div", { style: { fontSize: 12, color: "#6B7280" } }, leader.title || ""),
             ),
             React.createElement("span", { style: { padding: "3px 10px", borderRadius: 12, background: col + "15", color: col, fontSize: 10, fontWeight: 700 } }, leader.bu || "Unknown BU"),
@@ -10807,7 +10808,7 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
                 React.createElement("div", { style: { width: 32, height: 32, borderRadius: "50%", background: (deptColor[e.department] || "#6B7280") + "20", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 } }, "\uD83D\uDC64"),
                 // Details
                 React.createElement("div", { style: { flex: 1, minWidth: 0 } },
-                  React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: "#1E293B" } }, e.name),
+                  React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: "#1E293B" } }, flaggedName(e.name)),
                   React.createElement("div", { style: { fontSize: 11, color: "#6B7280" } }, (e.title || "Unknown title") + " \u2022 " + e.companyName),
                   React.createElement("div", { style: { display: "flex", gap: 6, marginTop: 3 } },
                     React.createElement("span", { style: { fontSize: 10, padding: "1px 6px", borderRadius: 4, background: (deptColor[e.department] || "#6B7280") + "15", color: deptColor[e.department] || "#6B7280", fontWeight: 600 } }, e.department || "Other"),
@@ -11676,6 +11677,7 @@ Return this exact JSON structure:
           transform: drawerOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.25s ease",
           boxShadow: drawerOpen ? "4px 0 20px rgba(0,0,0,0.3)" : "none",
+          overflow: "hidden",
         },
       },
       /*#__PURE__*/ React.createElement(
@@ -11802,7 +11804,7 @@ Return this exact JSON structure:
       ),
       /*#__PURE__*/ React.createElement(
         "div",
-        { style: { flex: 1, overflowY: "auto", padding: "8px 12px", WebkitOverflowScrolling: "touch" } },
+        { style: { flex: 1, minHeight: 0, overflowY: "auto", padding: "8px 12px", WebkitOverflowScrolling: "touch" } },
         filteredAccounts.map((acc) => {
           const score = completionScore(acc);
           const isSelected = acc.id === selectedId;
