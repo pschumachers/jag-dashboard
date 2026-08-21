@@ -115,7 +115,7 @@ var DEAL_STAGES = [
     seller: ["Initial call and discovery", "Understand what the customer is solving for (confirm potential pain)", "Build rapport"],
     buyer: ["Shares current situation", "Confirms interest and agrees to next step"] },
   { key: "validate", label: "Validate / Qualify",
-    seller: ["Deep understanding of the prospect's needs, pain points and organisation", "Establish credibility of company and solution", "Create enthusiasm for ongoing prospect engagement", "Establish business imperatives for the partnership"],
+    seller: ["Deep understanding of the prospect's needs, pain points and organisation", "Establish credibility of company and solution", "Create enthusiasm for ongoing prospect engagement", "Establish business non-negotiables for the partnership"],
     buyer: ["Shares names and roles of key influencers"] },
   { key: "prove", label: "Prove Value",
     seller: ["Proposal presented"],
@@ -4537,12 +4537,12 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
 
       if (!pageText || pageText.length < 50) {
         // Last resort: send URL to Claude with request to analyse based on known information
-        setUploadProgress("Analysing URL with Claude API (knowledge-based)...");
+        setUploadProgress("Analysing URL with AI API (knowledge-based)...");
         pageText = "URL to analyse: " + url + "\n\nNote: The page content could not be fetched directly. Please analyse this URL based on your knowledge of this website and company.";
       }
 
       const truncated = pageText.substring(0, 12000);
-      setUploadProgress("Analysing URL content with Claude API (1/2)...");
+      setUploadProgress("Analysing URL content with AI API (1/2)...");
 
       // Reuse the same 2-call analysis pipeline as file uploads
       const p1 = "You are a sales intelligence analyst. Below is content from a web page (URL: " + url + ") about or relevant to \"" + account.companyName + "\". Extract ALL relevant intelligence and return ONLY valid JSON (no markdown). Use \"\" for fields where no information is found. Be comprehensive:\n\n" +
@@ -4578,7 +4578,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       if (text1.startsWith("\`\`\`")) text1 = text1.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
       const d1 = extractJSON(text1);
 
-      setUploadProgress("Analysing URL content with Claude API (2/2)...");
+      setUploadProgress("Analysing URL content with AI API (2/2)...");
 
       const p2 = "You are a B2B sales strategist. Based on this web content about or related to \"" + account.companyName + "\" (URL: " + url + "), extract sales positioning intelligence. IMPORTANT: For any people (executives, project team), ONLY include individuals who the content confirms work at " + account.companyName + ". Do NOT include external people, consultants, or anyone not verified as an employee. Return ONLY valid JSON:\n\n" +
         JSON.stringify({
@@ -4764,7 +4764,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       }
 
       const truncated = content.substring(0, 12000);
-      setUploadProgress("Analysing with Claude API (1/2)...");
+      setUploadProgress("Analysing with AI API (1/2)...");
 
       // Call 1: Extract financials, fundamentals, strategy, workforce
       const p1 = "You are a sales intelligence analyst. Below is a document about \"" + account.companyName + "\". Extract ALL relevant intelligence and return ONLY valid JSON (no markdown). Use \"\" for fields where no information is found in the document. Be comprehensive — extract every data point you can find:\n\n" +
@@ -4800,7 +4800,7 @@ function IntelUploadCard({ account, update, claudeApiKey }) {
       if (text1.startsWith("\`\`\`")) text1 = text1.replace(/^\`\`\`(?:json)?\n?/, "").replace(/\n?\`\`\`$/, "").trim();
       const d1 = extractJSON(text1);
 
-      setUploadProgress("Analysing with Claude API (2/2)...");
+      setUploadProgress("Analysing with AI API (2/2)...");
 
       // Call 2: Extract problems, use cases, outcomes, executives
       const p2 = "You are a B2B sales strategist. Based on this document about \"" + account.companyName + "\", extract intelligence for sales positioning. IMPORTANT: For any people (executives, project team), ONLY include individuals who the document confirms work at " + account.companyName + ". Do NOT include external people, consultants, or anyone not verified as an employee. Return ONLY valid JSON:\n\n" +
@@ -5634,7 +5634,7 @@ function SectionFileUpload({ label, icon, claudeApiKey, prompt, onResult }) {
           reader.onerror = () => reject(new Error("Image read failed"));
           reader.readAsDataURL(file);
         });
-        setStatus("Analysing image with Claude API...");
+        setStatus("Analysing image with AI API...");
         const mediaType = file.type || "image/png";
         const resp = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
@@ -5658,7 +5658,7 @@ function SectionFileUpload({ label, icon, claudeApiKey, prompt, onResult }) {
         content = await readFile(file);
       }
       if (typeof content === "string") content = content.substring(0, 15000);
-      setStatus("Analysing with Claude API...");
+      setStatus("Analysing with AI API...");
       const fullPrompt = prompt + "\n\nDOCUMENT CONTENT:\n" + content;
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -7317,7 +7317,7 @@ var MUSTS = [
 ];
 
 var MUST_WHY = {
-  buyer: "The economic buyer owns the budget and signs the contract. Deals without a confirmed buyer who holds budget and can be reached stall or die in procurement, because no one has the authority to say yes. Access to power is the single biggest predictor of whether a deal closes, which is why this imperative carries the most weight. If you cannot reach the buyer, or they will not champion your value internally, everything downstream is at risk.",
+  buyer: "The economic buyer owns the budget and signs the contract. Deals without a confirmed buyer who holds budget and can be reached stall or die in procurement, because no one has the authority to say yes. Access to power is the single biggest predictor of whether a deal closes, which is why this non-negotiable carries the most weight. If you cannot reach the buyer, or they will not champion your value internally, everything downstream is at risk.",
   influencers: "Enterprise procurement decisions are made by a committee, not one person. Category managers, IT and ERP owners, Finance and the business units all shape the outcome and any one of them can block it. Mapping every influencer, reaching them and turning at least one into an internal advocate is what carries a deal through a complex buying group. Deals lost late often trace back to an unmapped influencer who quietly said no.",
   competition: "You are almost never the only option, even when the alternative is the status quo or the incumbent system. Knowing who you are up against, why they are at the table and how the buyer perceives them lets you shape the evaluation to your strengths. Sellers who cannot name the competition or the real decision criteria are usually column fodder for a decision already leaning elsewhere.",
   win: "A clear, prospect validated reason to win is what turns interest into a decision in your favour. It means you understand their real needs, they have shared their pains and decision process, and they are actively helping you build the case. A deal with no articulated win theme tends to slip, because nothing is pulling it forward against inertia and competing priorities.",
@@ -7499,7 +7499,7 @@ function SevenMustsSection({ account, update, claudeApiKey }) {
   return React.createElement(
     "div",
     null,
-    React.createElement(SectionHeader, { title: "7 Musts, Deal Imperatives", badge: mustsDone + " / 7 complete", badgeColor: mustsDone === 7 ? "#059669" : "#1E293B" }),
+    React.createElement(SectionHeader, { title: "7 Musts, the Non-negotiables", badge: mustsDone + " / 7 complete", badgeColor: mustsDone === 7 ? "#059669" : "#1E293B" }),
     React.createElement(
       Card,
       { style: { marginBottom: 12, borderLeft: "4px solid #00BFA5", background: "#F0FDFA" } },
@@ -8832,7 +8832,7 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
       const data = await response.json();
       return apiText(data) || "";
     } catch (error) {
-      console.error("Error calling Claude API:", error);
+      console.error("Error calling AI API:", error);
       return `Error: ${error.message}`;
     }
   };
@@ -8945,7 +8945,7 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
           /*#__PURE__*/ React.createElement(
             "div",
             { style: { fontSize: 12, color: C.muted, marginTop: 4 } },
-            "AI-powered personalized multi-touch sequences via Claude",
+            "AI-powered personalized multi-touch sequences",
           ),
         ),
       ),
@@ -8982,7 +8982,7 @@ function OutreachSection({ account, update, claudeApiKey = "" }) {
             { style: { marginTop: 12 } },
             /*#__PURE__*/ React.createElement("input", {
               type: "password",
-              placeholder: "Enter Claude API key (sk-ant-...)",
+              placeholder: "Enter AI API key (sk-ant-...)",
               value: apiKey,
               onChange: (e) => setApiKey(e.target.value),
               style: {
@@ -9509,7 +9509,7 @@ ${text}`;
           /*#__PURE__*/ React.createElement(
             "label",
             { style: { fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 8 } },
-            "\uD83D\uDD11 Claude API Key",
+            "\uD83D\uDD11 AI API Key",
           ),
           /*#__PURE__*/ React.createElement("input", {
             type: "password",
@@ -10272,7 +10272,17 @@ function parseMoney(s) {
   else if (u === "bn" || u === "b" || u === "billion") n *= 1e9;
   return n;
 }
-function fmtMoney(n) { if (n == null || isNaN(n)) return "—"; if (n >= 1e9) return "€" + (n / 1e9).toFixed(2) + "bn"; if (n >= 1e6) return "€" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "€" + Math.round(n / 1e3) + "K"; return "€" + Math.round(n); }
+function fmtMoney(n) { if (n == null || isNaN(n)) return "-"; if (n >= 1e9) return "€" + (n / 1e9).toFixed(2) + "bn"; if (n >= 1e6) return "€" + (n / 1e6).toFixed(1) + "M"; if (n >= 1e3) return "€" + Math.round(n / 1e3) + "K"; return "€" + Math.round(n); }
+function forecastCategory(a) {
+  var raw = (a && a.forecastCat) ? String(a.forecastCat) : "";
+  if (raw === "Commit" || raw === "Best case" || raw === "Pipeline" || raw === "Omitted") return raw;
+  var lik = dealLikelihood(a);
+  if (lik >= 80) return "Commit";
+  if (lik >= 50) return "Best case";
+  return "Pipeline";
+}
+var FORECAST_CATS = ["Commit", "Best case", "Pipeline", "Omitted"];
+var FORECAST_COL = { "Commit": "#059669", "Best case": "#0D9488", "Pipeline": "#6366F1", "Omitted": "#94A3B8" };
 function dealLikelihood(a) {
   if (a.oppLikelihoodOverride != null && String(a.oppLikelihoodOverride).trim() !== "") {
     var ov = parseInt(a.oppLikelihoodOverride, 10);
@@ -10319,7 +10329,7 @@ var HELP_TOPICS = [
   { id: "tabs", icon: "🧭", title: "The tabs at a glance",
     intro: "The top tabs move you through the workflow, left to right.",
     items: [
-      ["Dashboard", "Your portfolio analytics: the pipeline roll-up (weighted value, expected value, qualified deals, projected closes by quarter), readiness and accounts needing attention."],
+      ["Dashboard", "Your portfolio analytics: the pipeline roll-up, the Clari-style forecast with a Board QBR button, readiness, and accounts needing attention."],
       ["One-Pager", "The thirty second deal summary for any account: score, likelihood, projected close, value, why now, why we win, competition and the close plan. Print or save it as a PDF leave-behind."],
       ["Company Intel", "Executive brief, fundamentals, revenue and strategy."],
       ["Procurement & Spend", "Spend and supplier intel, the ERP and P2P stack, the people, and geo-politics."],
@@ -10331,17 +10341,24 @@ var HELP_TOPICS = [
   { id: "ai", icon: "✨", title: "The AI features",
     intro: "Every button marked with a sparkle reads the account intel and drafts content for you. You always keep the final say and can edit anything by hand.",
     items: [
-      ["Intel Refresh", "Pulls current public company, spend, people and signal data into the account."],
+      ["Intel Refresh", "Pulls current public company, spend, people and signal data into the account. It runs in the background, shown by a small progress pill, so you can keep working while it updates."],
       ["Suggest rating", "Scores the opportunity 0 to 100, sets the fit, timing, value and sales cycle, writes the reasoning and cites the web sources it used."],
-      ["Draft 7 Musts", "Drafts a summary for each imperative and tunes the section weights to the deal, ticking only the proof points the evidence supports."],
+      ["Draft 7 Musts", "Drafts a summary for each non-negotiable and tunes the section weights to the deal, ticking only the proof points the evidence supports."],
       ["Autopopulate Deal Objectives", "Marks off the seller actions and buyer reciprocations that have genuinely happened, based on your transcripts and history."]
     ] },
   { id: "qual", icon: "🤝", title: "How qualification works",
     intro: "Three linked views turn a hunch into a forecast.",
     items: [
       ["Opportunity Rating", "The headline score, the fit and timing, the value, the sales cycle and a real projected close date, plus the reasoning and sources."],
-      ["7 Musts", "Seven deal imperatives, each with proof points you tick and a weight for how much it drives the odds of closing. Together they produce a weighted deal likelihood, so the probability reflects both your progress and your priorities."],
+      ["7 Musts", "Seven deal non-negotiables, each with proof points you tick and a weight for how much it drives the odds of closing. Together they produce a weighted deal likelihood, so the probability reflects both your progress and your priorities."],
       ["Deal Objectives", "The deal broken into stages from first call to signature, tracking your actions and the buyer's reciprocations so a stage only counts as done when the buyer has reciprocated."]
+    ] },
+  { id: "forecast", icon: "🎯", title: "Forecast and the board QBR",
+    intro: "On the Dashboard, the Forecast block turns your qualified deals into a number you can stand behind.",
+    items: [
+      ["Categories", "Every deal gets a forecast category (Commit, Best case, Pipeline, Omitted). It defaults from the deal likelihood and you can override any deal, Clari-style. Omitted deals drop out of the totals."],
+      ["Roll-up", "Commit, Best case, Pipeline and Weighted totals across the whole book, with a row per account you can click into."],
+      ["Board QBR", "One click writes a quarterly business review from the whole portfolio: executive summary, forecast, pipeline health, a SWOT, wins, risks, top opportunities and asks. It opens as a document to print or save as PDF, and downloads a PowerPoint deck."]
     ] },
   { id: "data", icon: "🔒", title: "Data & security",
     intro: "Your intelligence stays yours.",
@@ -10422,6 +10439,86 @@ function OPMetric(props) {
       : React.createElement("div", { onClick: begin, title: editable ? "Click to edit" : undefined, style: { fontSize: 22, fontWeight: 800, color: color || C.text, lineHeight: 1.1, cursor: editable ? "text" : "default" } }, display)
   );
 }
+function qbrClean(s) { return String(s == null ? "" : s).replace(/\s*[—―]\s*/g, ", ").replace(/\s*–\s*/g, "-").replace(/\s+,/g, ",").replace(/,\s*,/g, ",").trim(); }
+function buildQbrHtml(qbr, totals, seller) {
+  function esc(s) { return qbrClean(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var S = seller || {};
+  function list(arr, fn) { return "<ul>" + (arr || []).map(function (x) { return "<li>" + fn(x) + "</li>"; }).join("") + "</ul>"; }
+  function swBox(title, col, arr) { return "<div class='sw'><h3 style='color:" + col + "'>" + esc(title) + "</h3>" + list(arr, function (x) { return esc(x); }) + "</div>"; }
+  var wm = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Ctext x='10' y='90' font-family='Helvetica,Arial,sans-serif' font-size='12' fill='%235b6b7f' fill-opacity='0.12' transform='rotate(-25 160 80)'%3EBoard confidential%3C/text%3E%3C/svg%3E";
+  var tile = function (label, val, col) { return "<div class='t'><div class='tl' style='color:" + col + "'>" + esc(label) + "</div><div class='tv'>" + esc(val) + "</div></div>"; };
+  var swot = qbr.swot ? ("<div class='sec'><h2>SWOT</h2><div class='swot'>"
+    + swBox("Strengths", "#059669", qbr.swot.strengths)
+    + swBox("Weaknesses", "#DC2626", qbr.swot.weaknesses)
+    + swBox("Opportunities", "#0D9488", qbr.swot.opportunities)
+    + swBox("Threats", "#D97706", qbr.swot.threats)
+    + "</div></div>") : "";
+  var html = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>" + esc(qbr.title || "Quarterly Business Review") + "</title><style>"
+    + "*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0F172A;background:#F8FAFC;line-height:1.6}"
+    + ".wm{position:fixed;inset:0;pointer-events:none;z-index:5;background-image:url(\"" + wm + "\");background-repeat:repeat}"
+    + ".wrap{max-width:860px;margin:0 auto;padding:26px 22px 60px;position:relative;z-index:1}"
+    + ".head{border-bottom:2px solid #E2E8F0;padding-bottom:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}"
+    + ".head h1{font-size:25px;font-weight:800}.head .m{font-size:13px;color:#64748B;margin-top:4px}.head .m b{color:#0F766E}"
+    + ".pbtn{font-size:12.5px;font-weight:700;color:#fff;background:#0F766E;border:none;border-radius:8px;padding:9px 15px;cursor:pointer}"
+    + ".tiles{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.t{flex:1 1 150px;min-width:140px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px}.tl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}.tv{font-size:22px;font-weight:800;color:#0F172A}"
+    + ".sec{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px 18px;margin-bottom:12px}.sec h2{font-size:14px;font-weight:800;color:#0F766E;margin-bottom:8px}.sec p{font-size:13px;color:#334155;margin-bottom:9px}.sec p:last-child{margin-bottom:0}"
+    + ".sec ul{margin:0;padding-left:18px}.sec li{font-size:13px;color:#334155;margin-bottom:6px}"
+    + ".swot{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sw{border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;background:#FCFDFE}.sw h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}.sw ul{padding-left:16px}.sw li{font-size:12.5px;color:#334155;margin-bottom:4px}"
+    + ".foot{text-align:center;font-size:11px;color:#94A3B8;padding-top:14px;border-top:1px solid #E2E8F0;margin-top:18px;line-height:1.7}"
+    + "@media print{.pbtn{display:none}.wm{opacity:.5}}"
+    + "</style></head><body><div class='wm'></div><div class='wrap'>"
+    + "<div class='head'><div><h1>" + esc(qbr.title || "Quarterly Business Review") + "</h1><div class='m'>" + esc(qbr.period || "") + " &middot; Selling <b>" + esc(S.productName || "your solution") + "</b> &middot; " + (totals.accounts || 0) + " accounts</div></div><button class='pbtn' onclick='window.print()'>Print / Save as PDF</button></div>"
+    + "<div class='tiles'>" + tile("Commit", totals.commit, "#059669") + tile("Best case", totals.best, "#0D9488") + tile("Pipeline", totals.pipeline, "#6366F1") + tile("Weighted", totals.weighted, "#0F766E") + "</div>"
+    + "<div class='sec'><h2>Executive summary</h2>" + (qbr.execSummary || []).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>"
+    + "<div class='sec'><h2>Forecast</h2><p>" + esc(qbr.forecast || "") + "</p></div>"
+    + "<div class='sec'><h2>Pipeline health</h2><p>" + esc(qbr.pipelineHealth || "") + "</p></div>"
+    + swot
+    + "<div class='sec'><h2>Wins and progression</h2>" + list(qbr.wins, function (x) { return esc(x); }) + "</div>"
+    + "<div class='sec'><h2>Risks to the number</h2>" + list(qbr.risks, function (r) { return "<b>" + esc(r.account || "") + ".</b> " + esc(r.risk || ""); }) + "</div>"
+    + "<div class='sec'><h2>Top opportunities</h2>" + list(qbr.topOpportunities, function (o) { return "<b>" + esc(o.account || "") + (o.value ? " (" + esc(o.value) + ")" : "") + ".</b> " + esc(o.why || ""); }) + "</div>"
+    + "<div class='sec'><h2>Asks of the board</h2>" + list(qbr.asks, function (x) { return esc(x); }) + "</div>"
+    + "<div class='foot'>Quarterly business review for " + esc(S.productName || "your solution") + ". AI-assisted, verify before presenting.<br>&copy; 2026 Pascal Schumachers. Board confidential.</div>"
+    + "</div></body></html>";
+  return html;
+}
+async function buildQbrPptx(qbr, totals, seller) {
+  await loadScript(PPTX_CDN, "pptx");
+  if (!window.PptxGenJS) throw new Error("Deck library not loaded");
+  var S = seller || {};
+  var teal = "0F766E", ink = "1E293B", muted = "64748B";
+  var p = new window.PptxGenJS();
+  p.defineLayout({ name: "W", width: 13.33, height: 7.5 }); p.layout = "W";
+  function bullets(arr) { return (arr || []).map(function (x) { return { text: qbrClean(typeof x === "string" ? x : (x.account ? (x.account + ": " + (x.risk || x.why || "")) : "")), options: { bullet: true, fontSize: 15, color: ink, paraSpaceAfter: 8 } }; }); }
+  var s = p.addSlide(); s.background = { color: "F8FAFC" };
+  s.addText(qbr.title || "Quarterly Business Review", { x: 0.7, y: 2.4, w: 12, h: 1, fontSize: 40, bold: true, color: ink });
+  s.addText([{ text: (qbr.period || "") + "  |  Selling " + (S.productName || "your solution") + "  |  " + (totals.accounts || 0) + " accounts", options: { fontSize: 16, color: muted } }], { x: 0.7, y: 3.5, w: 12, h: 0.6 });
+  var f = p.addSlide(); f.background = { color: "FFFFFF" };
+  f.addText("Forecast", { x: 0.7, y: 0.5, w: 12, h: 0.6, fontSize: 26, bold: true, color: teal });
+  var cards = [["Commit", totals.commit, "059669"], ["Best case", totals.best, "0D9488"], ["Pipeline", totals.pipeline, "6366F1"], ["Weighted", totals.weighted, teal]];
+  cards.forEach(function (c, i) { var x = 0.7 + i * 3.1; f.addShape(p.ShapeType.roundRect, { x: x, y: 1.5, w: 2.9, h: 1.6, fill: { color: "F1F5F9" }, line: { color: "E2E8F0" }, rectRadius: 0.1 }); f.addText(c[0], { x: x + 0.15, y: 1.65, w: 2.6, h: 0.4, fontSize: 12, bold: true, color: c[2] }); f.addText(c[1] || "-", { x: x + 0.15, y: 2.05, w: 2.6, h: 0.7, fontSize: 26, bold: true, color: ink }); });
+  f.addText(qbrClean(qbr.forecast || ""), { x: 0.7, y: 3.4, w: 12, h: 2.8, fontSize: 15, color: ink, valign: "top" });
+  var e = p.addSlide(); e.background = { color: "FFFFFF" };
+  e.addText("Executive summary", { x: 0.7, y: 0.5, w: 12, h: 0.6, fontSize: 26, bold: true, color: teal });
+  e.addText((qbr.execSummary || []).map(function (t) { return { text: qbrClean(t), options: { fontSize: 16, color: ink, paraSpaceAfter: 12 } }; }), { x: 0.7, y: 1.4, w: 12, h: 5.4, valign: "top" });
+  function textSlide(title, arr) { var sl = p.addSlide(); sl.background = { color: "FFFFFF" }; sl.addText(title, { x: 0.7, y: 0.5, w: 12, h: 0.6, fontSize: 26, bold: true, color: teal }); sl.addText(bullets(arr), { x: 0.7, y: 1.4, w: 12, h: 5.4, valign: "top" }); }
+  textSlide("Pipeline health", [qbr.pipelineHealth || ""]);
+  if (qbr.swot) {
+    var sw = p.addSlide(); sw.background = { color: "FFFFFF" };
+    sw.addText("SWOT", { x: 0.7, y: 0.5, w: 12, h: 0.6, fontSize: 26, bold: true, color: teal });
+    var quad = [["Strengths", "059669", qbr.swot.strengths, 0.7, 1.4], ["Weaknesses", "DC2626", qbr.swot.weaknesses, 6.95, 1.4], ["Opportunities", "0D9488", qbr.swot.opportunities, 0.7, 4.35], ["Threats", "D97706", qbr.swot.threats, 6.95, 4.35]];
+    quad.forEach(function (q) {
+      sw.addShape(p.ShapeType.roundRect, { x: q[3], y: q[4], w: 5.68, h: 2.75, fill: { color: "F8FAFC" }, line: { color: "E2E8F0" }, rectRadius: 0.08 });
+      sw.addText(q[0], { x: q[3] + 0.2, y: q[4] + 0.12, w: 5.3, h: 0.4, fontSize: 14, bold: true, color: q[1] });
+      sw.addText((q[2] || []).map(function (x) { return { text: qbrClean(x), options: { bullet: true, fontSize: 12, color: ink, paraSpaceAfter: 4 } }; }), { x: q[3] + 0.2, y: q[4] + 0.6, w: 5.3, h: 2.05, valign: "top" });
+    });
+  }
+  textSlide("Wins and progression", qbr.wins);
+  textSlide("Risks to the number", qbr.risks);
+  textSlide("Top opportunities", (qbr.topOpportunities || []).map(function (o) { return o.account + (o.value ? " (" + o.value + ")" : "") + ": " + (o.why || ""); }));
+  textSlide("Asks of the board", qbr.asks);
+  await p.writeFile({ fileName: "QBR_" + (S.productName || "Board").replace(/[^A-Za-z0-9]+/g, "_") + ".pptx" });
+}
+
 function OnePagerSection({ account, setActiveSection, setActiveSuperSection, update }) {
   function saveInt100(field, v) { if (v === "") { update(field, ""); return; } var n = parseInt(String(v).replace(/[^0-9]/g, ""), 10); if (isNaN(n)) return; update(field, String(Math.max(0, Math.min(100, n)))); }
   var score = parseInt(account.oppScore, 10); if (isNaN(score)) score = null;
@@ -10554,7 +10651,7 @@ function InfoDot(props) {
   );
 }
 
-function DashboardHome({ accounts, completionScore, selectAccount, setActiveSection, setActiveSuperSection, setDrawerOpen, updateAccount }) {
+function DashboardHome({ accounts, completionScore, selectAccount, setActiveSection, setActiveSuperSection, setDrawerOpen, updateAccount, onGenerateQBR }) {
   var _useState = useState(null), expandedCard = _useState[0], setExpandedCard = _useState[1];
   var _useState2 = useState(null), expandedStage = _useState2[0], setExpandedStage = _useState2[1];
   var _useState3 = useState(""), teamSearch = _useState3[0], setTeamSearch = _useState3[1];
@@ -10807,6 +10904,51 @@ function DashboardHome({ accounts, completionScore, selectAccount, setActiveSect
     ),
 
     // ══════════════════════════════════════════════════════════
+    // ── FORECAST (Clari-style categories + roll-up) ──
+    // ══════════════════════════════════════════════════════════
+    React.createElement("div", { style: { background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: 20, marginBottom: 16 } },
+      React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 14 } },
+        React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: "#1E293B" } }, "🎯 Forecast"),
+        React.createElement("button", { onClick: function () { if (onGenerateQBR) onGenerateQBR(); }, style: { padding: "8px 14px", borderRadius: 8, border: "none", background: C.teal, color: "#fff", fontFamily: "inherit", fontSize: 12.5, fontWeight: 700, cursor: "pointer" } }, "📊 Board QBR")
+      ),
+      (function () {
+        var cats = { "Commit": { v: 0, c: 0 }, "Best case": { v: 0, c: 0 }, "Pipeline": { v: 0, c: 0 } };
+        var weighted = 0;
+        inPlay.forEach(function (d) { var cat = forecastCategory(d.a); if (cat === "Omitted" || !cats[cat]) return; if (d.val != null) { cats[cat].v += d.val; weighted += d.val * (d.lik / 100); } cats[cat].c++; });
+        var card = function (label, val, count, col) {
+          return React.createElement("div", { key: label, style: { flex: "1 1 150px", minWidth: 140, background: C.bg, border: "1px solid " + C.border, borderRadius: 10, padding: "12px 14px" } },
+            React.createElement("div", { style: { fontSize: 10, fontWeight: 800, color: col, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 5 } }, label),
+            React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: "#1E293B" } }, fmtMoney(val)),
+            React.createElement("div", { style: { fontSize: 11, color: C.muted, marginTop: 2 } }, count + " deal" + (count === 1 ? "" : "s")));
+        };
+        return React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 } },
+          card("Commit", cats["Commit"].v, cats["Commit"].c, "#059669"),
+          card("Best case", cats["Best case"].v, cats["Best case"].c, "#0D9488"),
+          card("Pipeline", cats["Pipeline"].v, cats["Pipeline"].c, "#6366F1"),
+          card("Weighted", weighted, inPlay.filter(function (d) { return forecastCategory(d.a) !== "Omitted"; }).length, "#0F766E"));
+      })(),
+      inPlay.length ? React.createElement("div", { style: { overflowX: "auto" } },
+        React.createElement("table", { style: { width: "100%", borderCollapse: "collapse", fontSize: 12.5 } },
+          React.createElement("thead", null, React.createElement("tr", null,
+            ["Account", "Value", "Likelihood", "Close", "Forecast"].map(function (h) { return React.createElement("th", { key: h, style: { textAlign: "left", padding: "8px 10px", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5, color: C.muted, borderBottom: "1px solid " + C.border, whiteSpace: "nowrap" } }, h); }))),
+          React.createElement("tbody", null,
+            inPlay.slice().sort(function (a, b) { return (b.val || 0) - (a.val || 0); }).map(function (d) {
+              var a = d.a; var cat = forecastCategory(a); var q = d.proj ? quarterLabel(d.proj) : "-";
+              return React.createElement("tr", { key: a.id, style: { borderBottom: "1px solid " + C.bg } },
+                React.createElement("td", { style: { padding: "8px 10px", fontWeight: 700, color: "#1E293B", cursor: "pointer" }, onClick: function () { selectAccount && selectAccount(a.id); } }, a.companyName || "Unnamed"),
+                React.createElement("td", { style: { padding: "8px 10px", color: "#0F766E", fontWeight: 700, whiteSpace: "nowrap" } }, d.val != null ? fmtMoney(d.val) : "-"),
+                React.createElement("td", { style: { padding: "8px 10px", color: C.muted } }, d.lik + "%"),
+                React.createElement("td", { style: { padding: "8px 10px", color: C.muted, whiteSpace: "nowrap" } }, q),
+                React.createElement("td", { style: { padding: "6px 10px" } },
+                  React.createElement("select", { value: cat, onChange: function (e) { updateAccount && updateAccount(a.id, "forecastCat", e.target.value); }, style: { fontSize: 12, fontWeight: 700, color: FORECAST_COL[cat] || C.text, border: "1px solid " + C.border, borderRadius: 6, padding: "4px 6px", background: "#fff", fontFamily: "inherit", cursor: "pointer" } },
+                    FORECAST_CATS.map(function (fc) { return React.createElement("option", { key: fc, value: fc }, fc); }))));
+            }))
+        )
+      ) : React.createElement("div", { style: { fontSize: 12.5, color: C.muted, padding: "10px 2px" } }, "No deals in play yet. Add accounts and set an Est. value to build your forecast."),
+      React.createElement("div", { style: { fontSize: 11, color: C.muted, marginTop: 8, fontStyle: "italic" } }, "Category defaults from deal likelihood (80% or more Commit, 50 to 79% Best case). Override any deal here. Omitted deals drop out of the totals.")
+    ),
+
+    // ══════════════════════════════════════════════════════════
     // ── PIPELINE OVERVIEW (clickable stages) ──
     // ══════════════════════════════════════════════════════════
     React.createElement("div", { style: { background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: 20, marginBottom: 16 } },
@@ -11029,6 +11171,53 @@ function ProspectDashboard() {
     try { return localStorage.getItem("prospect_claude_api_key") || ""; } catch(e) { return ""; }
   });
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const generateQBR = async () => {
+    const key = claudeApiKey;
+    if (!key) { setShowApiKeyModal(true); return; }
+    var live = accounts.filter(function (a) { return !a._archived; });
+    if (!live.length) { alert("Add some accounts first to build a QBR."); return; }
+    var w = window.open("", "_blank");
+    if (w) { w.document.write("<!doctype html><meta charset='utf-8'><body style=\"font-family:-apple-system,sans-serif;padding:44px;color:#334155\"><h2 style='color:#0F766E'>Generating your board QBR...</h2><p>Researching and writing across " + live.length + " accounts. This can take up to a minute. A PowerPoint deck will download when it is ready.</p></body>"); w.document.close(); }
+    try {
+      const S = { productName: "JAG", category: "AI source-to-pay and procurement platform", valueProp: "spend visibility, savings, supplier risk reduction and procurement automation" };
+      var rows = live.map(function (a) { var val = parseMoney(a.oppValue); var pd = projectedCloseDate(a); return { company: a.companyName, industry: a.industry || "", value: val != null ? fmtMoney(val) : "", likelihood: dealLikelihood(a) + "%", category: forecastCategory(a), close: pd ? quarterLabel(pd) : "", stage: a.stage || "", fit: a.oppFit || "", compellingEvent: (a.compellingEvent || "").slice(0, 200) }; });
+      var commit = 0, best = 0, pipe = 0, weighted = 0;
+      live.forEach(function (a) { var val = parseMoney(a.oppValue); if (val == null) return; var cat = forecastCategory(a); if (cat === "Omitted") return; var lik = dealLikelihood(a); weighted += val * (lik / 100); if (cat === "Commit") commit += val; else if (cat === "Best case") best += val; else pipe += val; });
+      var totals = { commit: fmtMoney(commit), best: fmtMoney(best), pipeline: fmtMoney(pipe), weighted: fmtMoney(weighted), accounts: live.length };
+      var prompt = "You are a sales leader writing a QUARTERLY BUSINESS REVIEW for the board, for a team selling " + S.productName + " (" + S.category + "). Value delivered: " + S.valueProp + ".\n"
+        + "Portfolio forecast totals: Commit " + totals.commit + ", Best case " + totals.best + ", Pipeline " + totals.pipeline + ", Weighted " + totals.weighted + ", across " + totals.accounts + " accounts.\n"
+        + "The accounts:\n" + JSON.stringify(rows) + "\n\n"
+        + "Write a crisp, board-ready QBR grounded in these numbers and accounts. Return ONLY valid JSON. British English. Do NOT use em dashes or en dashes; use commas or full stops.\n"
+        + "{\n"
+        + "  \"title\": \"Quarterly Business Review\",\n"
+        + "  \"period\": \"the current quarter and year\",\n"
+        + "  \"execSummary\": [\"2 to 3 short paragraphs: the headline, the number we stand behind, and the story behind it\"],\n"
+        + "  \"forecast\": \"A short narrative on the forecast: commit versus best case versus pipeline, coverage, and confidence\",\n"
+        + "  \"pipelineHealth\": \"A short narrative on pipeline health: stage mix, concentration, ageing and gaps\",\n"
+        + "  \"swot\": { \"strengths\": [\"2 to 3 short points\"], \"weaknesses\": [\"2 to 3\"], \"opportunities\": [\"2 to 3\"], \"threats\": [\"2 to 3\"] },\n"
+        + "  \"wins\": [\"3 to 5 progression or win highlights across the book, each one line\"],\n"
+        + "  \"risks\": [ { \"account\": \"name\", \"risk\": \"the risk or what could slip, one line\" } ],\n"
+        + "  \"topOpportunities\": [ { \"account\": \"name\", \"value\": \"est value\", \"why\": \"why it matters, one line\" } ],\n"
+        + "  \"asks\": [\"2 to 4 specific asks of the board, each one line\"]\n"
+        + "}";
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 8000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!resp.ok) throw new Error("API error: " + resp.status);
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      const qbr = extractJSON(apiText(data));
+      if (!qbr || !qbr.execSummary) throw new Error("The model did not return a usable QBR. Please try again.");
+      var html = buildQbrHtml(qbr, totals, S);
+      if (w) { w.document.open(); w.document.write(html); w.document.close(); w.focus(); }
+      try { await buildQbrPptx(qbr, totals, S); } catch (pe) { if (w) { try { w.document.body.insertAdjacentHTML("afterbegin", "<div style='background:#FEF3C7;color:#92400E;padding:10px 14px;font-family:sans-serif;font-size:13px'>The deck download could not start: " + (pe && pe.message ? pe.message : "error") + ". You can still Print this page to PDF.</div>"); } catch (e2) {} } }
+    } catch (e) {
+      if (w) { w.document.open(); w.document.write("<body style='font-family:sans-serif;padding:44px;color:#334155'><h2>Could not generate the QBR</h2><p>" + (e && e.message ? e.message : "error") + "</p></body>"); w.document.close(); }
+      else { alert("Could not generate the QBR: " + (e && e.message ? e.message : "error")); }
+    }
+  };
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showConnectors, setShowConnectors] = useState(function(){ try { return localStorage.getItem("jag_showConnectors") === "1"; } catch(e){ return false; } });
   var visibleChildren = function(ss){ if (ss && ss.id === "action" && !showConnectors) return ss.children.filter(function(c){ return c.id !== "sfhistory" && c.id !== "transcripts"; }); return ss ? ss.children : []; };
@@ -11080,6 +11269,7 @@ function ProspectDashboard() {
   const [refreshTotal, setRefreshTotal] = useState(0);
   const [refreshLog, setRefreshLog] = useState([]);
   const [refreshCurrentAccount, setRefreshCurrentAccount] = useState("");
+  const [refreshDismissed, setRefreshDismissed] = useState(true);
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
   const [showRefreshSelectModal, setShowRefreshSelectModal] = useState(false);
   const [refreshSelectedIds, setRefreshSelectedIds] = useState(new Set());
@@ -11356,7 +11546,8 @@ function ProspectDashboard() {
   const runIntelRefresh = async (accountIds, accountsOverride) => {
     const key = claudeApiKey;
     if (!key) { setShowApiKeyModal(true); return; }
-    setShowRefreshIntelModal(true);
+    setShowRefreshIntelModal(false);
+    setRefreshDismissed(false);
     setRefreshing(true);
     setRefreshLog([]);
     setRefreshProgress(0);
@@ -12199,7 +12390,7 @@ Return this exact JSON structure:
           {
             className: "hdr-hide-mobile",
             onClick: () => setShowApiKeyModal(true),
-            title: "Set Claude API Key",
+            title: "Set AI API Key",
             style: {
               background: "none",
               border: "1px solid #E5E7EB",
@@ -12448,6 +12639,7 @@ Return this exact JSON structure:
         updateAccount: function(accId, field, value) {
           setAccounts(function(prev) { return prev.map(function(a) { return a.id === accId ? { ...a, [field]: value } : a; }); });
         },
+        onGenerateQBR: generateQBR,
       }),
       // ── Help screen (no account needed) ──
       activeSection === "help" && /*#__PURE__*/ React.createElement(HelpSection, null),
@@ -12630,7 +12822,7 @@ Return this exact JSON structure:
           /*#__PURE__*/ React.createElement(
             "div",
             { style: { fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 16 } },
-            "\uD83D\uDD11 Claude API Key",
+            "\uD83D\uDD11 AI API Key",
           ),
           /*#__PURE__*/ React.createElement("input", {
             type: "password",
@@ -12771,7 +12963,7 @@ Return this exact JSON structure:
       /*#__PURE__*/ React.createElement(
         "div",
         {
-          onClick: () => { if (!refreshing) setShowRefreshIntelModal(false); },
+          onClick: () => setShowRefreshIntelModal(false),
           style: {
             position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -12825,19 +13017,41 @@ Return this exact JSON structure:
               entry.msg && /*#__PURE__*/ React.createElement("span", { style: { color: C.muted, fontSize: 11 } }, `(${entry.msg})`),
             )),
           ),
-          !refreshing && /*#__PURE__*/ React.createElement(
+          /*#__PURE__*/ React.createElement(
             "button",
             {
               onClick: () => setShowRefreshIntelModal(false),
               style: {
-                width: "100%", padding: "10px 16px", background: C.teal, color: "#FFF",
-                border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13,
-                fontWeight: 600, fontFamily: "inherit", minHeight: 44,
+                width: "100%", padding: "10px 16px", background: refreshing ? C.card : C.teal, color: refreshing ? C.teal : "#FFF",
+                border: refreshing ? `1px solid ${C.teal}` : "none", borderRadius: 6, cursor: "pointer", fontSize: 13,
+                fontWeight: 700, fontFamily: "inherit", minHeight: 44,
               },
             },
-            "Close",
+            refreshing ? "Run in background, keep working" : "Close",
           ),
         ),
+      ),
+    (refreshing || (refreshLog.length > 0 && !refreshDismissed)) && !showRefreshIntelModal &&
+      /*#__PURE__*/ React.createElement(
+        "div",
+        { style: { position: "fixed", right: 16, bottom: 16, zIndex: 1500, width: 300, maxWidth: "calc(100vw - 32px)", background: C.card, border: "1px solid " + C.border, borderRadius: 12, boxShadow: "0 12px 34px rgba(0,0,0,0.18)", padding: "12px 14px", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" } },
+        /*#__PURE__*/ React.createElement(
+          "div",
+          { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 6 } },
+          /*#__PURE__*/ React.createElement("span", { style: { fontSize: 15 } }, refreshing ? "🔄" : "✅"),
+          /*#__PURE__*/ React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: C.text, flex: 1 } }, refreshing ? "Updating intelligence" : "Intelligence updated"),
+          !refreshing && /*#__PURE__*/ React.createElement("span", { onClick: () => setRefreshDismissed(true), title: "Dismiss", style: { cursor: "pointer", color: C.muted, fontSize: 14, lineHeight: 1 } }, "✕")
+        ),
+        /*#__PURE__*/ React.createElement("div", { style: { fontSize: 11.5, color: C.muted, marginBottom: refreshing ? 6 : 8, lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } },
+          refreshing ? (refreshCurrentAccount + " (" + refreshProgress + "/" + refreshTotal + ")") : (refreshLog.filter(function (l) { return l.status === "done"; }).length + " of " + refreshLog.length + " accounts updated")),
+        refreshing && /*#__PURE__*/ React.createElement("div", { style: { width: "100%", height: 5, background: C.bg, borderRadius: 3, overflow: "hidden", marginBottom: 8 } },
+          /*#__PURE__*/ React.createElement("div", { style: { width: (refreshTotal ? (refreshProgress / refreshTotal) * 100 : 0) + "%", height: "100%", background: C.teal, borderRadius: 3, transition: "width 0.3s" } })),
+        /*#__PURE__*/ React.createElement(
+          "div",
+          { style: { display: "flex", gap: 8 } },
+          /*#__PURE__*/ React.createElement("button", { onClick: () => setShowRefreshIntelModal(true), style: { flex: 1, padding: "7px", borderRadius: 7, border: "1px solid " + C.border, background: C.card, color: C.text, fontFamily: "inherit", fontSize: 12, fontWeight: 700, cursor: "pointer" } }, "Details"),
+          !refreshing && /*#__PURE__*/ React.createElement("button", { onClick: () => setRefreshDismissed(true), style: { flex: 1, padding: "7px", borderRadius: 7, border: "none", background: C.teal, color: "#fff", fontFamily: "inherit", fontSize: 12, fontWeight: 700, cursor: "pointer" } }, "Dismiss")
+        )
       ),
     showAddAccountModal &&
       /*#__PURE__*/ React.createElement(
@@ -12990,7 +13204,7 @@ Return this exact JSON structure:
               /*#__PURE__*/ React.createElement(
                 "label",
                 { style: { fontSize: 12, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 } },
-                "\uD83D\uDD11 Claude API Key",
+                "\uD83D\uDD11 AI API Key",
               ),
               /*#__PURE__*/ React.createElement("input", {
                 type: "password",
