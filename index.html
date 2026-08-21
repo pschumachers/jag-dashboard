@@ -10445,6 +10445,7 @@ function buildQbrHtml(qbr, totals, seller) {
   var S = seller || {};
   function list(arr, fn) { return "<ul>" + (arr || []).map(function (x) { return "<li>" + fn(x) + "</li>"; }).join("") + "</ul>"; }
   function swBox(title, col, arr) { return "<div class='sw'><h3 style='color:" + col + "'>" + esc(title) + "</h3>" + list(arr, function (x) { return esc(x); }) + "</div>"; }
+  var AC = (typeof C !== "undefined" && C && C.teal) || "#0F766E";
   var wm = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Ctext x='10' y='90' font-family='Helvetica,Arial,sans-serif' font-size='12' fill='%235b6b7f' fill-opacity='0.12' transform='rotate(-25 160 80)'%3EBoard confidential%3C/text%3E%3C/svg%3E";
   var tile = function (label, val, col) { return "<div class='t'><div class='tl' style='color:" + col + "'>" + esc(label) + "</div><div class='tv'>" + esc(val) + "</div></div>"; };
   var swot = qbr.swot ? ("<div class='sec'><h2>SWOT</h2><div class='swot'>"
@@ -10458,10 +10459,10 @@ function buildQbrHtml(qbr, totals, seller) {
     + ".wm{position:fixed;inset:0;pointer-events:none;z-index:5;background-image:url(\"" + wm + "\");background-repeat:repeat}"
     + ".wrap{max-width:860px;margin:0 auto;padding:26px 22px 60px;position:relative;z-index:1}"
     + ".head{border-bottom:2px solid #E2E8F0;padding-bottom:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}"
-    + ".head h1{font-size:25px;font-weight:800}.head .m{font-size:13px;color:#64748B;margin-top:4px}.head .m b{color:#0F766E}"
-    + ".pbtn{font-size:12.5px;font-weight:700;color:#fff;background:#0F766E;border:none;border-radius:8px;padding:9px 15px;cursor:pointer}"
+    + ".head h1{font-size:25px;font-weight:800}.head .m{font-size:13px;color:#64748B;margin-top:4px}.head .m b{color:" + AC + "}"
+    + ".pbtn{font-size:12.5px;font-weight:700;color:#fff;background:" + AC + ";border:none;border-radius:8px;padding:9px 15px;cursor:pointer}"
     + ".tiles{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.t{flex:1 1 150px;min-width:140px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px}.tl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}.tv{font-size:22px;font-weight:800;color:#0F172A}"
-    + ".sec{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px 18px;margin-bottom:12px}.sec h2{font-size:14px;font-weight:800;color:#0F766E;margin-bottom:8px}.sec p{font-size:13px;color:#334155;margin-bottom:9px}.sec p:last-child{margin-bottom:0}"
+    + ".sec{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px 18px;margin-bottom:12px}.sec h2{font-size:14px;font-weight:800;color:" + AC + ";margin-bottom:8px}.sec p{font-size:13px;color:#334155;margin-bottom:9px}.sec p:last-child{margin-bottom:0}"
     + ".sec ul{margin:0;padding-left:18px}.sec li{font-size:13px;color:#334155;margin-bottom:6px}"
     + ".swot{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sw{border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;background:#FCFDFE}.sw h3{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}.sw ul{padding-left:16px}.sw li{font-size:12.5px;color:#334155;margin-bottom:4px}"
     + ".foot{text-align:center;font-size:11px;color:#94A3B8;padding-top:14px;border-top:1px solid #E2E8F0;margin-top:18px;line-height:1.7}"
@@ -10485,7 +10486,7 @@ async function buildQbrPptx(qbr, totals, seller) {
   await loadScript(PPTX_CDN, "pptx");
   if (!window.PptxGenJS) throw new Error("Deck library not loaded");
   var S = seller || {};
-  var teal = "0F766E", ink = "1E293B", muted = "64748B";
+  var teal = String((typeof C !== "undefined" && C && C.teal) || "#0F766E").replace("#", ""), ink = "1E293B", muted = "64748B";
   var p = new window.PptxGenJS();
   p.defineLayout({ name: "W", width: 13.33, height: 7.5 }); p.layout = "W";
   function bullets(arr) { return (arr || []).map(function (x) { return { text: qbrClean(typeof x === "string" ? x : (x.account ? (x.account + ": " + (x.risk || x.why || "")) : "")), options: { bullet: true, fontSize: 15, color: ink, paraSpaceAfter: 8 } }; }); }
@@ -10509,7 +10510,7 @@ async function buildQbrPptx(qbr, totals, seller) {
     quad.forEach(function (q) {
       sw.addShape(p.ShapeType.roundRect, { x: q[3], y: q[4], w: 5.68, h: 2.75, fill: { color: "F8FAFC" }, line: { color: "E2E8F0" }, rectRadius: 0.08 });
       sw.addText(q[0], { x: q[3] + 0.2, y: q[4] + 0.12, w: 5.3, h: 0.4, fontSize: 14, bold: true, color: q[1] });
-      sw.addText((q[2] || []).map(function (x) { return { text: qbrClean(x), options: { bullet: true, fontSize: 12, color: ink, paraSpaceAfter: 4 } }; }), { x: q[3] + 0.2, y: q[4] + 0.6, w: 5.3, h: 2.05, valign: "top" });
+      sw.addText((q[2] || []).map(function (x) { return { text: qbrClean(x), options: { bullet: true, fontSize: 11, color: ink, paraSpaceAfter: 3 } }; }), { x: q[3] + 0.2, y: q[4] + 0.58, w: 5.3, h: 2.02, valign: "top", fit: "shrink", shrinkText: true });
     });
   }
   textSlide("Wins and progression", qbr.wins);
